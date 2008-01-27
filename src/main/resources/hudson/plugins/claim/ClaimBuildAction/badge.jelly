@@ -1,0 +1,9 @@
+<j:jelly xmlns:j="jelly:core">
+	<j:choose>
+		<j:when test="${it.claimed}">
+			<img width="16" height="16"
+			  title="Claimed by ${it.claimedBy}"
+			  src="${imagesURL}/16x16/lock.gif"/>
+		</j:when>
+	</j:choose>
+</j:jelly>  

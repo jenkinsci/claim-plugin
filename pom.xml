@@ -1,0 +1,29 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>org.jvnet.hudson.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>1.176</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>claim</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>hpi</packaging>
+  <name>Claim Plugin</name>
+  
+  <build>
+    <finalName>${project.artifactId}</finalName>
+
+    <pluginManagement>
+        <plugins>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.2</version>
+          </plugin>
+        </plugins>
+     </pluginManagement>
+  </build>
+
+</project>

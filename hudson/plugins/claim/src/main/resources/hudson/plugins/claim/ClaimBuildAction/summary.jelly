@@ -1,0 +1,18 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	<t:summary icon="orange-square.gif">
+	<j:choose>
+		<j:when test="${it.isClaimedByMe()}">
+			You claimed this build. 
+			<j:if test="${it.canRelease()}"><a href="claim">Drop the claim.</a>.</j:if>
+		</j:when>
+		<j:when test="${it.claimed}">
+		This build was claimed by ${it.claimedBy}. 
+		<j:if test="${it.canClaim()}"><a href="claim">Claim for yourself.</a></j:if>
+		</j:when>
+		<j:otherwise>
+		This build was not claimed. 
+		<j:if test="${it.canClaim()}"><a href="claim">Claim.</a></j:if>
+		</j:otherwise>
+	</j:choose>
+	</t:summary>
+</j:jelly>

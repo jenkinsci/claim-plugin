@@ -26,17 +26,14 @@ public class ClaimBuildAction implements BuildBadgeAction,
 		this.run = run;
 	}
 
-	@Override
 	public String getDisplayName() {
 		return "Claim Build";
 	}
 
-	@Override
 	public String getIconFileName() {
 		return null;
 	}
 
-	@Override
 	public String getUrlName() {
 		return "claim";
 	}

@@ -20,7 +20,6 @@ public class ClaimPublisher extends Publisher {
 	public ClaimPublisher() {
 	}
 	
-	@Override
 	public Descriptor<Publisher> getDescriptor() {
 		return DESCRIPTOR;
 	}

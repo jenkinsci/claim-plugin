@@ -1,0 +1,31 @@
+<st:compress xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:c="/hudson/plugins/claim/tag">
+
+        <st:header name="X-Hudson" value="${servletContext.getAttribute('version')}" />
+  <j:new var="h" className="hudson.Functions" /><!-- instead of JSP functions -->
+        <l:layout title="${h.ifThenElse(app==it,'%Dashboard',it.viewName)}">
+    <st:include page="sidepanel.jelly" it="${it.parent}"/>
+                <l:main-panel>
+                  <div id="view-message">
+        <t:editableDescription permission="${app.ADMINISTER}"/>
+                  </div>
+      <j:set var="items" value="${it.builds}"/>
+      <j:choose>
+        <j:when test="${empty(items)}">
+          <st:include page="noJob.jelly" />
+        </j:when>
+        <j:otherwise>
+          <!-- set @jobBaseUrl="" so that links to jobs will be under this view. -->
+    		<st:include page="buildListTable.jelly" />
+        </j:otherwise>
+      </j:choose>
+     </l:main-panel>
+    <l:header>
+      <!-- for screen resolution detection -->
+      <l:yui module="cookie" suffix="-beta" />
+      <script>
+        YAHOO.util.Cookie.set("screenResolution", screen.width+"x"+screen.height);
+ 
+      </script>
+    </l:header>
+        </l:layout>
+</st:compress>

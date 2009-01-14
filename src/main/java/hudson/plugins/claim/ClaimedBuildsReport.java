@@ -11,18 +11,21 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import hudson.model.Action;
+import hudson.model.Descriptor.FormException;
 import hudson.model.Hudson;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TopLevelItem;
 import hudson.model.View;
+import hudson.model.ViewDescriptor;
 import hudson.util.RunList;
 
 public class ClaimedBuildsReport extends View implements Action {
     private final Hudson owner;
 
     public ClaimedBuildsReport(Hudson owner) {
+        super("Claim Report");
     	this.owner = owner;
     }
     
@@ -30,10 +33,6 @@ public class ClaimedBuildsReport extends View implements Action {
     	return this.owner;
     }
     
-	public String getDisplayName() {
-		return "Claim Report";
-	}
-
 	public String getIconFileName() {
 		return "orange-square.gif";
 	}
@@ -56,12 +55,6 @@ public class ClaimedBuildsReport extends View implements Action {
 	}
 
 	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public TopLevelItem getItem(String name) {
 		return owner.getItem(name);
 	}
@@ -78,7 +71,17 @@ public class ClaimedBuildsReport extends View implements Action {
 	}
 
 	@Override
-	public String getViewName() {
+	public void onJobRenamed(Item item, String oldName, String newName) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected void submit(StaplerRequest req) throws IOException, ServletException, FormException {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public ViewDescriptor getDescriptor() {
 		// TODO Auto-generated method stub
 		return null;
 	}

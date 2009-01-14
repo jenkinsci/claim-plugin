@@ -3,7 +3,7 @@
 	<j:choose>
 		<j:when test="${it.isClaimedByMe()}">
 			You claimed this build. 
-			<j:if test="${it.canRelease()}"><a href="claim">Drop the claim.</a>.</j:if>
+			<j:if test="${it.canRelease()}"><a href="claim">Drop the claim.</a></j:if>
 		</j:when>
 		<j:when test="${it.claimed}">
 		This build was claimed by ${it.claimedBy}. 

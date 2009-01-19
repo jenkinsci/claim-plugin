@@ -1,9 +1,16 @@
 <j:jelly xmlns:j="jelly:core">
-	<j:choose>
-		<j:when test="${it.claimed}">
+		<j:if test="${it.claimed}">
+		<j:choose>
+			<j:when test="${it.reason != null}">
 			<img width="16" height="16"
-			  title="Claimed by ${it.claimedBy}"
+			  title="Claimed by ${it.claimedBy}. Reason: ${it.reason}"
 			  src="${imagesURL}/16x16/lock.gif"/>
-		</j:when>
-	</j:choose>
+			 </j:when>
+			 <j:otherwise>
+			<img width="16" height="16"
+			  title="Claimed by ${it.claimedBy}."
+			  src="${imagesURL}/16x16/lock.gif"/>
+			 </j:otherwise>
+		</j:choose>
+		</j:if>
 </j:jelly>  

@@ -102,7 +102,12 @@ public class ClaimedBuildsReport extends View implements Action {
 		if(claim == null || !claim.isClaimed()) {
 			return "unclaimed";
 		}
-		return "claimed by " + claim.getClaimedBy();
+		String reason = claim.getReason();
+		if (reason != null) {
+			return "claimed by " + claim.getClaimedBy() + " because: " + claim.getReason();
+		} else {
+			return "claimed by " + claim.getClaimedBy();
+		}
 	}
 	
 	@Override

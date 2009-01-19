@@ -60,8 +60,8 @@ public class ClaimPublisher extends Publisher {
 			AbstractBuild<?,?> previousBuild = build.getPreviousBuild();
 			if (previousBuild != null) {
 				ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
-				if (c != null && c.isClaimed()) {
-					action.claim(c.getClaimedBy());
+				if (c != null && c.isClaimed() && c.isSticky()) {
+					c.copyTo(action);
 				}
 			}
 		}

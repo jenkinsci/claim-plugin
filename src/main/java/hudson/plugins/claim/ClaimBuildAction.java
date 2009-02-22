@@ -83,7 +83,6 @@ public class ClaimBuildAction implements BuildBadgeAction,
 	
 	/**
 	 * Claim a new Run with the same settings as this one.
-	 * @param run
 	 */
 	public void copyTo(ClaimBuildAction other) {
 		other.claim(getClaimedBy(), getReason(), isSticky());

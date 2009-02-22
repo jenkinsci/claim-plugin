@@ -17,6 +17,7 @@ public class ClaimPublisher extends Publisher {
 
 	public static final Descriptor<Publisher> DESCRIPTOR = new DescriptorImpl();
 
+    @DataBoundConstructor
 	public ClaimPublisher() {
 	}
 	
@@ -40,12 +41,6 @@ public class ClaimPublisher extends Publisher {
 			return "Allow broken build claiming";
 		}
 
-		@Override
-		public Publisher newInstance(StaplerRequest req, JSONObject formData)
-				throws FormException {
-			return new ClaimPublisher();
-		}
-		
 	}
 
 	@Override

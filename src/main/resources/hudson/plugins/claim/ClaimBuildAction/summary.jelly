@@ -1,55 +1,67 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-<script type="text/javascript">
-function ShowPopup(hoveritem)
-{
-	hp = document.getElementById("hoverpopup");
-	hp.style.visibility = "Visible";
-}
+    <script type="text/javascript">
+        function ShowPopup(hoveritem)
+        {
+            hp = document.getElementById("claimHoverPopup");
+            hp.style.visibility = "Visible";
+        }
 
-function HidePopup()
-{
-	hp = document.getElementById("hoverpopup");
-	hp.style.visibility = "Hidden";
-}
-</script>
+        function HidePopup()
+        {
+            hp = document.getElementById("claimHoverPopup");
+            hp.style.visibility = "Hidden";
+        }
+    </script>
 
-	<t:summary icon="orange-square.gif">
-	<j:choose>
-		<j:when test="${it.isClaimedByMe()}">
-		<p>
-			You claimed this build. 
-			<j:if test="${it.canRelease()}"><a href="claim/unclaim">Drop the claim.</a></j:if>
-		</p>
-			<j:if test="${it.hasReason()}"><p>Reason: ${it.reason}</p></j:if>
-		</j:when>
-		<j:when test="${it.claimed}">
-		<p>
-		This build was claimed by ${it.claimedBy}. 
-		<j:if test="${it.canClaim()}"><a href="claim/claim">Claim for yourself.</a></j:if>
-		</p>
-		<j:if test="${it.hasReason()}"><p>Reason: ${it.reason}</p></j:if>
-		</j:when>
-		<j:otherwise>
-		This build was not claimed. 
-		<j:if test="${it.canClaim()}"><a href="#" onClick="ShowPopup(this); return false;">Claim</a> it.</j:if>
-		</j:otherwise>
-	</j:choose>
-	<div id="hoverpopup" style="visibility:hidden; width:500px; border:1px solid #bbb;">
-		<f:form method="post" action="claim/claim" name="claim">
-	      <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
-	        <f:textarea name="reason" value="${it.reason}"/>
-	      </f:entry>
-	      <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html">
-	        <f:checkbox name="sticky" checked="${it.sticky}"/>
-	      </f:entry>
-	      <f:block>
-		      <div align="right">
-		        <f:submit value="${%Claim}" />
-		  		<input type="button" onClick="HidePopup();" value="Cancel" class="submit-button" />
-			  </div>
-	      </f:block>
-		</f:form>
-	</div>
-	</t:summary>
+    <t:summary icon="orange-square.gif">
+        <j:choose>
+            <j:when test="${it.isClaimedByMe()}">
+                <p>
+                    You claimed this build.
+                    <j:if test="${it.canRelease()}">
+                        <a id="dropClaim" href="claim/unclaim">Drop the claim.</a>
+                    </j:if>
+                </p>
+                <j:if test="${it.hasReason()}">
+                    <p>Reason: ${it.reason}</p>
+                </j:if>
+            </j:when>
+            <j:when test="${it.claimed}">
+                <p>
+                    This build was claimed by ${it.claimedBy}.
+                    <j:if test="${it.canClaim()}">
+                        <a id="claimForYourself" href="#" onClick="ShowPopup(this); return false;">Claim for yourself.</a>
+                    </j:if>
+                </p>
+                <j:if test="${it.hasReason()}">
+                    <p>Reason: ${it.reason}</p>
+                </j:if>
+            </j:when>
+            <j:otherwise>
+                This build was not claimed.
+                <j:if test="${it.canClaim()}">
+                    <a id ="claim" href="#" onClick="ShowPopup(this); return false;">Claim</a>
+                    it.
+                </j:if>
+            </j:otherwise>
+        </j:choose>
+        <div id="claimHoverPopup" style="visibility:hidden; width:500px; border:1px solid #bbb;">
+            <f:form method="post" action="claim/claim" name="claim">
+                <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
+                    <f:textarea name="reason" value="${it.reason}"/>
+                </f:entry>
+                <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html">
+                    <f:checkbox name="sticky" checked="${it.sticky}"/>
+                </f:entry>
+                <f:block>
+                    <div align="right">
+                        <f:submit value="${%Claim}"/>
+                        <input type="button" onClick="HidePopup();" value="Cancel" class="submit-button"/>
+                    </div>
+                </f:block>
+            </f:form>
+        </div>
+    </t:summary>
 </j:jelly>

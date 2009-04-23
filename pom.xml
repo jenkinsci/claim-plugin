@@ -12,7 +12,7 @@
   <version>1.5-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Claim Plugin</name>
-  <url>http://hudson.gotdns.com/wiki/display/HUDSON/Claim+Plugin</url>  
+  <url>http://wiki.hudson-ci.org/display/HUDSON/Claim+Plugin</url>  
   <build>
     <finalName>${project.artifactId}</finalName>
 

@@ -3,34 +3,26 @@ package hudson.plugins.claim;
 import java.io.IOException;
 
 import hudson.Launcher;
+import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Descriptor;
 import hudson.model.Result;
 import hudson.tasks.Publisher;
+import hudson.tasks.Notifier;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
-public class ClaimPublisher extends Publisher {
-
-	public static final Descriptor<Publisher> DESCRIPTOR = new DescriptorImpl();
+public class ClaimPublisher extends Notifier {
 
     @DataBoundConstructor
 	public ClaimPublisher() {
 	}
 	
-	public Descriptor<Publisher> getDescriptor() {
-		return DESCRIPTOR;
-	}
-	
-	private static class DescriptorImpl extends Descriptor<Publisher> {
-
-		protected DescriptorImpl() {
-			super(ClaimPublisher.class);
-		}
-
+    @Extension
+	public static class DescriptorImpl extends Descriptor<Publisher> {
 		@Override
 		public String getHelpFile() {
 			return "/plugin/claim/help.html";

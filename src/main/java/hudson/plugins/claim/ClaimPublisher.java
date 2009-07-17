@@ -8,8 +8,10 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Descriptor;
 import hudson.model.Result;
+import hudson.model.AbstractProject;
 import hudson.tasks.Publisher;
 import hudson.tasks.Notifier;
+import hudson.tasks.BuildStepDescriptor;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -22,7 +24,7 @@ public class ClaimPublisher extends Notifier {
 	}
 	
     @Extension
-	public static class DescriptorImpl extends Descriptor<Publisher> {
+	public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 		@Override
 		public String getHelpFile() {
 			return "/plugin/claim/help.html";
@@ -33,7 +35,10 @@ public class ClaimPublisher extends Notifier {
 			return "Allow broken build claiming";
 		}
 
-	}
+        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+            return true;
+        }
+    }
 
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,

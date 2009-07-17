@@ -19,14 +19,17 @@ import hudson.model.Run;
 import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
+import hudson.model.RootAction;
 import hudson.util.RunList;
+import hudson.Extension;
 
-public class ClaimedBuildsReport extends View implements Action {
+@Extension
+public class ClaimedBuildsReport extends View implements RootAction {
     private final Hudson owner;
 
-    public ClaimedBuildsReport(Hudson owner) {
+    public ClaimedBuildsReport() {
         super("Claim Report");
-    	this.owner = owner;
+    	this.owner = Hudson.getInstance();
     }
     
     public Hudson getParent() {

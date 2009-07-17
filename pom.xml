@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>claim</artifactId>
-  <version>1.5</version>
+  <version>1.6-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <name>Claim Plugin</name>
   <url>http://wiki.hudson-ci.org/display/HUDSON/Claim+Plugin</url>  
@@ -25,10 +25,4 @@
         </plugins>
      </pluginManagement>
   </build>
-
-  <scm>
-    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/tags/claim-1.5</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/claim-1.5</developerConnection>
-    <url>https://hudson.dev.java.net/source/browse/hudson/hudson/plugins/claim/tags/claim-1.5</url>
-  </scm>
 </project>

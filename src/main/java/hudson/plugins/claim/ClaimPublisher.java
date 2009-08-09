@@ -9,6 +9,7 @@ import hudson.model.BuildListener;
 import hudson.model.Descriptor;
 import hudson.model.Result;
 import hudson.model.AbstractProject;
+import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Notifier;
 import hudson.tasks.BuildStepDescriptor;
@@ -59,6 +60,10 @@ public class ClaimPublisher extends Notifier {
 		}
 		
 		return true;
+	}
+
+	public BuildStepMonitor getRequiredMonitorService() {
+		return BuildStepMonitor.STEP;
 	}
 	
 }

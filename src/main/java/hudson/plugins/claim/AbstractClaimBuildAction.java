@@ -4,6 +4,7 @@ import hudson.model.BuildBadgeAction;
 import hudson.model.Hudson;
 import hudson.model.ProminentProjectAction;
 import hudson.model.Saveable;
+import hudson.tasks.junit.TestAction;
 
 import java.io.IOException;
 
@@ -14,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-public abstract class AbstractClaimBuildAction<T extends Saveable> implements BuildBadgeAction,
+public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestAction implements BuildBadgeAction,
 		ProminentProjectAction {
 
 	private static final long serialVersionUID = 1L;
@@ -137,5 +138,5 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> implements Bu
 	}
 	
 	public abstract String getNoun();
-
+	
 }

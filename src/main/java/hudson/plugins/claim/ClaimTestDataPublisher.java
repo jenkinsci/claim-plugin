@@ -14,7 +14,9 @@ import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.TestResultAction;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -57,16 +59,16 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 		}
 
 		@Override
-		public TestAction getTestAction(TestObject testObject) {
+		public List<TestAction> getTestAction(TestObject testObject) {
 			ClaimTestAction result = claims.get(testObject.getId());
 			if (result != null) {
-				return result;
+				return Collections.<TestAction>singletonList(result);
 			}
 			
 			if (testObject instanceof CaseResult) {
 				CaseResult cr = (CaseResult) testObject;
 				if (!cr.isPassed() && !cr.isSkipped()) {
-					return new ClaimTestAction(this, testObject.getId());
+					return Collections.<TestAction>singletonList(new ClaimTestAction(this, testObject.getId()));
 				}
 			}
 			

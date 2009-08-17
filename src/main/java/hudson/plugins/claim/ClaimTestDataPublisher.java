@@ -72,7 +72,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 				}
 			}
 			
-			return null;
+			return Collections.emptyList();
 		}
 
 		public void save() throws IOException {

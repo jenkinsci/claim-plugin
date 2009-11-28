@@ -1,22 +1,19 @@
 package hudson.plugins.claim;
 
+import hudson.Extension;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
+import hudson.model.Result;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Notifier;
+import hudson.tasks.Publisher;
+
 import java.io.IOException;
 
-import hudson.Launcher;
-import hudson.Extension;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.Descriptor;
-import hudson.model.Result;
-import hudson.model.AbstractProject;
-import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Publisher;
-import hudson.tasks.Notifier;
-import hudson.tasks.BuildStepDescriptor;
-import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
 
 public class ClaimPublisher extends Notifier {
 
@@ -39,6 +36,7 @@ public class ClaimPublisher extends Notifier {
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             return true;
         }
+        
     }
 
 	@Override

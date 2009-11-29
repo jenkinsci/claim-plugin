@@ -9,6 +9,10 @@ import hudson.model.Job;
 import hudson.model.Run;
 import hudson.views.ListViewColumn;
 
+import net.sf.json.JSONObject;
+
+import org.kohsuke.stapler.StaplerRequest;
+
 public class ClaimColumn extends ListViewColumn {
 	
 	@DataBoundConstructor
@@ -41,6 +45,11 @@ public class ClaimColumn extends ListViewColumn {
 	
 	@Extension
 	public static class DescriptorImpl extends Descriptor<ListViewColumn> {
+        @Override
+        public ListViewColumn newInstance(StaplerRequest req,
+                                          JSONObject formData) throws FormException {
+            return new ClaimColumn();
+        }
 
 		@Override
 		public String getDisplayName() {

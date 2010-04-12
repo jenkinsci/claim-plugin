@@ -3,7 +3,7 @@
 		<j:choose>
 			<j:when test="${it.reason != null}">
 			<img width="16" height="16"
-			  title="Claimed by ${it.claimedBy}. Reason: ${it.reason}"
+			  title="Claimed by ${it.claimedByName}. Reason: ${it.reason}"
 			  src="${imagesURL}/16x16/lock.gif"/>
 			 </j:when>
 			 <j:otherwise>

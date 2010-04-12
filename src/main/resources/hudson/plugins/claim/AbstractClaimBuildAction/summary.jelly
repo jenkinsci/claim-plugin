@@ -30,7 +30,7 @@
             </j:when>
             <j:when test="${it.claimed}">
                 <p>
-                    This ${it.noun} was claimed by ${it.claimedBy}.
+                    This ${it.noun} was claimed by ${it.claimedByName}.
                     <j:if test="${it.canClaim()}">
                         <a id="claimForYourself" href="#" onClick="ShowPopup(this); return false;">Claim for yourself.</a>
                     </j:if>

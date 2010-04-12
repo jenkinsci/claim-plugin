@@ -60,7 +60,15 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 
 		@Override
 		public List<TestAction> getTestAction(TestObject testObject) {
-			ClaimTestAction result = claims.get(testObject.getId());
+			String id = testObject.getId();
+			ClaimTestAction result = claims.get(id);
+
+			// In Hudson 1.347 or so, IDs changed, and a junit/ prefix was added.
+			// Attempt to fix this backward-incompatibility
+			if (result == null && id.startsWith("junit")) {
+				result = claims.get(id.substring(5));
+			}
+			
 			if (result != null) {
 				return Collections.<TestAction>singletonList(result);
 			}
@@ -68,7 +76,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 			if (testObject instanceof CaseResult) {
 				CaseResult cr = (CaseResult) testObject;
 				if (!cr.isPassed() && !cr.isSkipped()) {
-					return Collections.<TestAction>singletonList(new ClaimTestAction(this, testObject.getId()));
+					return Collections.<TestAction>singletonList(new ClaimTestAction(this, id));
 				}
 			}
 			

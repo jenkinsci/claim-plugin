@@ -4,6 +4,7 @@ import hudson.model.BuildBadgeAction;
 import hudson.model.Hudson;
 import hudson.model.ProminentProjectAction;
 import hudson.model.Saveable;
+import hudson.model.User;
 import hudson.tasks.junit.TestAction;
 
 import java.io.IOException;
@@ -14,7 +15,10 @@ import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
+@ExportedBean(defaultVisibility = 2)
 public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestAction implements BuildBadgeAction,
 		ProminentProjectAction {
 
@@ -59,14 +63,25 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		resp.forwardToPreviousPage(req);
 	}
 
+	@Exported
 	public String getClaimedBy() {
 		return claimedBy;
 	}
 
+	public String getClaimedByName() {
+		User user = User.get(claimedBy, false);
+		if (user != null) {
+			return user.getDisplayName();
+		} else {
+			return claimedBy;
+		}
+	}
+	
 	public void setClaimedBy(String claimedBy) {
 		this.claimedBy = claimedBy;
 	}
 
+	@Exported
 	public boolean isClaimed() {
 		return claimed;
 	}
@@ -109,6 +124,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return Hudson.getAuthentication().getName().equals("anonymous");
 	}
 
+	@Exported
 	public String getReason() {
 		return reason;
 	}

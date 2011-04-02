@@ -3,11 +3,16 @@ package hudson.plugins.claim;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
+import hudson.matrix.MatrixBuild;
+import hudson.matrix.MatrixRun;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.model.Job;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.views.ListViewColumn;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.json.JSONObject;
 
@@ -29,12 +34,27 @@ public class ClaimColumn extends ListViewColumn {
 		return false;
 	}
 	
-	public ClaimBuildAction getAction(Job<?,?> job) {
+	public List<ClaimBuildAction> getAction(Job<?,?> job) {
+                List<ClaimBuildAction> result = new ArrayList<ClaimBuildAction>();
 		Run<?,?> run = job.getLastCompletedBuild();
-		if (run == null) {
-			return null;
+		if (run != null) {
+                    if (run instanceof hudson.matrix.MatrixBuild) {
+                        MatrixBuild matrixBuild = (hudson.matrix.MatrixBuild) run;
+                        
+                        for (MatrixRun combination : matrixBuild.getRuns()) {
+                            ClaimBuildAction action = combination.getAction(ClaimBuildAction.class);
+                            if (combination.getResult().isWorseThan(Result.SUCCESS) && action != null && action.isClaimed()) {
+                                result.add(action);
+                            }
+                        }
+                    } else {
+                        ClaimBuildAction action = run.getAction(ClaimBuildAction.class);
+                        if (action != null && action.isClaimed()) {
+                            result.add(action);
+                        }
+                    }
 		}
-		return run.getAction(ClaimBuildAction.class);
+                return result;
 	}
 
 	public Descriptor<ListViewColumn> getDescriptor() {

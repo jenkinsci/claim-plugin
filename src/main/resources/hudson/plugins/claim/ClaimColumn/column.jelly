@@ -24,21 +24,19 @@ THE SOFTWARE.
 
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:s="/lib/form">
   <td>
-  		<j:set var="action" value="${it.getAction(job)}"/>
-		<j:if test="${action.claimed}">
-		<j:choose>
-			<j:when test="${action.reason != null}">
-			<img width="16" height="16"
-			  title="Claimed by ${action.claimedBy}. Reason: ${action.reason}"
-			  src="${imagesURL}/16x16/lock.gif"/>
-			 </j:when>
-			 <j:otherwise>
-			<img width="16" height="16"
-			  title="Claimed by ${action.claimedBy}."
-			  src="${imagesURL}/16x16/lock.gif"/>
-			 </j:otherwise>
-		</j:choose>
-		</j:if>
-  
+    <j:forEach var="action" items="${it.getAction(job)}">
+        <j:choose>
+                <j:when test="${action.reason != null}">
+                    <img width="16" height="16"
+                      title="Claimed by ${action.claimedBy}. Reason: ${action.reason}"
+                      src="${imagesURL}/16x16/lock.gif"/>
+                 </j:when>
+                 <j:otherwise>
+                    <img width="16" height="16"
+                      title="Claimed by ${action.claimedBy}."
+                      src="${imagesURL}/16x16/lock.gif"/>
+                 </j:otherwise>
+        </j:choose>
+    </j:forEach>  
   </td>
 </j:jelly>

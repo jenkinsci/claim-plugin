@@ -26,14 +26,14 @@ THE SOFTWARE.
   <td>
     <j:forEach var="action" items="${it.getAction(job)}">
         <j:choose>
-                <j:when test="${action.reason != null}">
+                <j:when test="${action.claim.reason != null}">                    
                     <img width="16" height="16"
-                      title="Claimed by ${action.claimedBy}. Reason: ${action.reason}"
+                      title="${action.combinationName} Claimed by ${action.claim.claimedBy}. Reason: ${action.claim.reason}"
                       src="${imagesURL}/16x16/lock.gif"/>
                  </j:when>
                  <j:otherwise>
                     <img width="16" height="16"
-                      title="Claimed by ${action.claimedBy}."
+                      title="${action.combinationName} Claimed by ${action.claim.claimedBy}."
                       src="${imagesURL}/16x16/lock.gif"/>
                  </j:otherwise>
         </j:choose>

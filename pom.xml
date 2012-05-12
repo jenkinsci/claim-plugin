@@ -4,8 +4,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.347</version>
-    <relativePath>../pom.xml</relativePath>
+    <version>1.391</version>
   </parent>
 
   <artifactId>claim</artifactId>

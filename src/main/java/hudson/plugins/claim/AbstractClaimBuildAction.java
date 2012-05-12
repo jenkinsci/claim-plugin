@@ -18,7 +18,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-@ExportedBean(defaultVisibility = 2)
+@ExportedBean(defaultVisibility = 5)
 public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestAction implements BuildBadgeAction,
 		ProminentProjectAction {
 
@@ -73,7 +73,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return claimedBy;
 	}
 
-	public String getClaimedByName() {
+    @Exported
+    public String getClaimedByName() {
 		User user = User.get(claimedBy, false);
 		if (user != null) {
 			return user.getDisplayName();
@@ -167,8 +168,9 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	public void setTransient(boolean transientClaim) {
 		this.transientClaim = transientClaim;
 	}
-	
-	public boolean isSticky() {
+
+    @Exported
+    public boolean isSticky() {
 		return !transientClaim;
 	}
 	

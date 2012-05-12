@@ -2,8 +2,11 @@ package hudson.plugins.claim;
 
 import java.io.ObjectStreamException;
 
+import hudson.model.Api;
 import hudson.model.Run;
+import org.kohsuke.stapler.export.ExportedBean;
 
+@ExportedBean(defaultVisibility=2)
 public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
 
 	private static final long serialVersionUID = 1L;
@@ -29,5 +32,9 @@ public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
 		}
 		return this;
 	}
+
+    public Api getApi() {
+        return new Api(new ClaimedBuildsReport.ClaimReportEntry(owner));
+    }
 
 }

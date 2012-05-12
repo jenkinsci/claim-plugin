@@ -6,12 +6,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Descriptor;
 import hudson.model.Saveable;
-import hudson.tasks.junit.CaseResult;
-import hudson.tasks.junit.TestAction;
-import hudson.tasks.junit.TestDataPublisher;
-import hudson.tasks.junit.TestObject;
-import hudson.tasks.junit.TestResult;
-import hudson.tasks.junit.TestResultAction;
+import hudson.tasks.junit.*;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -32,18 +27,25 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 		
 		Data data = new Data(build);
 
-		for (CaseResult result: testResult.getFailedTests()) {
-			CaseResult previous = result.getPreviousResult();
-			if (previous != null) {
-				ClaimTestAction previousAction = previous.getTestAction(ClaimTestAction.class);
-				if (previousAction != null && previousAction.isClaimed() && previousAction.isSticky()) {
-					ClaimTestAction action = new ClaimTestAction(data, result.getId());
-					previousAction.copyTo(action);
-					data.addClaim(result.getId(), action);
+		for (SuiteResult suite: testResult.getSuites()) {
+			for (CaseResult result: suite.getCases()) {
+				CaseResult previous = result.getPreviousResult();
+				if (previous != null) {
+					ClaimTestAction previousAction = previous.getTestAction(ClaimTestAction.class);
+					if (previousAction != null && previousAction.isClaimed()) {
+						if (result.getFailCount() > 0 && previousAction.isSticky()) {
+							ClaimTestAction action = new ClaimTestAction(data, result.getId());
+							previousAction.copyTo(action);
+							data.addClaim(result.getId(), action);
+						}
+						if (result.getFailCount() == 0) {
+							new ClaimTestAction(data, result.getId()).unclaim();
+						}
+					}
 				}
 			}
 		}
-		
+
 		return data;
 		
 	}
@@ -91,7 +93,10 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 				ClaimTestAction claim) {
 			claims.put(testObjectId, claim);
 		}
-		
+
+		public AbstractBuild<?, ?> getBuild() {
+			return build;
+		}
 	}
 	
 	@Extension

@@ -44,6 +44,10 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return "claim";
 	}
 
+	public T getOwner() {
+		return owner;
+	}
+
 	public void doClaim(StaplerRequest req, StaplerResponse resp)
 			throws ServletException, IOException {
 		Authentication authentication = Hudson.getAuthentication();
@@ -53,6 +57,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		if (StringUtils.isEmpty(reason)) reason = null;
 		claim(name, reason, sticky);
 		owner.save();
+
 		resp.forwardToPreviousPage(req);
 	}
 
@@ -91,6 +96,15 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		this.claimedBy = claimedBy;
 		this.reason = reason;
 		this.transientClaim = !sticky;
+
+		for (ClaimListener listener: ClaimListener.all()) {
+			try {
+				listener.claimed(this);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
+
 	}
 	
 	/**
@@ -105,6 +119,15 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		this.claimedBy = null;
 		this.transientClaim = false;
 		// we remember the reason to show it if someone reclaims this build.
+
+		for (ClaimListener listener: ClaimListener.all()) {
+			try {
+				listener.unclaimed(this);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
+		}
+
 	}
 
 	public boolean isClaimedByMe() {

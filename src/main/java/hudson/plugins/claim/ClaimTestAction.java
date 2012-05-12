@@ -1,6 +1,7 @@
 package hudson.plugins.claim;
 
 import hudson.plugins.claim.ClaimTestDataPublisher.Data;
+import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestAction;
 
 public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
@@ -25,6 +26,18 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
 	@Override
 	public String getNoun() {
 		return "test";
+	}
+
+	public String getTestObjectId() {
+		return testObjectId;
+	}
+
+	public CaseResult getCaseResult() {
+		return (CaseResult) getOwner().
+			getBuild().
+			getAction(hudson.tasks.junit.TestResultAction.class).
+			getResult().
+			findCorrespondingResult(testObjectId);
 	}
 
 }

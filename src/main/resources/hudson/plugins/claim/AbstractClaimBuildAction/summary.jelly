@@ -52,8 +52,18 @@
                 <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
                     <f:textarea name="reason" value="${it.reason}"/>
                 </f:entry>
-                <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html"> 
+                <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html">
                     <f:checkbox name="sticky" checked="${it.sticky}"/>
+                </f:entry>
+                <f:entry title="Claim all latest builds" help="/plugin/claim/help-claimAll.html">
+                    <f:checkbox name="claimAll" checked="${it.claimAll}"/>
+                </f:entry>
+                <f:entry title="Select Culprits: " help="/plugin/claim/help-culprits.html">
+                	<select name="culprits">
+                		<j:forEach var="culprit" items="${it.culprits}">
+                			<option value="${culprit}">${culprit}</option>
+                		</j:forEach>
+                    </select>
                 </f:entry>
                 <f:block>
                     <div align="right">

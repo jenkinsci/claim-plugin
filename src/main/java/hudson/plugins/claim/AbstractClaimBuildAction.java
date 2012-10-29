@@ -104,14 +104,10 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	public void claimGivenBuild(String name, String reason, boolean sticky, String culprit, AbstractBuild<?, ?> otherBuild) throws IOException {
 		ClaimBuildAction otherClaim = otherBuild.getAction(ClaimBuildAction.class);
 
-		if(!otherClaim.isClaimedBySameUser(name) && otherClaim.isSameCulprit(culprit)) {
+		if(!otherClaim.isClaimed() && otherClaim.isSameCulprit(culprit)) {
 			otherClaim.claim(name, reason, sticky);
 			otherBuild.save();
 		}
-	}
-
-	public boolean isClaimedBySameUser(String name) {
-		return (this.isClaimed() && StringUtils.equals(name, this.claimedBy))? true : false;
 	}
 
 	public boolean isSameCulprit(String culprit) {

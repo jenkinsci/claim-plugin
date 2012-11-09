@@ -50,6 +50,10 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return currentBuild.getCulprits();
 	}
 
+	public List<? extends Item> getItems() {
+		return Hudson.getInstance().getItems();
+	}
+
 	private String reason;
 
 	public String getIconFileName() {
@@ -85,7 +89,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	}
 
 	public void claimAllBrokenBuilds(String name, String reason, boolean sticky, String culprit) throws IOException {
-		List<TopLevelItem> items = Hudson.getInstance().getItems();
+		List<? extends Item> items = this.getItems();
 
 		/*loop over the jobs*/
 		for(Item item : items) {

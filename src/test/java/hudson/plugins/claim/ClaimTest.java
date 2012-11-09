@@ -25,14 +25,25 @@ package hudson.plugins.claim;
 
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.FailureBuilder;
+import org.mockito.Mockito;
+
+import hudson.model.Job;
 import hudson.model.Project;
 import hudson.model.Build;
+import hudson.model.Result;
 import hudson.model.User;
 import hudson.model.Hudson;
+import hudson.plugins.claim.ClaimBuildAction;
+import hudson.plugins.claim.ClaimBuildActionWrapper;
+import hudson.plugins.claim.ClaimPublisher;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.HudsonPrivateSecurityRealm;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -44,8 +55,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 
 public class ClaimTest extends HudsonTestCase {
-    private Build<?,?> build;
+	private Build<?,?> build;
     private Project<?, ?> project;
+    private Set<User> culprits;
+    private User user1;
+    private User user2;
 
     @Override
     protected void setUp() throws Exception {
@@ -55,14 +69,19 @@ public class ClaimTest extends HudsonTestCase {
         HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
         hudson.setSecurityRealm(realm);
 
-        User user1 = realm.createAccount("user1", "user1");
-        User user2 = realm.createAccount("user2", "user2");
+        user1 = realm.createAccount("user1", "user1");
+        user2 = realm.createAccount("user2", "user2");
 
 
         project = createFreeStyleProject("x");
         project.getBuildersList().add(new FailureBuilder());
         project.getPublishersList().add(new ClaimPublisher());
         build = project.scheduleBuild2(0).get();
+
+        /*Setting culprtis*/
+        culprits = new HashSet<User>();
+        culprits.add(user1);
+        culprits.add(user2);
 
     }
 
@@ -146,5 +165,206 @@ public class ClaimTest extends HudsonTestCase {
 
         ClaimBuildAction action2 = nextBuild.getAction(ClaimBuildAction.class);
         assertFalse("build is claimed", action2.isClaimed());
+    }
+
+    public void testIsSameCulprit_CulpritIsNull() throws Exception {
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
+    	testClaim.setCulprits(culprits);
+    	assertFalse(testClaim.isSameCulprit(null));
+    }
+
+    public void testIsSameCulprit_CulpritIsEmpty() throws Exception {
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
+    	testClaim.setCulprits(culprits);
+    	assertFalse(testClaim.isSameCulprit(""));
+    }
+
+    public void testIsSameCulprit_NoCulprits() throws Exception {
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
+    	testClaim.setCulprits(new HashSet<User>());
+    	assertFalse(testClaim.isSameCulprit(user1.getId()));
+    }
+
+    public void testIsSameCulprit_NotSameCulprit() throws Exception {
+    	final String invalidCulprit = "invalidCulprit";
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
+    	testClaim.setCulprits(culprits);
+    	assertFalse(testClaim.isSameCulprit(invalidCulprit));
+    }
+
+    public void testIsSameCulprit_SameCulprit() throws Exception {
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
+    	testClaim.setCulprits(culprits);
+    	assertTrue(testClaim.isSameCulprit(user1.getId()));
+    }
+
+    public void testClaimGivenBuild_BuildIsNotClaimedAndCulpritIsNotSame() throws Exception {
+    	Build<?, ?> otherBuild = Mockito.mock(Build.class);
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(otherBuild);
+    	testClaim.setCulprits(culprits);
+
+    	Mockito.when(otherBuild.getAction(ClaimBuildAction.class)).thenReturn(testClaim);
+
+    	/*try claiming for the build*/
+    	testClaim.claimGivenBuild("user2", "", true, "user3", otherBuild);
+
+    	ClaimBuildAction otherClaim = otherBuild.getAction(ClaimBuildAction.class);
+    	assertFalse(otherClaim.isClaimed());
+    }
+
+    public void testClaimGivenBuild_BuildIsNotClaimedAndCulpritIsSame() throws Exception {
+    	Build<?, ?> otherBuild = Mockito.mock(Build.class);
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(otherBuild);
+    	testClaim.setCulprits(culprits);
+
+    	Mockito.when(otherBuild.getAction(ClaimBuildAction.class)).thenReturn(testClaim);
+
+    	/*try claiming for the build*/
+    	testClaim.claimGivenBuild("user2", "", true, "user1", otherBuild);
+
+    	ClaimBuildAction otherClaim = otherBuild.getAction(ClaimBuildAction.class);
+    	assertTrue(otherClaim.isClaimed());
+    	assertSame("user2", otherClaim.getClaimedBy());
+    }
+
+    public void testClaimGivenBuild_BuildIsClaimedByOtherUser() throws Exception {
+    	Build<?, ?> otherBuild = Mockito.mock(Build.class);
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(otherBuild);
+    	testClaim.setCulprits(culprits);
+    	testClaim.claim("user1", "", true);
+
+    	Mockito.when(otherBuild.getAction(ClaimBuildAction.class)).thenReturn(testClaim);
+
+    	/*try claiming for the build*/
+    	testClaim.claimGivenBuild("user2", "", true, "user1", otherBuild);
+
+    	ClaimBuildAction otherClaim = otherBuild.getAction(ClaimBuildAction.class);
+    	assertNotSame("user2", otherClaim.getClaimedBy());
+    }
+
+    public void testClaimAllBrokenBuilds_NoBuildsClaimed() {
+
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
+    	testClaim.setCulprits(culprits);
+    	List<Job> items = createMockUnstableItems();
+    	testClaim.setItems(items);
+
+    	try {
+			testClaim.claimAllBrokenBuilds("user1", "", true, "user1");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+    	for(Job item : items) {
+    		ClaimBuildAction build0Claim = item.getLastBuild().getAction(ClaimBuildAction.class);
+    		assertTrue(build0Claim.isClaimed());
+    		assertEquals("user1", build0Claim.getClaimedBy());
+    	}
+    }
+
+    public void testClaimAllBrokenBuilds_SomeBuildsClaimed() {
+
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
+    	testClaim.setCulprits(culprits);
+    	List<Job> items = createMockUnstableItems();
+    	/*Mock the first build being claimed already by some other user*/
+    	items.get(0).getLastBuild().getAction(ClaimBuildAction.class).claim("user1", "", true);
+    	testClaim.setItems(items);
+
+    	try {
+			testClaim.claimAllBrokenBuilds("user2", "", true, "user1");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+    	ClaimBuildAction build0Claim = items.get(0).getLastBuild().getAction(ClaimBuildAction.class);
+    	assertTrue(build0Claim.isClaimed());
+    	assertNotSame("user2", build0Claim.getClaimedBy());
+
+    	ClaimBuildAction build1Claim = items.get(1).getLastBuild().getAction(ClaimBuildAction.class);
+    	assertTrue(build1Claim.isClaimed());
+    	assertSame("user2", build1Claim.getClaimedBy());
+    }
+
+    public void testClaimAllBrokenBuilds_SomeBuildsAreSuccess() {
+
+    	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
+    	testClaim.setCulprits(culprits);
+    	List<Job> items = createMockUnstableItems();
+    	items.addAll(createMockStableItems());
+
+    	testClaim.setItems(items);
+
+    	try {
+			testClaim.claimAllBrokenBuilds("user2", "", true, "user1");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+    	ClaimBuildAction build0Claim = items.get(0).getLastBuild().getAction(ClaimBuildAction.class);
+    	assertTrue(build0Claim.isClaimed());
+    	assertSame("user2", build0Claim.getClaimedBy());
+
+    	ClaimBuildAction build1Claim = items.get(1).getLastBuild().getAction(ClaimBuildAction.class);
+    	assertTrue(build1Claim.isClaimed());
+    	assertSame("user2", build1Claim.getClaimedBy());
+
+    	ClaimBuildAction build2Claim = items.get(2).getLastBuild().getAction(ClaimBuildAction.class);
+    	assertFalse(build2Claim.isClaimed());
+
+    	ClaimBuildAction build3Claim = items.get(3).getLastBuild().getAction(ClaimBuildAction.class);
+    	assertFalse(build3Claim.isClaimed());
+    }
+
+    private List<Job> createMockUnstableItems() {
+    	Build<?, ?> build0 = Mockito.mock(Build.class);
+    	ClaimBuildActionWrapper build0Claim = new ClaimBuildActionWrapper(build0);
+    	build0Claim.setCulprits(culprits);
+    	Mockito.when(build0.getAction(ClaimBuildAction.class)).thenReturn(build0Claim);
+    	Mockito.when(build0.getResult()).thenReturn(Result.UNSTABLE);
+
+    	Build<?, ?> build1 = Mockito.mock(Build.class);
+    	ClaimBuildActionWrapper build1Claim = new ClaimBuildActionWrapper(build1);
+    	build1Claim.setCulprits(culprits);
+    	Mockito.when(build1.getAction(ClaimBuildAction.class)).thenReturn(build1Claim);
+    	Mockito.when(build1.getResult()).thenReturn(Result.UNSTABLE);
+
+    	Job job1 = Mockito.mock(Job.class);
+    	Mockito.when(job1.getLastBuild()).thenReturn(build0);
+
+    	Job job2 = Mockito.mock(Job.class);
+    	Mockito.when(job2.getLastBuild()).thenReturn(build1);
+
+    	List<Job> items = new ArrayList<Job>();
+    	items.add(job1);
+    	items.add(job2);
+
+    	return items;
+    }
+
+    private List<Job> createMockStableItems() {
+    	Build<?, ?> build0 = Mockito.mock(Build.class);
+    	ClaimBuildActionWrapper build0Claim = new ClaimBuildActionWrapper(build0);
+    	build0Claim.setCulprits(new HashSet<User>());
+    	Mockito.when(build0.getAction(ClaimBuildAction.class)).thenReturn(build0Claim);
+    	Mockito.when(build0.getResult()).thenReturn(Result.SUCCESS);
+
+    	Build<?, ?> build1 = Mockito.mock(Build.class);
+    	ClaimBuildActionWrapper build1Claim = new ClaimBuildActionWrapper(build1);
+    	build1Claim.setCulprits(new HashSet<User>());
+    	Mockito.when(build1.getAction(ClaimBuildAction.class)).thenReturn(build1Claim);
+    	Mockito.when(build1.getResult()).thenReturn(Result.SUCCESS);
+
+    	Job job1 = Mockito.mock(Job.class);
+    	Mockito.when(job1.getLastBuild()).thenReturn(build0);
+
+    	Job job2 = Mockito.mock(Job.class);
+    	Mockito.when(job2.getLastBuild()).thenReturn(build1);
+
+    	List<Job> items = new ArrayList<Job>();
+    	items.add(job1);
+    	items.add(job2);
+
+    	return items;
     }
 }

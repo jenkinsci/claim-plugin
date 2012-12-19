@@ -78,10 +78,7 @@ public class ClaimTest extends HudsonTestCase {
         project.getPublishersList().add(new ClaimPublisher());
         build = project.scheduleBuild2(0).get();
 
-        /*Setting culprtis*/
-        culprits = new HashSet<User>();
-        culprits.add(user1);
-        culprits.add(user2);
+        setUpCulpritList();
 
     }
 
@@ -167,38 +164,38 @@ public class ClaimTest extends HudsonTestCase {
         assertFalse("build is claimed", action2.isClaimed());
     }
 
-    public void testIsSameCulprit_CulpritIsNull() throws Exception {
+    public void testShouldReturnFalseWhenCulpritIsNull() throws Exception {
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
     	testClaim.setCulprits(culprits);
     	assertFalse(testClaim.isSameCulprit(null));
     }
 
-    public void testIsSameCulprit_CulpritIsEmpty() throws Exception {
+    public void testShouldReturnFalseWhenCulpritIsEmpty() throws Exception {
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
     	testClaim.setCulprits(culprits);
     	assertFalse(testClaim.isSameCulprit(""));
     }
 
-    public void testIsSameCulprit_NoCulprits() throws Exception {
+    public void testShouldReturnFalseWhenNoCulprits() throws Exception {
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
     	testClaim.setCulprits(new HashSet<User>());
     	assertFalse(testClaim.isSameCulprit(user1.getId()));
     }
 
-    public void testIsSameCulprit_NotSameCulprit() throws Exception {
+    public void testShouldReturnFalseWhenCulpritIsNotSame() throws Exception {
     	final String invalidCulprit = "invalidCulprit";
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
     	testClaim.setCulprits(culprits);
     	assertFalse(testClaim.isSameCulprit(invalidCulprit));
     }
 
-    public void testIsSameCulprit_SameCulprit() throws Exception {
+    public void testShouldReturnTrueWhenCulpritIsSame() throws Exception {
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
     	testClaim.setCulprits(culprits);
     	assertTrue(testClaim.isSameCulprit(user1.getId()));
     }
 
-    public void testClaimGivenBuild_BuildIsNotClaimedAndCulpritIsNotSame() throws Exception {
+    public void testShouldNotClaimBuildWhenBuildIsNotClaimedAndCulpritIsNotSame() throws Exception {
     	Build<?, ?> otherBuild = Mockito.mock(Build.class);
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(otherBuild);
     	testClaim.setCulprits(culprits);
@@ -212,7 +209,7 @@ public class ClaimTest extends HudsonTestCase {
     	assertFalse(otherClaim.isClaimed());
     }
 
-    public void testClaimGivenBuild_BuildIsNotClaimedAndCulpritIsSame() throws Exception {
+    public void testShouldClaimBuildWhenBuildIsNotClaimedAndCulpritIsSame() throws Exception {
     	Build<?, ?> otherBuild = Mockito.mock(Build.class);
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(otherBuild);
     	testClaim.setCulprits(culprits);
@@ -227,7 +224,7 @@ public class ClaimTest extends HudsonTestCase {
     	assertSame("user2", otherClaim.getClaimedBy());
     }
 
-    public void testClaimGivenBuild_BuildIsClaimedByOtherUser() throws Exception {
+    public void testShouldNotClaimBuildWhenBuildIsClaimedByOtherUser() throws Exception {
     	Build<?, ?> otherBuild = Mockito.mock(Build.class);
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(otherBuild);
     	testClaim.setCulprits(culprits);
@@ -242,7 +239,7 @@ public class ClaimTest extends HudsonTestCase {
     	assertNotSame("user2", otherClaim.getClaimedBy());
     }
 
-    public void testClaimAllBrokenBuilds_NoBuildsClaimed() {
+    public void testShouldClaimAllBuildsIfAllAreNotClaimed() {
 
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
     	testClaim.setCulprits(culprits);
@@ -262,7 +259,7 @@ public class ClaimTest extends HudsonTestCase {
     	}
     }
 
-    public void testClaimAllBrokenBuilds_SomeBuildsClaimed() {
+    public void testShouldClaimOnlyUnclaimedBuilds() {
 
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
     	testClaim.setCulprits(culprits);
@@ -286,7 +283,7 @@ public class ClaimTest extends HudsonTestCase {
     	assertSame("user2", build1Claim.getClaimedBy());
     }
 
-    public void testClaimAllBrokenBuilds_SomeBuildsAreSuccess() {
+    public void testShouldClaimOnlyFailedBuilds() {
 
     	ClaimBuildActionWrapper testClaim = new ClaimBuildActionWrapper(build);
     	testClaim.setCulprits(culprits);
@@ -366,5 +363,11 @@ public class ClaimTest extends HudsonTestCase {
     	items.add(job2);
 
     	return items;
+    }
+
+    private void setUpCulpritList() {
+    	culprits = new HashSet<User>();
+        culprits.add(user1);
+        culprits.add(user2);
     }
 }

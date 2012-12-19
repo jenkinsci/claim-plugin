@@ -127,7 +127,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		String culprit = (String) req.getSubmittedForm().get("culprits");
 		boolean sticky = req.getSubmittedForm().getBoolean("sticky");
 
-		/*Check if any culprit was selected*/
 		if(!StringUtils.equals(culprit, INVALID_ENTRY)) {
 			selectedBuildList = getSelectedBuilds(req, culprit);
 			claimSelectedBuilds(name, reason, sticky, culprit);
@@ -135,7 +134,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 
 		if (StringUtils.isEmpty(reason)) reason = null;
 
-		/*Claim the current build*/
 		claim(name, reason, sticky);
 		owner.save();
 

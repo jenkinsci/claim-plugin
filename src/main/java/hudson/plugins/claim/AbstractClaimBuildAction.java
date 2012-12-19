@@ -2,21 +2,20 @@ package hudson.plugins.claim;
 
 import hudson.model.BuildBadgeAction;
 import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Cause;
-import hudson.model.Cause.UserCause;
 import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.Item;
 import hudson.model.ProminentProjectAction;
 import hudson.model.Result;
 import hudson.model.Saveable;
-import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.tasks.junit.TestAction;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -33,10 +32,14 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		ProminentProjectAction {
 
 	private static final long serialVersionUID = 1L;
+	private final String INVALID_ENTRY = "Not Selected";
+	private final String DELIMITER = ":";
 
 	private boolean claimed;
 	private String claimedBy;
 	private boolean transientClaim;
+	private Map<String, Map<String, AbstractBuild>> culpritBuildMap;
+	private List<AbstractBuild> selectedBuildList;
 
 	protected T owner;
 
@@ -44,10 +47,61 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		this.owner = owner;
 	}
 
+	private Map<String, AbstractBuild> getBuildsOfSameCulprit(User culprit) {
+		Map<String, AbstractBuild> buildList = new HashMap<String, AbstractBuild>();
+
+		for(AbstractBuild build : getAllBuilds()) {
+			if(isCulpritOfBuild(build, culprit)) {
+				buildList.put(createMapId(culprit.getId(), build.getFullDisplayName()), build);
+			}
+		}
+
+		return buildList;
+	}
+
+	private String createMapId(String culprit, String buildFullDisplayName) {
+		return culprit + DELIMITER + buildFullDisplayName;
+	}
+
+	private boolean isCulpritOfBuild(AbstractBuild build, User culprit) {
+
+		if(build.getCulprits().contains(culprit)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private List<AbstractBuild> getAllBuilds() {
+		List<? extends Item> items = this.getItems();
+
+		List<AbstractBuild> buildList = new ArrayList<AbstractBuild>();
+		/*loop over the jobs*/
+		for(Item item : items) {
+			Job<?, ?> job = (Job<?, ?>) item;
+
+			AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>)job.getLastBuild();
+			buildList.add(lastBuild);
+		}
+
+		return buildList;
+	}
+
 	@Exported
 	public Set<User> getCulprits() {
 		AbstractBuild<?, ?> currentBuild = (AbstractBuild<?, ?>) owner;
 		return currentBuild.getCulprits();
+	}
+
+	@Exported
+	public Map<String, Map<String, AbstractBuild>> getCulpritBuildMap() {
+		culpritBuildMap = new HashMap<String, Map<String,AbstractBuild>>();
+
+		for(User culprit : this.getCulprits()) {
+			culpritBuildMap.put(culprit.getId(), getBuildsOfSameCulprit(culprit));
+		}
+
+		return culpritBuildMap;
 	}
 
 	public List<? extends Item> getItems() {
@@ -66,26 +120,52 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 
 	public void doClaim(StaplerRequest req, StaplerResponse resp)
 			throws ServletException, IOException {
+
 		Authentication authentication = Hudson.getAuthentication();
 		String name = authentication.getName();
 		String reason = (String) req.getSubmittedForm().get("reason");
 		String culprit = (String) req.getSubmittedForm().get("culprits");
 		boolean sticky = req.getSubmittedForm().getBoolean("sticky");
 
+		/*Check if any culprit was selected*/
+		if(!StringUtils.equals(culprit, INVALID_ENTRY)) {
+			selectedBuildList = getSelectedBuilds(req, culprit);
+			claimSelectedBuilds(name, reason, sticky, culprit);
+		}
+
 		if (StringUtils.isEmpty(reason)) reason = null;
 
-		/*check if user wants to claim all related builds*/
-		boolean claimAll = req.getSubmittedForm().getBoolean("claimAll");
-
-		/*Claim the current build first*/
+		/*Claim the current build*/
 		claim(name, reason, sticky);
 		owner.save();
 
-		if(claimAll && (!culprit.isEmpty() || culprit != null)) {
-			claimAllBrokenBuilds(name, reason, sticky, culprit);
+		resp.forwardToPreviousPage(req);
+	}
+
+	private void claimSelectedBuilds(String name, String reason, boolean sticky, String culprit) throws IOException {
+		for(AbstractBuild selectedBuild : selectedBuildList) {
+			claimGivenBuild(name, reason, sticky, culprit, selectedBuild);
+		}
+	}
+
+	private List<AbstractBuild> getSelectedBuilds(StaplerRequest req, String culprit) throws ServletException {
+		List<AbstractBuild> selectedBuildList = new ArrayList<AbstractBuild>();
+
+		Map<String, AbstractBuild> buildMap = culpritBuildMap.get(culprit);
+
+		for(String buildId : buildMap.keySet()) {
+			if(!isSelected(req, buildId)) {
+				continue;
+			}
+
+			selectedBuildList.add(buildMap.get(buildId));
 		}
 
-		resp.forwardToPreviousPage(req);
+		return selectedBuildList;
+	}
+
+	private boolean isSelected(StaplerRequest req, String buildId) throws ServletException {
+		return req.getSubmittedForm().getBoolean(buildId);
 	}
 
 	public void claimAllBrokenBuilds(String name, String reason, boolean sticky, String culprit) throws IOException {

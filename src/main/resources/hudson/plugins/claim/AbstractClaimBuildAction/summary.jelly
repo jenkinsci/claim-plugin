@@ -17,7 +17,6 @@
             hp.style.display = "none";
         }
 
-		<![CDATA[
         function setStatusOfAllItems(isChecked)
         {
         	if(culprit == "" || culprit == null || culprit == "Not Selected") {
@@ -27,7 +26,7 @@
             var divList = document.getElementById(culprit);
 			var buildList = divList.getElementsByTagName("input");
 
-            for(var i=0; i<buildList.length; i++) {
+            for(var i=0; i &lt; buildList.length; i++) {
             	buildList[i].checked = isChecked;
             }
         }
@@ -57,11 +56,11 @@
 		function hideList() {
 			var divList = document.getElementById("list");
 			var buildList = divList.getElementsByTagName("div");
-			for(var i=0; i<buildList.length; i++) {
+			for(var i=0; i &lt; buildList.length; i++) {
             	buildList[i].style.display = "none";
             }
 		}
-        ]]>
+
     </script>
 
     <style>

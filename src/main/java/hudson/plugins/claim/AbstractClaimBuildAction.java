@@ -166,23 +166,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return req.getSubmittedForm().getBoolean(buildId);
 	}
 
-	public void claimAllBrokenBuilds(String name, String reason, boolean sticky, String culprit) throws IOException {
-		List<? extends Item> items = this.getItems();
-
-		/*loop over the jobs*/
-		for(Item item : items) {
-			Job<?, ?> job = (Job<?, ?>) item;
-
-			AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>)job.getLastBuild();
-
-			if(lastBuild == null || !lastBuild.getResult().isWorseThan(Result.SUCCESS)) {
-				continue;
-			}
-
-			claimGivenBuild(name, reason, sticky, culprit, lastBuild);
-		}
-	}
-
 	public void claimGivenBuild(String name, String reason, boolean sticky, String culprit, AbstractBuild<?, ?> otherBuild) throws IOException {
 		ClaimBuildAction otherClaim = otherBuild.getAction(ClaimBuildAction.class);
 

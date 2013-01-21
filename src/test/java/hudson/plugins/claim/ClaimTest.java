@@ -51,19 +51,13 @@ public class ClaimTest extends HudsonTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        hudson.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
-        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
-        hudson.setSecurityRealm(realm);
-
-        User user1 = realm.createAccount("user1", "user1");
-        User user2 = realm.createAccount("user2", "user2");
-
-
         project = createFreeStyleProject("x");
         project.getBuildersList().add(new FailureBuilder());
         project.getPublishersList().add(new ClaimPublisher());
         build = project.scheduleBuild2(0).get();
 
+        hudson.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
+        hudson.setSecurityRealm(createDummySecurityRealm());
     }
 
     public void testHasClaimAction() {

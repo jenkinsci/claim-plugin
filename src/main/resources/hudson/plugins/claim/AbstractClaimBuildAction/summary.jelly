@@ -2,6 +2,9 @@
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
     <script type="text/javascript">
+
+		var culprit;
+
         function ShowPopup(hoveritem)
         {
             hp = document.getElementById("claimHoverPopup");
@@ -13,7 +16,77 @@
             hp = document.getElementById("claimHoverPopup");
             hp.style.display = "none";
         }
+
+        function setStatusOfAllItems(isChecked)
+        {
+        	if(culprit == "" || culprit == null || culprit == "Not Selected") {
+        		return;
+        	}
+
+            var divList = document.getElementById(culprit);
+			var buildList = divList.getElementsByTagName("input");
+
+            for(var i=0; i &lt; buildList.length; i++) {
+            	buildList[i].checked = isChecked;
+            }
+        }
+
+		function getBuildsBasedOnSelection(culpritMenu) {
+			/*clear the list to refresh*/
+			clearList();
+
+			var index  = culpritMenu.selectedIndex
+    		var selValue = culpritMenu.options[index].value
+
+    		if(selValue == "Not Selected") {
+    			return;
+    		}
+
+    		culprit = selValue;
+
+    		var divList = document.getElementById(culprit);
+    		divList.style.display = "inline";
+		}
+
+		function clearList() {
+			/*hide the list*/
+            hideList();
+		}
+
+		function hideList() {
+			var divList = document.getElementById("list");
+			var buildList = divList.getElementsByTagName("div");
+			for(var i=0; i &lt; buildList.length; i++) {
+            	buildList[i].style.display = "none";
+            }
+		}
+
     </script>
+
+    <style>
+    	.checklist {
+    		border: 1px solid #ccc;
+    		list-style: none;
+    		height: 10em;
+    		overflow: auto;
+    		width: 24em;
+		}
+
+		.checklist, .checklist li { margin: 0; padding: 0; }
+
+		.checklist label {
+    		display: block;
+    		padding-left: 25px;
+    		text-indent: -25px;
+		}
+
+		.buttonPanel {
+			border: 1px solid #ccc;
+    		height: 2em;
+    		width: 24em;
+		}
+
+    </style>
 
     <t:summary icon="orange-square.gif">
         <j:choose>
@@ -52,8 +125,34 @@
                 <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
                     <f:textarea name="reason" value="${it.reason}"/>
                 </f:entry>
-                <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html"> 
+                <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html">
                     <f:checkbox name="sticky" checked="${it.sticky}"/>
+                </f:entry>
+                <f:entry title="Select Culprits: " help="/plugin/claim/help-culprits.html">
+                	<select name="culprits" onChange="getBuildsBasedOnSelection(this.form.culprits)">
+                		<option value="Not Selected">Not Selected</option>
+                		<j:forEach var="culprit" items="${it.culprits}">
+                			<option value="${culprit.id}">${culprit.id}</option>
+                		</j:forEach>
+                    </select>
+
+                </f:entry>
+                <f:entry help="/plugin/claim/help-buildList.html">
+                	<div id="list">
+                		<ul class="checklist">
+                				<j:forEach var="culpritBuildMap" items="${it.getCulpritBuildMap()}">
+                					<div id="${culpritBuildMap.key}" style="display:none;">
+                						<j:forEach var="buildMap" items="${culpritBuildMap.value}">
+                							<li><label for="${buildMap.key}"><f:checkbox name="${buildMap.key}" />${buildMap.value.fullDisplayName}</label></li>
+                						</j:forEach>
+                					</div>
+                				</j:forEach>
+                		</ul>
+                	</div>
+                	<div class="buttonPanel" id="listFormatHandlers">
+                        <input type="button" onClick="setStatusOfAllItems(true);" value="Select All" class="submit-button"/>
+                        <input type="button" onClick="setStatusOfAllItems(false);" value="Clear Selections" class="submit-button"/>
+                    </div>
                 </f:entry>
                 <f:block>
                     <div align="right">

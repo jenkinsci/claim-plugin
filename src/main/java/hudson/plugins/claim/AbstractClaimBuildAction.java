@@ -81,7 +81,10 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 			Job<?, ?> job = (Job<?, ?>) item;
 
 			AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>)job.getLastBuild();
-			buildList.add(lastBuild);
+
+			if(lastBuild != null) {
+				buildList.add(lastBuild);
+			}
 		}
 
 		return buildList;

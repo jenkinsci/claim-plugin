@@ -14,6 +14,7 @@ import hudson.tasks.junit.TestAction;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -93,6 +94,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	@Exported
 	public Set<User> getCulprits() {
 		AbstractBuild<?, ?> currentBuild = (AbstractBuild<?, ?>) owner;
+
+		if(currentBuild == null) {
+			return new HashSet<User>();
+		}
+
 		return currentBuild.getCulprits();
 	}
 

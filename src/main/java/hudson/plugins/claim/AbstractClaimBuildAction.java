@@ -51,7 +51,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	private Map<String, AbstractBuild> getBuildsOfSameCulprit(User culprit) {
 		Map<String, AbstractBuild> buildList = new HashMap<String, AbstractBuild>();
 
-		for(AbstractBuild build : getAllBuilds()) {
+		for(AbstractBuild build : getAllUnstableBuilds()) {
 			if(isCulpritOfBuild(build, culprit)) {
 				buildList.put(createMapId(culprit.getId(), build.getFullDisplayName()), build);
 			}
@@ -73,7 +73,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return false;
 	}
 
-	private List<AbstractBuild> getAllBuilds() {
+	private boolean isBuildUnstable(AbstractBuild build) {
+		return build.getResult().isWorseThan(Result.SUCCESS);
+	}
+
+	private List<AbstractBuild> getAllUnstableBuilds() {
 		List<? extends Item> items = this.getItems();
 
 		List<AbstractBuild> buildList = new ArrayList<AbstractBuild>();
@@ -83,7 +87,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 
 			AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>)job.getLastBuild();
 
-			if(lastBuild != null) {
+			if(lastBuild != null && isBuildUnstable(lastBuild)) {
 				buildList.add(lastBuild);
 			}
 		}

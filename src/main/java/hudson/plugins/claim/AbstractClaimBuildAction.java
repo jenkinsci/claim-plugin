@@ -74,20 +74,35 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	}
 
 	private boolean isBuildUnstable(AbstractBuild build) {
-		return build.getResult().isWorseThan(Result.SUCCESS);
+		if(build == null) {
+			return false;
+		}
+
+		Result result = build.getResult();
+
+		if(result == null) {
+			return false;
+		}
+
+		return result.isWorseThan(Result.SUCCESS);
 	}
 
 	private List<AbstractBuild> getAllUnstableBuilds() {
 		List<? extends Item> items = this.getItems();
 
 		List<AbstractBuild> buildList = new ArrayList<AbstractBuild>();
+
+		if(items == null) {
+			return buildList;
+		}
+
 		/*loop over the jobs*/
 		for(Item item : items) {
 			Job<?, ?> job = (Job<?, ?>) item;
 
 			AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>)job.getLastBuild();
 
-			if(lastBuild != null && isBuildUnstable(lastBuild)) {
+			if(isBuildUnstable(lastBuild)) {
 				buildList.add(lastBuild);
 			}
 		}
@@ -181,6 +196,10 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 
 	public void claimGivenBuild(String name, String reason, boolean sticky, String culprit, AbstractBuild<?, ?> otherBuild) throws IOException {
 		ClaimBuildAction otherClaim = otherBuild.getAction(ClaimBuildAction.class);
+
+		if(otherClaim == null) {
+			return;
+		}
 
 		if(!otherClaim.isClaimed() && otherClaim.isSameCulprit(culprit)) {
 			otherClaim.claim(name, reason, sticky);

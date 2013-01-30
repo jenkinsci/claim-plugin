@@ -61,7 +61,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	}
 
 	private String createMapId(String culprit, String buildFullDisplayName) {
-		return culprit + DELIMITER + buildFullDisplayName;
+		return culprit.hashCode() + DELIMITER + buildFullDisplayName.hashCode();
 	}
 
 	private boolean isCulpritOfBuild(AbstractBuild build, User culprit) {

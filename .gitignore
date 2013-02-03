@@ -1,4 +1,6 @@
 /target/
+/work/
+*.iws
 *.iml
 *.ipr
 *.ipr

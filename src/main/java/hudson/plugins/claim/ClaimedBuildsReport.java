@@ -1,6 +1,7 @@
 package hudson.plugins.claim;
 
 import hudson.Extension;
+import hudson.model.AbstractBuild;
 import hudson.model.Action;
 import hudson.model.Hudson;
 import hudson.model.TopLevelItem;
@@ -88,7 +89,7 @@ public class ClaimedBuildsReport implements Action {
     @Exported(name = "build")
     public List<ClaimReportEntry> getEntries() {
         List<ClaimReportEntry> entries = new ArrayList<ClaimedBuildsReport.ClaimReportEntry>();
-        for (Run<?, ?> r : getBuilds())
+        for (AbstractBuild r : (List<AbstractBuild>) getBuilds())
             entries.add(new ClaimReportEntry(r));
         return entries;
     }
@@ -114,9 +115,9 @@ public class ClaimedBuildsReport implements Action {
 
     @ExportedBean(defaultVisibility = 9)
     public static class ClaimReportEntry {
-        private Run<?, ?> run;
+        private AbstractBuild<?, ?> run;
 
-        public ClaimReportEntry(Run<?, ?> run) {
+        public ClaimReportEntry(AbstractBuild<?, ?> run) {
             super();
             this.run = run;
         }

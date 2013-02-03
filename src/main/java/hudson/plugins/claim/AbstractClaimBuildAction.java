@@ -1,10 +1,13 @@
 package hudson.plugins.claim;
 
+import hudson.MarkupText;
+import hudson.model.AbstractBuild;
 import hudson.model.BuildBadgeAction;
 import hudson.model.Hudson;
 import hudson.model.ProminentProjectAction;
 import hudson.model.Saveable;
 import hudson.model.User;
+import hudson.scm.ChangeLogAnnotator;
 import hudson.tasks.junit.TestAction;
 
 import java.io.IOException;
@@ -47,6 +50,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	public T getOwner() {
 		return owner;
 	}
+
+    public abstract AbstractBuild<?,?> getBuild();
 
 	public void doClaim(StaplerRequest req, StaplerResponse resp)
 			throws ServletException, IOException {
@@ -152,6 +157,18 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	public String getReason() {
 		return reason;
 	}
+
+    public String getReasonAnnotated() {
+        MarkupText text = new MarkupText(reason);
+        for (ChangeLogAnnotator ann: ChangeLogAnnotator.all()) {
+            try {
+                ann.annotate(getBuild(), null, text);
+            } catch (Exception e) {
+            }
+        }
+        return text.toString(false);
+    }
+
 
 	public void setReason(String reason) {
 		this.reason = reason;

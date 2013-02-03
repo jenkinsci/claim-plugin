@@ -11,6 +11,7 @@ import hudson.scm.ChangeLogAnnotator;
 import hudson.tasks.junit.TestAction;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 
@@ -29,6 +30,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 
 	private boolean claimed;
 	private String claimedBy;
+	private Date claimDate;
 	private boolean transientClaim;
 	
 	protected T owner;
@@ -111,6 +113,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 			}
 		}
 
+		this.claimDate = new Date();
 	}
 	
 	/**
@@ -124,6 +127,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		this.claimed = false;
 		this.claimedBy = null;
 		this.transientClaim = false;
+		this.claimDate = null;
 		// we remember the reason to show it if someone reclaims this build.
 
 		for (ClaimListener listener: ClaimListener.all()) {
@@ -193,6 +197,15 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	
 	public void setSticky(boolean sticky) {
 		this.transientClaim = !sticky;
+	}
+
+    @Exported
+	public Date getClaimDate() {
+		return this.claimDate;
+	}
+
+	public boolean hasClaimDate() {
+		return this.claimDate != null;
 	}
 	
 	public abstract String getNoun();

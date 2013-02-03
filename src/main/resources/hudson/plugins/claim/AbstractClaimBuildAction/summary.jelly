@@ -1,5 +1,5 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
-         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
     <script type="text/javascript">
         function ShowPopup(hoveritem)
@@ -19,7 +19,14 @@
         <j:choose>
             <j:when test="${it.isClaimedByMe()}">
                 <p>
-                    You claimed this ${it.noun}.
+                    <j:choose>
+                        <j:when test="${it.hasClaimDate()}">
+                            You claimed this ${it.noun} on <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>.
+                        </j:when>
+                        <j:otherwise>
+                            You claimed this ${it.noun}.
+                        </j:otherwise>
+                     </j:choose>
                     <j:if test="${it.canRelease()}">
                         <a id="dropClaim" href="claim/unclaim">Drop the claim.</a>
                     </j:if>
@@ -30,7 +37,14 @@
             </j:when>
             <j:when test="${it.claimed}">
                 <p>
-                    This ${it.noun} was claimed by ${it.claimedByName}.
+                    <j:choose>
+                        <j:when test="${it.hasClaimDate()}">
+                            This ${it.noun} was claimed by ${it.claimedByName} on <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>.
+                        </j:when>
+                        <j:otherwise>
+                            This ${it.noun} was claimed by ${it.claimedByName}.
+                        </j:otherwise>
+                     </j:choose>
                     <j:if test="${it.canClaim()}">
                         <a id="claimForYourself" href="#" onClick="ShowPopup(this); return false;">Claim for yourself.</a>
                     </j:if>

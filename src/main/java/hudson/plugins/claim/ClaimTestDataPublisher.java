@@ -14,17 +14,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import hudson.util.EditDistance;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class ClaimTestDataPublisher extends TestDataPublisher {
-	
+
+    private final boolean onlyCopyClaimOnSimilarError;
+
 	@DataBoundConstructor
-	public ClaimTestDataPublisher() {}
-	
-	@Override
+	public ClaimTestDataPublisher(boolean onlyCopySimilarClaims) {
+        this.onlyCopyClaimOnSimilarError = onlyCopySimilarClaims;
+    }
+
+
+    public boolean isOnlyCopyClaimOnSimilarError() {
+        return onlyCopyClaimOnSimilarError;
+    }
+
+    @Override
 	public Data getTestData(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener, TestResult testResult) {
-		
 		Data data = new Data(build);
 
 		for (SuiteResult suite: testResult.getSuites()) {
@@ -34,9 +43,11 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 					ClaimTestAction previousAction = previous.getTestAction(ClaimTestAction.class);
 					if (previousAction != null && previousAction.isClaimed()) {
 						if (result.getFailCount() > 0 && previousAction.isSticky()) {
-							ClaimTestAction action = new ClaimTestAction(data, result.getId());
-							previousAction.copyTo(action);
-							data.addClaim(result.getId(), action);
+                            if (!onlyCopyClaimOnSimilarError || isSimilar(previous, result)) {
+                                ClaimTestAction action = new ClaimTestAction(data, result.getId());
+                                previousAction.copyTo(action);
+                                data.addClaim(result.getId(), action);
+                            }
 						}
 						if (result.getFailCount() == 0) {
 							new ClaimTestAction(data, result.getId()).unclaim();
@@ -49,6 +60,17 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 		return data;
 		
 	}
+
+    public boolean isSimilar(CaseResult a, CaseResult b) {
+        int similarity = Integer.getInteger(getClass().getName() + ".similarity", 7);
+
+        String errorA = a.getErrorDetails();
+        String errorB = b.getErrorDetails();
+
+        int margin = Math.max(errorA.length(), errorB.length()) / similarity;
+
+        return EditDistance.editDistance(errorA, errorB) < margin;
+    }
 	
 	public static class Data extends TestResultAction.Data implements Saveable {
 

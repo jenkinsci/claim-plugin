@@ -1,6 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-    <f:entry title="Version property" field="property">
-        <f:textbox />
+    <f:entry title="Only copy claim if error is similar" field="onlyCopyClaimOnSimilarError">
+        <f:checkbox />
     </f:entry>
 </j:jelly>

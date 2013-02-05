@@ -27,16 +27,9 @@ import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.FailureBuilder;
 import hudson.model.Project;
 import hudson.model.Build;
-import hudson.model.User;
-import hudson.model.Hudson;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
-import hudson.security.HudsonPrivateSecurityRealm;
-
-import java.io.IOException;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlLink;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;

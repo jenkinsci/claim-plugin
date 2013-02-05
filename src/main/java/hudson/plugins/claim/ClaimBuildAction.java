@@ -4,7 +4,6 @@ import java.io.ObjectStreamException;
 
 import hudson.model.AbstractBuild;
 import hudson.model.Api;
-import hudson.model.Run;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility=2)

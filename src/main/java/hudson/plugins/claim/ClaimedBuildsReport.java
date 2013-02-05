@@ -3,7 +3,6 @@ package hudson.plugins.claim;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.Action;
-import hudson.model.Hudson;
 import hudson.model.TopLevelItem;
 import hudson.model.TransientViewActionFactory;
 import hudson.model.Api;

@@ -1,7 +1,7 @@
-Jenkins SVN Revert Plugin
+Jenkins Claim Plugin
 =========================
 
-A plugin for Jenkins CI that allows users to claim(take responsibility) for a failing build.
+A plugin for Jenkins CI that allows users to claim(take responsibility) for a failing build.<br>
 See https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin for detailed instructions.
 
 Change Log

@@ -6,9 +6,17 @@ See https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin for detailed instru
 
 Change Log
 ----------
+
+### v2.0 (5 Feb 2013)
+
+- Store and display a date of when a claim was added.
+- Support for annotations in claims.
+- Improved Matrix claim information
+
 ### v1.7 (4 Maj 2010)
 
 - Show user names in claims instead of ids.
+- Support for claiming Matrix builds.
 
 ### v1.6 (28 Nov 2009)
 

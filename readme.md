@@ -7,10 +7,10 @@ See https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin for detailed instru
 Change Log
 ----------
 
-### v2.0 (5 Feb 2013)
+### v2.0 (6 Feb 2013)
 
 - Store and display a date of when a claim was added.
-- Support for annotations in claims.
+- Option to sticky claim test failures if the failure is "similiar"
 - Improved Matrix claim information
 
 ### v1.7 (4 Maj 2010)

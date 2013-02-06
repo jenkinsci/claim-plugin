@@ -38,6 +38,11 @@ public class ClaimPublisher extends Notifier {
         }
         
     }
+    
+    @Override
+    public DescriptorImpl getDescriptor() {
+        return (DescriptorImpl)super.getDescriptor();
+    }
 
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,

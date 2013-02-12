@@ -2,27 +2,19 @@ package hudson.plugins.claim;
 
 import java.io.ObjectStreamException;
 
-import hudson.model.AbstractBuild;
-import hudson.model.Api;
-import org.kohsuke.stapler.export.ExportedBean;
+import hudson.model.Run;
 
-@ExportedBean(defaultVisibility=2)
-public class ClaimBuildAction extends AbstractClaimBuildAction<AbstractBuild> {
+public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
 
 	private static final long serialVersionUID = 1L;
 	
-	private transient AbstractBuild run;
+	private transient Run run;
 
-	public ClaimBuildAction(AbstractBuild run) {
+	public ClaimBuildAction(Run run) {
 		super(run);
 	}
 
-    @Override
-    public AbstractBuild<?, ?> getBuild() {
-        return run;
-    }
-
-    public String getDisplayName() {
+	public String getDisplayName() {
 		return "Claim Build";
 	}
 	
@@ -37,9 +29,5 @@ public class ClaimBuildAction extends AbstractClaimBuildAction<AbstractBuild> {
 		}
 		return this;
 	}
-
-    public Api getApi() {
-        return new Api(new ClaimedBuildsReport.ClaimReportEntry(owner));
-    }
 
 }

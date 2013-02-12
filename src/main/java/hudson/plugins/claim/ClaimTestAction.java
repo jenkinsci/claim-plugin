@@ -1,8 +1,6 @@
 package hudson.plugins.claim;
 
-import hudson.model.AbstractBuild;
 import hudson.plugins.claim.ClaimTestDataPublisher.Data;
-import hudson.tasks.junit.CaseResult;
 
 public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
 
@@ -16,13 +14,8 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
 	public String getDisplayName() {
 		return "Claim Test";
 	}
-
-    @Override
-    public AbstractBuild<?, ?> getBuild() {
-        return getOwner().getBuild();
-    }
-
-    @Override
+	
+	@Override
 	public void claim(String claimedBy, String reason, boolean sticky) {
 		super.claim(claimedBy, reason, sticky);
 		owner.addClaim(testObjectId, this);
@@ -31,18 +24,6 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
 	@Override
 	public String getNoun() {
 		return "test";
-	}
-
-	public String getTestObjectId() {
-		return testObjectId;
-	}
-
-	public CaseResult getCaseResult() {
-		return (CaseResult) getOwner().
-			getBuild().
-			getAction(hudson.tasks.junit.TestResultAction.class).
-			getResult().
-			findCorrespondingResult(testObjectId);
 	}
 
 }

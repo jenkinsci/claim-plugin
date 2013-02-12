@@ -32,7 +32,7 @@
                     </j:if>
                 </p>
                 <j:if test="${it.hasReason()}">
-                    <p>Reason: ${it.reasonAnnotated}</p>
+                    <p>Reason: ${it.reason}</p>
                 </j:if>
             </j:when>
             <j:when test="${it.claimed}">
@@ -50,7 +50,7 @@
                     </j:if>
                 </p>
                 <j:if test="${it.hasReason()}">
-                    <p>Reason: ${it.reasonAnnotated}</p>
+                    <p>Reason: ${it.reason}</p>
                 </j:if>
             </j:when>
             <j:otherwise>

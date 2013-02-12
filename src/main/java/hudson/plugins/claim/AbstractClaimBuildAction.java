@@ -1,13 +1,10 @@
 package hudson.plugins.claim;
 
-import hudson.MarkupText;
-import hudson.model.AbstractBuild;
 import hudson.model.BuildBadgeAction;
 import hudson.model.Hudson;
 import hudson.model.ProminentProjectAction;
 import hudson.model.Saveable;
 import hudson.model.User;
-import hudson.scm.ChangeLogAnnotator;
 import hudson.tasks.junit.TestAction;
 
 import java.io.IOException;
@@ -22,7 +19,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-@ExportedBean(defaultVisibility = 5)
+@ExportedBean(defaultVisibility = 2)
 public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestAction implements BuildBadgeAction,
 		ProminentProjectAction {
 
@@ -49,12 +46,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return "claim";
 	}
 
-	public T getOwner() {
-		return owner;
-	}
-
-    public abstract AbstractBuild<?,?> getBuild();
-
 	public void doClaim(StaplerRequest req, StaplerResponse resp)
 			throws ServletException, IOException {
 		Authentication authentication = Hudson.getAuthentication();
@@ -64,7 +55,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		if (StringUtils.isEmpty(reason)) reason = null;
 		claim(name, reason, sticky);
 		owner.save();
-
 		resp.forwardToPreviousPage(req);
 	}
 
@@ -80,8 +70,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return claimedBy;
 	}
 
-    @Exported
-    public String getClaimedByName() {
+	public String getClaimedByName() {
 		User user = User.get(claimedBy, false);
 		if (user != null) {
 			return user.getDisplayName();
@@ -104,15 +93,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		this.claimedBy = claimedBy;
 		this.reason = reason;
 		this.transientClaim = !sticky;
-
-		for (ClaimListener listener: ClaimListener.all()) {
-			try {
-				listener.claimed(this);
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-		}
-
 		this.claimDate = new Date();
 	}
 	
@@ -129,15 +109,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		this.transientClaim = false;
 		this.claimDate = null;
 		// we remember the reason to show it if someone reclaims this build.
-
-		for (ClaimListener listener: ClaimListener.all()) {
-			try {
-				listener.unclaimed(this);
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-		}
-
 	}
 
 	public boolean isClaimedByMe() {
@@ -162,18 +133,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 		return reason;
 	}
 
-    public String getReasonAnnotated() {
-        MarkupText text = new MarkupText(reason);
-        for (ChangeLogAnnotator ann: ChangeLogAnnotator.all()) {
-            try {
-                ann.annotate(getBuild(), null, text);
-            } catch (Exception e) {
-            }
-        }
-        return text.toString(false);
-    }
-
-
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
@@ -189,9 +148,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	public void setTransient(boolean transientClaim) {
 		this.transientClaim = transientClaim;
 	}
-
-    @Exported
-    public boolean isSticky() {
+	
+	public boolean isSticky() {
 		return !transientClaim;
 	}
 	

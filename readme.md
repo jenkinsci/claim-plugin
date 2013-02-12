@@ -9,7 +9,7 @@ Change Log
 
 ### v2.1 (12 Feb 2013)
 
-- Fixed [JENKINS-16766]
+- Fixed HTML rendering issue introduced in 2.0 [JENKINS-16766]
 
 ### v2.0 (6 Feb 2013)
 

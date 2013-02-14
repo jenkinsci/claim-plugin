@@ -81,7 +81,7 @@ Compile your project by using the following command:
      `mvn hpi:run`
 This creates the `claim.hpi` file in the `claim-plugin\target` folder.
 
-The `claim.hpi` file must be uploaded to Jenkins. To do so, perform the following:
+The `claim.hpi` file must be uploaded to Jenkins. To do so, perform the following: 
 
 1. On Jenkin’s Home page, select **Manage Jenkins** from the left-hand navigation column.
 2. Select **Manage Plugins** from the list of options that appear.

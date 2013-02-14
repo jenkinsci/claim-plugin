@@ -39,7 +39,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 public class ClaimTest extends HudsonTestCase {
     private Build<?,?> build;
     private Project<?, ?> project;
-
+    
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -73,10 +73,10 @@ public class ClaimTest extends HudsonTestCase {
         form.submit((HtmlButton) last(form.selectNodes(".//button")));
 
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        assertEquals("claiming user incorrect", "user1", action.getClaimedBy());
-        assertEquals("claim text incorrect", claimText, action.getReason());
-        assertTrue("build is not claimed", action.isClaimed());
-        assertFalse("build should not be sticky", action.isSticky());
+        assertEquals("user1", action.getClaimedBy());
+        assertEquals(claimText, action.getReason());
+        assertTrue(action.isClaimed());
+        assertFalse(action.isSticky());
     }
 
     public void testClaimForYourself() throws Exception {
@@ -95,8 +95,8 @@ public class ClaimTest extends HudsonTestCase {
         form.submit((HtmlButton) form.getElementsByTagName("button").item(0));
 
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        assertEquals("claiming user incorrect", "user1", action.getClaimedBy());
-        assertEquals("claim text incorrect", claimText, action.getReason());
+        assertEquals("user1", action.getClaimedBy());
+        assertEquals(claimText, action.getReason());
         assertTrue(action.isClaimed());
     }
 
@@ -119,10 +119,10 @@ public class ClaimTest extends HudsonTestCase {
         Build<?,?> nextBuild = project.scheduleBuild2(0).get();
 
         ClaimBuildAction action2 = nextBuild.getAction(ClaimBuildAction.class);
-        assertTrue("build is not claimed", action2.isClaimed());
-        assertEquals("claiming user not equal", action1.getClaimedBy(), action2.getClaimedBy());
-        assertEquals("claim reason not equal", action1.getReason(), action2.getReason());
-        assertTrue("build should be sticky", action2.isSticky());
+        assertTrue(action2.isClaimed());
+        assertEquals(action1.getClaimedBy(), action2.getClaimedBy());
+        assertEquals(action1.getReason(), action2.getReason());
+        assertTrue(action2.isSticky());
     }
 
     public void testNotStickyBuild() throws Exception {
@@ -132,6 +132,6 @@ public class ClaimTest extends HudsonTestCase {
         Build<?,?> nextBuild = project.scheduleBuild2(0).get();
 
         ClaimBuildAction action2 = nextBuild.getAction(ClaimBuildAction.class);
-        assertFalse("build is claimed", action2.isClaimed());
+        assertFalse(action2.isClaimed());
     }
 }

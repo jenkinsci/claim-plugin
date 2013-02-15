@@ -63,13 +63,14 @@ public class ClaimTest extends HudsonTestCase {
 
     public void testFirstClaim() throws Exception {
         ClaimBuildAction action = whenClaimingBuildByClicking("claim");
+       
         assertEquals("user1", action.getClaimedBy());
         assertEquals(claimText, action.getReason());
         assertTrue(action.isClaimed());
     }
 
 	public void testClaimForYourself() throws Exception {
-        givenBuildClaimedByOtherUser();
+		givenBuildClaimedByOtherUser();
         ClaimBuildAction action = whenClaimingBuildByClicking("claimForYourself");
         assertEquals("user1", action.getClaimedBy());
         assertEquals(claimText, action.getReason());
@@ -77,12 +78,9 @@ public class ClaimTest extends HudsonTestCase {
     }
 
 	public void testDropClaim() throws Exception {
-        build.getAction(ClaimBuildAction.class).claim("user1", "reason", true);
-
-        WebClient wc = new WebClient();
-        wc.login("user1", "user1");
-        HtmlPage page = wc.goTo("/job/x/" + build.getNumber());
-        ((HtmlAnchor) page.getElementById("dropClaim")).click();
+		givenBuildClaimedByCurrentUser();
+        
+        whenNavigatingToClaimPageAndClicking("dropClaim");
 
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
         assertFalse(action.isClaimed());
@@ -115,6 +113,10 @@ public class ClaimTest extends HudsonTestCase {
 		build.getAction(ClaimBuildAction.class).claim("user2", "reason", true);
 	}
 
+	private void givenBuildClaimedByCurrentUser() {
+		build.getAction(ClaimBuildAction.class).claim("user1", "reason", true);
+	}
+	
 	private ClaimBuildAction whenClaimingBuildByClicking(String claimElement) throws Exception, IOException,
 			SAXException {
 		HtmlPage page = whenNavigatingToClaimPageAndClicking(claimElement);

@@ -39,6 +39,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 
+
 public class ClaimTest extends HudsonTestCase {
     private Build<?,?> build;
     private Project<?, ?> project;
@@ -47,6 +48,7 @@ public class ClaimTest extends HudsonTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
 
         project = createFreeStyleProject("x");
         project.getBuildersList().add(new FailureBuilder());

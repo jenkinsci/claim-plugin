@@ -58,7 +58,7 @@ public class ClaimReportTest extends HudsonTestCase {
 		WebClient wc = new WebClient();
 		
 		HtmlPage page = wc.goTo("claims/");
-		HtmlElement element = page.getElementById("claim." + JOB_NAME);
+		HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
 		assertTrue(element.isDisplayed());
 	}
 	

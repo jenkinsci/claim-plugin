@@ -9,10 +9,14 @@ import hudson.model.ListView;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.HudsonTestCase;
 
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class ClaimReportTest extends HudsonTestCase {
 
+
+	private static final String JOB_NAME = "job";
+	private FreeStyleProject job;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -20,7 +24,7 @@ public class ClaimReportTest extends HudsonTestCase {
 
 		java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
 
-		createFailingJobWithName("job1");
+		job = createFailingJobWithName(JOB_NAME);
 
 	}
 
@@ -41,7 +45,22 @@ public class ClaimReportTest extends HudsonTestCase {
 		WebClient wc = new WebClient();
 		
 		HtmlPage page = wc.goTo("claims/");
-		page.getElementById("no-failing-builds");
-		
+		HtmlElement element = page.getElementById("no-failing-builds");
+		assertTrue(element.isDisplayed());
 	}
+	
+	public void testJobPresentInDefaultViewIsVisibleInClaimReport() throws Exception {
+		ListView view = new ListView("DefaultView");
+		view.add(job);
+		hudson.addView(view);
+		hudson.setPrimaryView(view);
+		
+		WebClient wc = new WebClient();
+		
+		HtmlPage page = wc.goTo("claims/");
+		HtmlElement element = page.getElementById("claim." + JOB_NAME);
+		assertTrue(element.isDisplayed());
+	}
+	
+	
 }

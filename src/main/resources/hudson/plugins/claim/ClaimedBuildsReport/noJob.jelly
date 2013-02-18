@@ -1,4 +1,4 @@
-<div>
+<div id="no-failing-builds">
   ${%Welcome to the Jenkins Claim Report.}
   ${%There are no failing builds.  Excellent work!}
 </div>

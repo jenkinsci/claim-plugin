@@ -35,7 +35,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 
 	private static final long serialVersionUID = 1L;
 	private final String INVALID_ENTRY = "Not Selected";
-	private final String DELIMITER = ":";
+	private final String BUILD = "build";
+	private int buildID;
 
 	private boolean claimed;
 	private String claimedBy;
@@ -55,15 +56,16 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 
 		for(AbstractBuild build : getAllUnstableBuilds()) {
 			if(isCulpritOfBuild(build, culprit)) {
-				buildList.put(createMapId(culprit.getId(), build.getFullDisplayName()), build);
+				buildList.put(createMapId(), build);
 			}
 		}
 
 		return buildList;
 	}
 
-	private String createMapId(String culprit, String buildFullDisplayName) {
-		return culprit.hashCode() + DELIMITER + buildFullDisplayName.hashCode();
+	private String createMapId() {
+		++buildID;
+		return BUILD + buildID;
 	}
 
 	private boolean isCulpritOfBuild(AbstractBuild build, User culprit) {
@@ -126,7 +128,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	@Exported
 	public Map<String, Map<String, AbstractBuild>> getCulpritBuildMap() {
 		culpritBuildMap = new HashMap<String, Map<String,AbstractBuild>>();
-
+		buildID = -1;
 		for(User culprit : this.getCulprits()) {
 			culpritBuildMap.put(culprit.getId(), getBuildsOfSameCulprit(culprit));
 		}

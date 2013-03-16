@@ -30,7 +30,7 @@ public class ClaimPublisher extends Notifier {
 
 		@Override
 		public String getDisplayName() {
-			return "Allow broken build claiming";
+			return Messages.ClaimPublisher_DisplayName();
 		}
 
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {

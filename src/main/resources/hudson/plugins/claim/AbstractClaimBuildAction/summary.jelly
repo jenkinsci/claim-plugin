@@ -21,43 +21,44 @@
                 <p>
                     <j:choose>
                         <j:when test="${it.hasClaimDate()}">
-                            You claimed this ${it.noun} on <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>.
+                             ${%you.climed.on(it.noun)}
+                             <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
                         </j:when>
                         <j:otherwise>
-                            You claimed this ${it.noun}.
+                            ${%you.climed(it.noun)}
                         </j:otherwise>
                      </j:choose>
                     <j:if test="${it.canRelease()}">
-                        <a id="dropClaim" href="claim/unclaim">Drop the claim.</a>
+                        <a id="dropClaim" href="claim/unclaim">${%Drop the claim.}</a>
                     </j:if>
                 </p>
                 <j:if test="${it.hasReason()}">
-                    <p>Reason: ${it.reason}</p>
+                    <p>${%Reason:} ${it.reason}</p>
                 </j:if>
             </j:when>
             <j:when test="${it.claimed}">
                 <p>
                     <j:choose>
                         <j:when test="${it.hasClaimDate()}">
-                            This ${it.noun} was claimed by ${it.claimedByName} on <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>.
+                            ${%one.climed.on(it.noun,it.claimedByName)}
+                            <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
                         </j:when>
                         <j:otherwise>
-                            This ${it.noun} was claimed by ${it.claimedByName}.
+                            ${%one.climed(it.noun,it.claimedByName)}
                         </j:otherwise>
                      </j:choose>
                     <j:if test="${it.canClaim()}">
-                        <a id="claimForYourself" href="#" onClick="ShowPopup(this); return false;">Claim for yourself.</a>
+                        <a id="claimForYourself" href="#" onClick="ShowPopup(this); return false;">${%Claim for yourself.}</a>
                     </j:if>
                 </p>
                 <j:if test="${it.hasReason()}">
-                    <p>Reason: ${it.reason}</p>
+                    <p>${%Reason:} ${it.reason}</p>
                 </j:if>
             </j:when>
             <j:otherwise>
-                This ${it.noun} was not claimed.
+                ${%not.climed(it.noun)}
                 <j:if test="${it.canClaim()}">
-                    <a id ="claim" href="#" onClick="ShowPopup(this); return false;">Claim</a>
-                    it.
+                    ${%claim.it.link("ShowPopup(this); return false;")}
                 </j:if>
             </j:otherwise>
         </j:choose>
@@ -72,7 +73,7 @@
                 <f:block>
                     <div align="right">
                         <f:submit value="${%Claim}"/>
-                        <input type="button" onClick="HidePopup();" value="Cancel" class="submit-button"/>
+                        <input type="button" onClick="HidePopup();" value="${%Cancel}" class="submit-button"/>
                     </div>
                 </f:block>
             </f:form>

@@ -42,14 +42,15 @@ public class ClaimedBuildsReport implements RootAction {
     public String getClaimantText(Run r) {
         ClaimBuildAction claim = r.getAction(ClaimBuildAction.class);
         if (claim == null || !claim.isClaimed()) {
-            return "unclaimed";
+            return Messages.ClaimedBuildsReport_ClaimantText_unclimed();
         }
         String reason = claim.getReason();
         if (reason != null) {
-            return "claimed by " + claim.getClaimedBy() + " because: "
-                    + claim.getReason();
+            return Messages.ClaimedBuildsReport_ClaimantText_claimedWithReason(
+                    claim.getClaimedBy(), claim.getReason());
         } else {
-            return "claimed by " + claim.getClaimedBy();
+            return Messages.ClaimedBuildsReport_ClaimantText_claimed(claim
+                    .getClaimedBy());
         }
     }
 
@@ -81,7 +82,7 @@ public class ClaimedBuildsReport implements RootAction {
     }
 
     public String getDisplayName() {
-        return "Claim Report";
+        return Messages.ClaimedBuildsReport_DisplayName();
     }
 
 }

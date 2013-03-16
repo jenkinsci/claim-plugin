@@ -28,12 +28,12 @@ THE SOFTWARE.
         <j:choose>
                 <j:when test="${action.claim.reason != null}">                    
                     <img width="16" height="16"
-                      title="${action.combinationName} Claimed by ${action.claim.claimedBy}. Reason: ${action.claim.reason}"
+                      title="${%climed.reason(action.combinationName,action.claim.claimedBy,action.claim.reason)}"
                       src="${imagesURL}/16x16/lock.gif"/>
                  </j:when>
                  <j:otherwise>
                     <img width="16" height="16"
-                      title="${action.combinationName} Claimed by ${action.claim.claimedBy}."
+                      title="${%climed(action.combinationName,action.claim.claimedBy)}"
                       src="${imagesURL}/16x16/lock.gif"/>
                  </j:otherwise>
         </j:choose>

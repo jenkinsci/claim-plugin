@@ -21,7 +21,7 @@ public class ClaimedBuildsReport implements RootAction {
     }
 
     public String getIconFileName() {
-        return "orange-square.gif";
+        return "/plugin/claim/icons/claim-24x24.png";
     }
 
     public String getUrlName() {

@@ -15,7 +15,7 @@
         }
     </script>
 
-    <t:summary icon="orange-square.gif">
+    <t:summary icon="${rootUrl}/plugin/claim/icons/claim-48x48.png">
         <j:choose>
             <j:when test="${it.isClaimedByMe()}">
                 <p>

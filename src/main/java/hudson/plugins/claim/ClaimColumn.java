@@ -26,7 +26,7 @@ public class ClaimColumn extends ListViewColumn {
 
 	@Override
 	public String getColumnCaption() {
-		return "Claim";
+		return Messages.ClaimColumn_ColumnCaption();
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class ClaimColumn extends ListViewColumn {
 
 		@Override
 		public String getDisplayName() {
-			return "Claim";
+			return Messages.ClaimColumn_DisplayName();
 		}
 		
 	}

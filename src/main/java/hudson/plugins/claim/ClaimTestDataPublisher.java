@@ -99,7 +99,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 		
 		@Override
 		public String getDisplayName() {
-			return "Allow claiming of failed tests";
+			return Messages.ClaimTestDataPublisher_DisplayName();
 		}
 	}
 

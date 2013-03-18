@@ -21,11 +21,11 @@
                 <p>
                     <j:choose>
                         <j:when test="${it.hasClaimDate()}">
-                             ${%you.climed.on(it.noun)}
+                             ${%you.claimed.on(it.noun)}
                              <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
                         </j:when>
                         <j:otherwise>
-                            ${%you.climed(it.noun)}
+                            ${%you.claimed(it.noun)}
                         </j:otherwise>
                      </j:choose>
                     <j:if test="${it.canRelease()}">
@@ -40,11 +40,11 @@
                 <p>
                     <j:choose>
                         <j:when test="${it.hasClaimDate()}">
-                            ${%one.climed.on(it.noun,it.claimedByName)}
+                            ${%one.claimed.on(it.noun,it.claimedByName)}
                             <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
                         </j:when>
                         <j:otherwise>
-                            ${%one.climed(it.noun,it.claimedByName)}
+                            ${%one.claimed(it.noun,it.claimedByName)}
                         </j:otherwise>
                      </j:choose>
                     <j:if test="${it.canClaim()}">
@@ -56,7 +56,7 @@
                 </j:if>
             </j:when>
             <j:otherwise>
-                ${%not.climed(it.noun)}
+                ${%not.claimed(it.noun)}
                 <j:if test="${it.canClaim()}">
                     ${%claim.it.link("ShowPopup(this); return false;")}
                 </j:if>

@@ -3,12 +3,12 @@
 		<j:choose>
 			<j:when test="${it.reason != null}">
 			<img width="16" height="16"
-			  title="Claimed by ${it.claimedByName}. Reason: ${it.reason}"
+			  title="${%claimed.reason(it.claimedByName,it.reason)}"
 			  src="${imagesURL}/16x16/lock.gif"/>
 			 </j:when>
 			 <j:otherwise>
 			<img width="16" height="16"
-			  title="Claimed by ${it.claimedBy}."
+			  title="${%claimed(it.claimedBy)}"
 			  src="${imagesURL}/16x16/lock.gif"/>
 			 </j:otherwise>
 		</j:choose>

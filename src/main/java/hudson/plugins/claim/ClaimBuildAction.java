@@ -15,12 +15,12 @@ public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
 	}
 
 	public String getDisplayName() {
-		return "Claim Build";
+		return Messages.ClaimBuildAction_DisplayName();
 	}
 	
 	@Override
 	public String getNoun() {
-		return "build";
+		return Messages.ClaimBuildAction_Noun();
 	}
 
 	public Object readResolve() throws ObjectStreamException {

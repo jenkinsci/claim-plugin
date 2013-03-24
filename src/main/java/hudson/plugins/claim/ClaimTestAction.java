@@ -12,7 +12,7 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
 	}
 
 	public String getDisplayName() {
-		return "Claim Test";
+		return Messages.ClaimTestAction_DisplayName();
 	}
 	
 	@Override
@@ -23,7 +23,7 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
 	
 	@Override
 	public String getNoun() {
-		return "test";
+		return Messages.ClaimTestAction_Noun();
 	}
 
 }

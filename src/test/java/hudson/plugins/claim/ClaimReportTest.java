@@ -37,7 +37,7 @@ public class ClaimReportTest extends HudsonTestCase {
 		return project;
 	}
 
-	public void testThatJobNotPresentInDefaultViewIsNotVisibleInClaimReport() throws Exception {
+	public void testThatJobNotPresentInDefaultViewIsVisibleInClaimReport() throws Exception {
 		ListView view = new ListView("DefaultView");
 		hudson.addView(view);
 		hudson.setPrimaryView(view);
@@ -45,7 +45,7 @@ public class ClaimReportTest extends HudsonTestCase {
 		WebClient wc = new WebClient();
 		
 		HtmlPage page = wc.goTo("claims/");
-		HtmlElement element = page.getElementById("no-failing-builds");
+		HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
 		assertTrue(element.isDisplayed());
 	}
 	

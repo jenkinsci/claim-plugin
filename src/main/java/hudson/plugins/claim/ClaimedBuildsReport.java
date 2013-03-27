@@ -59,7 +59,7 @@ public class ClaimedBuildsReport implements RootAction {
         if (view != null) {
             return view;
         } else {
-            return Hudson.getInstance().getPrimaryView();
+            return Hudson.getInstance().getView("All");
         }
     }
 

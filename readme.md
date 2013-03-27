@@ -7,6 +7,11 @@ Look at [wiki] for detailed instructions.
 Change Log
 ----------
 
+### v2.2 (27 Mar 2013)
+- Added support for translations and added Chinese translation
+- Added new icon to make claim plugin more visible
+- All jobs are now visible in claim report [JENKINS-16801]
+
 ### v2.1 (12 Feb 2013)
 
 - Fixed HTML rendering issue introduced in 2.0 [JENKINS-16766]

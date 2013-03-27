@@ -35,5 +35,6 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-16801]: https://issues.jenkins-ci.org/browse/JENKINS-16801
 [JENKINS-16766]: https://issues.jenkins-ci.org/browse/JENKINS-16766
 [wiki]: https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin

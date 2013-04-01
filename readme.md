@@ -4,6 +4,8 @@ Jenkins Claim Plugin
 A plugin for Jenkins CI that allows users to claim(take responsibility) for a failing build.<br>
 Look at [wiki] for detailed instructions.
 
+[![Build Status](https://buildhive.cloudbees.com/job/samsta/job/claim-plugin/org.jenkins-ci.plugins$claim/badge/icon)](https://buildhive.cloudbees.com/job/samsta/job/claim-plugin/org.jenkins-ci.plugins$claim/)
+
 Change Log
 ----------
 

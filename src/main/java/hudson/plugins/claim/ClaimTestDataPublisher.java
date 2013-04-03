@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -73,14 +74,16 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 				return Collections.<TestAction>singletonList(result);
 			}
 			
+			Vector<TestAction> list = new Vector<TestAction>();
 			if (testObject instanceof CaseResult) {
 				CaseResult cr = (CaseResult) testObject;
 				if (!cr.isPassed() && !cr.isSkipped()) {
-					return Collections.<TestAction>singletonList(new ClaimTestAction(this, id));
+					list.add(new ClaimTestAction(this, id));
 				}
+				list.add(new QuarantineTestAction(this, id));
 			}
 			
-			return Collections.emptyList();
+			return list;
 		}
 
 		public void save() throws IOException {

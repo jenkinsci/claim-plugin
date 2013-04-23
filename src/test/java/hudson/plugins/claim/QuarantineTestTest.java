@@ -54,8 +54,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 
 
 public class QuarantineTestTest extends HudsonTestCase {
-	private String claimText = "claimReason";
-    
+	private String quarantineText = "quarantineReason";
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -76,7 +76,7 @@ public class QuarantineTestTest extends HudsonTestCase {
 			}
     	}		
     }
-    
+        
     private FreeStyleBuild configureTestBuild(final String xmlFileName) throws Exception {
     	FreeStyleProject p = createFreeStyleProject("x");
         p.getBuildersList().add(new TestBuilder() {
@@ -88,7 +88,7 @@ public class QuarantineTestTest extends HudsonTestCase {
         });
         DescribableList<TestDataPublisher, Descriptor<TestDataPublisher>> publishers =
             new DescribableList<TestDataPublisher, Descriptor<TestDataPublisher>>(p);
-        publishers.add(new ClaimTestDataPublisher());
+        publishers.add(new QuarantineTestDataPublisher());
         
         p.getPublishersList().add(new JUnitResultArchiver("*.xml",false, publishers));
     	return p.scheduleBuild2(0).get();

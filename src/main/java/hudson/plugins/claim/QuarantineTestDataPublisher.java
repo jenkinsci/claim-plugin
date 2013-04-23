@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class ClaimTestDataPublisher extends TestDataPublisher {
+public class QuarantineTestDataPublisher extends TestDataPublisher {
 	
 	@DataBoundConstructor
-	public ClaimTestDataPublisher() {}
+	public QuarantineTestDataPublisher() {}
 	
 	@Override
 	public Data getTestData(AbstractBuild<?, ?> build, Launcher launcher,
@@ -32,7 +32,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 		
 		Data data = new Data(build);
 
-		for (CaseResult result: testResult.getFailedTests()) {
+/*		for (CaseResult result: testResult.getFailedTests()) {
 			CaseResult previous = result.getPreviousResult();
 			if (previous != null) {
 				ClaimTestAction previousAction = previous.getTestAction(ClaimTestAction.class);
@@ -43,14 +43,14 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 				}
 			}
 		}
-		
+		*/
 		return data;
 		
 	}
 	
 	public static class Data extends TestResultAction.Data implements Saveable {
 
-		private Map<String,ClaimTestAction> claims = new HashMap<String,ClaimTestAction>();
+		private Map<String,QuarantineTestAction> quarantines = new HashMap<String,QuarantineTestAction>();
 
 		private final AbstractBuild<?,?> build;
 
@@ -61,12 +61,12 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 		@Override
 		public List<TestAction> getTestAction(TestObject testObject) {
 			String id = testObject.getId();
-			ClaimTestAction result = claims.get(id);
+			QuarantineTestAction result = quarantines.get(id);
 
 			// In Hudson 1.347 or so, IDs changed, and a junit/ prefix was added.
 			// Attempt to fix this backward-incompatibility
 			if (result == null && id.startsWith("junit")) {
-				result = claims.get(id.substring(5));
+				result = quarantines.get(id.substring(5));
 			}
 			
 			if (result != null) {
@@ -74,24 +74,14 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 			}
 			
 			if (testObject instanceof CaseResult) {
-				CaseResult cr = (CaseResult) testObject;
-				if (!cr.isPassed() && !cr.isSkipped()) {
-					return Collections.<TestAction>singletonList(new ClaimTestAction(this, id));
-				}
+				return Collections.<TestAction>singletonList(new QuarantineTestAction(this, id));
 			}
-			
 			return Collections.emptyList();
 		}
 
 		public void save() throws IOException {
 			build.save();
-		}
-
-		public void addClaim(String testObjectId,
-				ClaimTestAction claim) {
-			claims.put(testObjectId, claim);
-		}
-		
+		}		
 	}
 	
 	@Extension
@@ -99,7 +89,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 		
 		@Override
 		public String getDisplayName() {
-			return Messages.ClaimTestDataPublisher_DisplayName();
+			return Messages.QuarantineTestDataPublisher_DisplayName();
 		}
 	}
 

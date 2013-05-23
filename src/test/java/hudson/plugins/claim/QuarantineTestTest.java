@@ -24,6 +24,9 @@
 package hudson.plugins.claim;
 
 import java.io.IOException;
+
+import junit.framework.TestCase;
+
 import org.xml.sax.SAXException;
 
 import org.jvnet.hudson.test.HudsonTestCase;
@@ -54,6 +57,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 
 
 public class QuarantineTestTest extends HudsonTestCase {
+	private String projectName = "x";
 	private String quarantineText = "quarantineReason";
 
     @Override
@@ -76,9 +80,24 @@ public class QuarantineTestTest extends HudsonTestCase {
 			}
     	}		
     }
+    
+    public void testTextSummaryForUnquarantinedTest() throws Exception {
+    	FreeStyleBuild build = configureTestBuild("junit-1-failure.xml");
+    	TestResult tr = build.getAction(TestResultAction.class).getResult();
+    	HtmlPage page = whenNavigatingToTestCase(tr.getSuite("SuiteA").getCase("TestA"));
+    	assert(page.asText().indexOf("This test was not quarantined.") != -1);
+    }
         
+    private HtmlPage whenNavigatingToTestCase(CaseResult testCase) throws Exception, IOException, SAXException
+    {
+		WebClient wc = new WebClient();
+	    wc.login("user1", "user1");
+	    HtmlPage page = wc.goTo(testCase.getOwner().getUrl() + "testReport/" + testCase.getUrl());
+    	return page;
+    }
+    
     private FreeStyleBuild configureTestBuild(final String xmlFileName) throws Exception {
-    	FreeStyleProject p = createFreeStyleProject("x");
+    	FreeStyleProject p = createFreeStyleProject(projectName);
         p.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
                 build.getWorkspace().child("junit.xml").copyFrom(

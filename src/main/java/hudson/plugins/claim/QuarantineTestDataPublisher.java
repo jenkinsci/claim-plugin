@@ -81,7 +81,12 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 
 		public void save() throws IOException {
 			build.save();
-		}		
+		}
+		
+		public void addQuarantine(String testObjectId,
+				QuarantineTestAction quarantine) {
+				quarantines.put(testObjectId, quarantine);
+		}
 	}
 	
 	@Extension

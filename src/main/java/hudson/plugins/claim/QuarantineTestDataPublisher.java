@@ -35,6 +35,8 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 		
 		Data data = new Data(build);
 
+
+		
 		for (SuiteResult suite: testResult.getSuites())
 		{
 			for (CaseResult result: suite.getCases()) {
@@ -67,6 +69,14 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 
 		@Override
 		public List<TestAction> getTestAction(TestObject testObject) {
+			
+			if (build.getParent().getPublishersList().get(QuarantinableJUnitResultArchiver.class) == null)
+			{
+				// only display if QuarantinableJUnitResultArchiver chosen, to avoid confusion
+				System.out.println("not right publisher");
+				return Collections.emptyList();
+			}
+			
 			String id = testObject.getId();
 			QuarantineTestAction result = quarantines.get(id);
 
@@ -98,6 +108,10 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 	
 	@Extension
 	public static class DescriptorImpl extends Descriptor<TestDataPublisher> {
+		
+		public String getHelpFile() {
+			return "/plugin/claim/help-quarantine.html";
+		}
 		
 		@Override
 		public String getDisplayName() {

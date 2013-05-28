@@ -77,7 +77,7 @@ public class QuarantinableJUnitResultArchiver extends JUnitResultArchiver {
 			BuildListener listener) throws InterruptedException, IOException {
 		listener.getLogger().println(hudson.tasks.junit.Messages.JUnitResultArchiver_Recording());
 		TestResultAction action;
-		
+				
 		final String testResults = build.getEnvironment(listener).expand(this.getTestResults());
 
 		try {
@@ -124,7 +124,7 @@ public class QuarantinableJUnitResultArchiver extends JUnitResultArchiver {
 
 		build.getActions().add(action);
 		//CHECKPOINT.report();
-
+		
 		if (action.getResult().getFailCount() > 0)
 		{
 			int quarantined = 0;
@@ -141,7 +141,7 @@ public class QuarantinableJUnitResultArchiver extends JUnitResultArchiver {
 			}
 			
 			int remaining = action.getResult().getFailCount()-quarantined;
-			listener.getLogger().println("[Quarantine]: " +remaining+ "unquarantined failures remaining");
+			listener.getLogger().println("[Quarantine]: " +remaining+ " unquarantined failures remaining");
 
 			if (remaining > 0)
 				build.setResult(Result.UNSTABLE);
@@ -153,7 +153,7 @@ public class QuarantinableJUnitResultArchiver extends JUnitResultArchiver {
     @Extension
     public static class DescriptorImpl extends JUnitResultArchiver.DescriptorImpl {
 		public String getDisplayName() {
-			return "the awesome quarantining thingy";
+			return Messages.QuarantinableJUnitResultArchiver_DisplayName();
 		}
 
 		@Override

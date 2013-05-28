@@ -4,7 +4,6 @@ import hudson.plugins.claim.QuarantineTestDataPublisher.Data;
 import hudson.model.BuildBadgeAction;
 import hudson.model.Hudson;
 import hudson.model.ProminentProjectAction;
-import hudson.model.Saveable;
 import hudson.model.User;
 import hudson.tasks.junit.TestAction;
 import org.acegisecurity.Authentication;
@@ -15,7 +14,6 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
@@ -93,20 +91,30 @@ public class QuarantineTestAction
 		return reason;
 	}
 	
+	public Date getDate()
+	{
+		return quarantineDate;
+	}
+	
 	public boolean isUserAnonymous() {
 		return Hudson.getAuthentication().getName().equals("anonymous");
 	}
 
-	public void quarantine(String quarantinedBy, String reason) {
+	public void quarantine(String quarantinedBy, String reason, Date date)
+	{
 		this.quarantined = true;
 		this.quarantinedBy = quarantinedBy;
 		this.reason = reason;
-		this.quarantineDate = new Date();
-		owner.addQuarantine(testObjectId, this);
+		this.quarantineDate = date;
+		owner.addQuarantine(testObjectId, this);		
+	}
+	
+	public void quarantine(String quarantinedBy, String reason) {
+		quarantine(quarantinedBy,reason,new Date());
 	}
 	
 	public void quarantine(QuarantineTestAction action) {
-		quarantine(action.quarantinedByName(),action.getReason());
+		quarantine(action.quarantinedByName(),action.getReason(),action.getDate());
 	}
 	
 	public void release() {

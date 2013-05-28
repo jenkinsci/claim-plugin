@@ -15,34 +15,36 @@
         }
     </script>
 
-    <t:summary icon="${rootUrl}/plugin/claim/icons/quarantine-48x48.png">    
         <j:choose>
             <j:when test="${it.isQuarantined()}">
-                ${%one.quarantined(it.noun,it.quarantinedByName())}
-    		    <j:if test="${!it.isUserAnonymous()}">
-    		    	${%release.it.link}
-       			</j:if>
-            </j:when>
+				<t:summary icon="${rootUrl}/plugin/claim/icons/quarantine-48x48.png">    
+            	    ${%one.quarantined(it.noun,it.quarantinedByName())}
+    		   		 <j:if test="${!it.isUserAnonymous()}">
+    		    		${%release.it.link}
+       				</j:if>
+	 		    </t:summary> 
+           	</j:when>
             <j:otherwise>
-		        ${%not.quarantined}
-    		    <j:if test="${!it.isUserAnonymous()}">
-        		            ${%quarantine.it.link("ShowQuarantinePopup(this); return false;")}
-       			</j:if>
-       		</j:otherwise>
+		    	<t:summary icon="${rootUrl}/plugin/claim/icons/quarantine-48x48-inactive.png">    
+			        ${%not.quarantined}
+	    		    <j:if test="${!it.isUserAnonymous()}">
+	        		            ${%quarantine.it.link("ShowQuarantinePopup(this); return false;")}
+	       			</j:if>
+				 	<div id="quarantineHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb; margin-top:5px;">
+				    	<f:form method="post" action="quarantine/quarantine" name="quarantine">
+				        	<f:entry title="${%Reason}" help="/plugin/claim/help-reason-quarantine.html">
+				            	<f:textarea name="reason" value="${it.reason}"/>
+				            </f:entry>
+				            <f:block>
+				            	<div align="right">
+				                	<f:submit value="${%Quarantine}"/>
+				                    <input type="button" onClick="HideQuarantinePopup();" value="${%Cancel}" class="submit-button"/>
+				                </div>
+				            </f:block>
+				        </f:form>
+				    </div>
+				 </t:summary>
+	       	</j:otherwise>
        </j:choose>
-	 	<div id="quarantineHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb; margin-top:5px;">
-	    	<f:form method="post" action="quarantine/quarantine" name="quarantine">
-	        	<f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
-	            	<f:textarea name="reason" value="${it.reason}"/>
-	            </f:entry>
-	            <f:block>
-	            	<div align="right">
-	                	<f:submit value="${%Quarantine}"/>
-	                    <input type="button" onClick="HideQuarantinePopup();" value="${%Cancel}" class="submit-button"/>
-	                </div>
-	            </f:block>
-	        </f:form>
-	    </div>
-    </t:summary> 
     
 </j:jelly>

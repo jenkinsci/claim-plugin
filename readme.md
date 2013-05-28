@@ -1,7 +1,10 @@
 Jenkins Claim Plugin
 =========================
 
-A plugin for Jenkins CI that allows users to claim(take responsibility) for a failing build.<br>
+*Work in progress - use at your own peril*
+
+A plugin for Jenkins CI that allows users to claim (take responsibility for) a failing build, and to quarantine tests,
+which means they will be excluded from the final PASS/FAIL decision.<br>
 Look at [wiki] for detailed instructions.
 
 [![Build Status](https://buildhive.cloudbees.com/job/samsta/job/claim-plugin/org.jenkins-ci.plugins$claim/badge/icon)](https://buildhive.cloudbees.com/job/samsta/job/claim-plugin/org.jenkins-ci.plugins$claim/)

@@ -88,6 +88,11 @@ public class QuarantineTestAction
 		}
 	}
 	
+	public String getReason()
+	{
+		return reason;
+	}
+	
 	public boolean isUserAnonymous() {
 		return Hudson.getAuthentication().getName().equals("anonymous");
 	}
@@ -100,11 +105,20 @@ public class QuarantineTestAction
 		owner.addQuarantine(testObjectId, this);
 	}
 	
+	public void quarantine(QuarantineTestAction action) {
+		quarantine(action.quarantinedByName(),action.getReason());
+	}
+	
 	public void release() {
 		this.quarantined = false;
 		this.quarantinedBy = null;
 		this.quarantineDate = null;
 		// we remember the reason to show it if someone puts this test back in quarantine.
+	}
+
+	@Override
+	public String toString() {
+		return "QuarantineTestAction(quarantined="+quarantined+",quarantinedBy="+quarantinedBy+",reason="+reason+")";
 	}
 
 }

@@ -7,6 +7,7 @@ import hudson.model.BuildListener;
 import hudson.model.Descriptor;
 import hudson.model.Saveable;
 import hudson.tasks.junit.CaseResult;
+import hudson.tasks.junit.SuiteResult;
 import hudson.tasks.junit.TestAction;
 import hudson.tasks.junit.TestDataPublisher;
 import hudson.tasks.junit.TestObject;
@@ -14,6 +15,8 @@ import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.TestResultAction;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,21 +35,25 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 		
 		Data data = new Data(build);
 
-/*		for (CaseResult result: testResult.getFailedTests()) {
-			CaseResult previous = result.getPreviousResult();
-			if (previous != null) {
-				ClaimTestAction previousAction = previous.getTestAction(ClaimTestAction.class);
-				if (previousAction != null && previousAction.isClaimed() && previousAction.isSticky()) {
-					ClaimTestAction action = new ClaimTestAction(data, result.getId());
-					previousAction.copyTo(action);
-					data.addClaim(result.getId(), action);
+		for (SuiteResult suite: testResult.getSuites())
+		{
+			for (CaseResult result: suite.getCases()) {
+				CaseResult previous = result.getPreviousResult();
+				if (previous != null) {
+					QuarantineTestAction previousAction = previous.getTestAction(QuarantineTestAction.class);
+
+					if (previousAction != null && previousAction.isQuarantined()) {
+						QuarantineTestAction action = new QuarantineTestAction(data, result.getId());
+						action.quarantine(previousAction);
+						data.addQuarantine(result.getId(), action);
+					}
 				}
 			}
 		}
-		*/
 		return data;
 		
 	}
+	
 	
 	public static class Data extends TestResultAction.Data implements Saveable {
 

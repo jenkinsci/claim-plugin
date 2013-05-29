@@ -96,6 +96,19 @@ public class QuarantineTestAction
 		return quarantineDate;
 	}
 	
+	public boolean hasReason() {
+		return !StringUtils.isEmpty(reason);
+	}
+	
+	/**
+	 * Whether this is the latest result. As it does not make sense to enable
+	 * quarantining on an old result, use this to not even display the option to quarantine it
+	 */
+	public boolean isLatestResult()
+	{
+		return owner.isLatestResult();
+	}
+	
 	public boolean isUserAnonymous() {
 		return Hudson.getAuthentication().getName().equals("anonymous");
 	}

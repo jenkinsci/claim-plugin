@@ -19,8 +19,17 @@
             <j:when test="${it.isQuarantined()}">
 				<t:summary icon="${rootUrl}/plugin/claim/icons/quarantine-48x48.png">    
             	    ${%one.quarantined(it.noun,it.quarantinedByName())}
+                     <i:formatDate value="${it.date}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
     		   		 <j:if test="${!it.isUserAnonymous()}">
-    		    		${%release.it.link}
+    		   		 	<j:if test="${it.isLatestResult()}">
+	    		    		${%release.it.link}
+	    		    	</j:if>
+	    		    	<j:if test="${!it.isLatestResult()}">
+	    		    		${%go.to.latest.to.release}
+	    		    	</j:if>
+		                <j:if test="${it.hasReason()}">
+		                    <p>${%Reason:} ${it.reason}</p>
+		                </j:if>
        				</j:if>
 	 		    </t:summary> 
            	</j:when>
@@ -28,7 +37,12 @@
 		    	<t:summary icon="${rootUrl}/plugin/claim/icons/quarantine-48x48-inactive.png">    
 			        ${%not.quarantined}
 	    		    <j:if test="${!it.isUserAnonymous()}">
-	        		            ${%quarantine.it.link("ShowQuarantinePopup(this); return false;")}
+	    		    	<j:if test="${it.isLatestResult()}">
+	        		    	${%quarantine.it.link("ShowQuarantinePopup(this); return false;")}
+	        		    </j:if>
+	    		    	<j:if test="${!it.isLatestResult()}">
+	    		    		${%go.to.latest.to.quarantine}
+	    		    	</j:if>
 	       			</j:if>
 				 	<div id="quarantineHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb; margin-top:5px;">
 				    	<f:form method="post" action="quarantine/quarantine" name="quarantine">

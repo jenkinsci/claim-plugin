@@ -66,7 +66,7 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 		public Data(AbstractBuild<?,?> build) {
 			this.build = build;
 		}
-
+		
 		@Override
 		public List<TestAction> getTestAction(TestObject testObject) {
 			
@@ -79,12 +79,6 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 			
 			String id = testObject.getId();
 			QuarantineTestAction result = quarantines.get(id);
-
-			// In Hudson 1.347 or so, IDs changed, and a junit/ prefix was added.
-			// Attempt to fix this backward-incompatibility
-			if (result == null && id.startsWith("junit")) {
-				result = quarantines.get(id.substring(5));
-			}
 			
 			if (result != null) {
 				return Collections.<TestAction>singletonList(result);
@@ -95,6 +89,11 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 			}
 			return Collections.emptyList();
 		}
+		
+		public boolean isLatestResult()
+		{
+			return build.getParent().getLastBuild() == build;
+		}
 
 		public void save() throws IOException {
 			build.save();
@@ -104,6 +103,7 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 				QuarantineTestAction quarantine) {
 				quarantines.put(testObjectId, quarantine);
 		}
+		
 	}
 	
 	@Extension

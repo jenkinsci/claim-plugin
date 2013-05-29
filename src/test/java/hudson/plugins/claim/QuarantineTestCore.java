@@ -170,5 +170,41 @@ public class QuarantineTestCore extends QuarantineTest {
     	assertTrue(build.getResult() != Result.SUCCESS);
    	
     }
+    
+    public void testQuarantinedTestsAreInReport() throws Exception  
+    {
+    	TestResult tr = getResultsFromJUnitResult("junit-1-failure.xml");
+    	
+    	tr.getSuite("SuiteA").getCase("TestB").getTestAction(QuarantineTestAction.class).quarantine("user1","reason");
+    	tr.getSuite("SuiteB").getCase("TestA").getTestAction(QuarantineTestAction.class).quarantine("user1","reason");
+    	
+    	QuarantinedTestsReport report = new QuarantinedTestsReport();
+    	
+    	assertEquals(2,report.getQuarantinedTests().size());
+    	assertTrue(report.getQuarantinedTests().contains(tr.getSuite("SuiteA").getCase("TestB")));
+    	assertTrue(report.getQuarantinedTests().contains(tr.getSuite("SuiteB").getCase("TestA")));
+    }
 
+    public void testQuarantineReportGetNumberOfSuccessivePasses() throws Exception
+    {
+    	TestResult tr = getResultsFromJUnitResult("junit-no-failure.xml");
+    	tr.getSuite("SuiteA").getCase("TestB").getTestAction(QuarantineTestAction.class).quarantine("user1","reason");
+
+    	QuarantinedTestsReport report = new QuarantinedTestsReport();
+    	assertEquals(1,report.getNumberOfSuccessivePasses(report.getQuarantinedTests().get(0)));
+    	
+    	runBuildWithJUnitResult("junit-no-failure.xml");
+    	report = new QuarantinedTestsReport();
+    	assertEquals(2,report.getNumberOfSuccessivePasses(report.getQuarantinedTests().get(0)));
+   	
+    	runBuildWithJUnitResult("junit-1-failure.xml");
+    	report = new QuarantinedTestsReport();
+    	assertEquals(0,report.getNumberOfSuccessivePasses(report.getQuarantinedTests().get(0)));
+   	
+    	runBuildWithJUnitResult("junit-no-failure.xml");
+    	report = new QuarantinedTestsReport();
+    	assertEquals(1,report.getNumberOfSuccessivePasses(report.getQuarantinedTests().get(0)));
+    }
+
+    
 }

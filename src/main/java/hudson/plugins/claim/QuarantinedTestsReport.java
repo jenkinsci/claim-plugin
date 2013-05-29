@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 
 @Extension
 public class QuarantinedTestsReport implements RootAction {
@@ -35,12 +36,15 @@ public class QuarantinedTestsReport implements RootAction {
 
 
     public View getOwner() {
-        View view = Stapler.getCurrentRequest().findAncestorObject(View.class);
-        if (view != null) {
-            return view;
-        } else {
-            return Hudson.getInstance().getView("All");
-        }
+    	StaplerRequest request = Stapler.getCurrentRequest();
+    	if (request != null)
+    	{
+    		View view = request.findAncestorObject(View.class);
+    		if (view != null) {
+    			return view;
+    		}
+    	}
+        return Hudson.getInstance().getView("All");
     }
     
     public QuarantineTestAction getAction(CaseResult test)
@@ -77,7 +81,6 @@ public class QuarantinedTestsReport implements RootAction {
     
     public int getNumberOfSuccessivePasses(CaseResult test)
     {
-//    	if (!test.isPassed()) return 0;
     	int count = 0;
     	    	
     	for (TestResult result: test.getHistory().getList())

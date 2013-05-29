@@ -112,6 +112,21 @@ public class QuarantineTestCore extends QuarantineTest {
 
     }
     
+    public void testResultIsOnlyMarkedAsLatestIfLatest() throws Exception {
+    	FreeStyleBuild build = runBuildWithJUnitResult("junit-1-failure.xml");
+    	TestResult tr1 = build.getAction(TestResultAction.class).getResult();
+    	QuarantineTestAction action1 = tr1.getSuite("SuiteA").getCase("TestB").getTestAction(QuarantineTestAction.class);
+    	
+    	assertTrue(action1.isLatestResult());
+    	
+    	build = runBuildWithJUnitResult("junit-1-failure.xml");    	
+    	TestResult tr2 = build.getAction(TestResultAction.class).getResult();
+    	QuarantineTestAction action2 = tr2.getSuite("SuiteA").getCase("TestB").getTestAction(QuarantineTestAction.class);
+
+    	assertFalse(action1.isLatestResult());
+    	assertTrue(action2.isLatestResult());
+    }
+    
     public void testQuarantiningMakesFinalResultPass() throws Exception  {
     	FreeStyleBuild build = runBuildWithJUnitResult("junit-1-failure.xml");    	
     	assertTrue(build.getResult() != Result.SUCCESS);

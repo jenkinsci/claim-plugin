@@ -92,9 +92,19 @@ public class QuarantineTestDataPublisher extends TestDataPublisher {
 		
 		public boolean isLatestResult()
 		{
-			return build.getParent().getLastBuild() == build;
+			return build.getParent().getLastCompletedBuild() == build;
 		}
 
+		public hudson.tasks.test.TestResult getResultForTestId(String testObjectId)
+		{
+			TestResultAction action = build.getAction(TestResultAction.class);
+			if (action != null && action.getResult() != null)
+			{
+				return action.getResult().findCorrespondingResult(testObjectId);
+			}
+			return null;
+		}
+		
 		public void save() throws IOException {
 			build.save();
 		}

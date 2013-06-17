@@ -25,7 +25,7 @@
 	    		    		${%release.it.link}
 	    		    	</j:if>
 	    		    	<j:if test="${!it.isLatestResult()}">
-	    		    		${%go.to.latest.to.release}
+	    		    		${%go.to.latest.to.release.link(rootUrl + "/" + it.latestResultUrl)}
 	    		    	</j:if>
 		                <j:if test="${it.hasReason()}">
 		                    <p>${%Reason:} ${it.reason}</p>
@@ -41,7 +41,7 @@
 	        		    	${%quarantine.it.link("ShowQuarantinePopup(this); return false;")}
 	        		    </j:if>
 	    		    	<j:if test="${!it.isLatestResult()}">
-	    		    		${%go.to.latest.to.quarantine}
+	    		    		${%go.to.latest.to.quarantine.link(rootUrl + "/" + it.latestResultUrl)}
 	    		    	</j:if>
 	       			</j:if>
 				 	<div id="quarantineHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb; margin-top:5px;">

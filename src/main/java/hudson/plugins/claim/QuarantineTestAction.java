@@ -100,6 +100,19 @@ public class QuarantineTestAction
 		return !StringUtils.isEmpty(reason);
 	}
 	
+	public String getLatestResultUrl()
+	{
+		String url = "";
+		hudson.tasks.test.TestResult tr = owner.getResultForTestId(testObjectId);
+		
+		if (tr != null)
+		{
+			url = tr.getOwner().getParent().getUrl() + "lastCompletedBuild/testReport" + tr.getUrl();
+		}
+		
+		return url;
+	}
+	
 	/**
 	 * Whether this is the latest result. As it does not make sense to enable
 	 * quarantining on an old result, use this to not even display the option to quarantine it

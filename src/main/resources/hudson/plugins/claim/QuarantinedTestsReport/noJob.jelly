@@ -1,0 +1,4 @@
+<div id="no-failing-builds">
+  ${%Welcome to the Jenkins Quarantine Report.}
+  ${%There are no tests in quarantine.  Excellent work!}
+</div>

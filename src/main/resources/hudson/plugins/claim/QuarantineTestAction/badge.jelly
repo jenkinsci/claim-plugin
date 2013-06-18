@@ -1,0 +1,16 @@
+<j:jelly xmlns:j="jelly:core">
+		<j:if test="${it.isQuarantined()}">
+		<j:choose>
+			<j:when test="${it.reason != null}">
+			<img width="16" height="16" style="margin-left: 2px; margin-right: 2px"
+			  title="${%quarantined.reason(it.quarantinedByName(),it.reason)}"
+			  src="${rootUrl}/plugin/claim/icons/quarantine-16x16.png"/>
+			 </j:when>
+			 <j:otherwise>
+			<img width="16" height="16" style="margin-left: 2px; margin-right: 2px"
+			  title="${%quarantined(it.quarantinedByName())}"
+			  src="${rootUrl}/plugin/claim/icons/quarantine-16x16.png"/>
+			 </j:otherwise>
+		</j:choose>
+		</j:if>
+</j:jelly>  

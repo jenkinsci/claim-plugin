@@ -1,0 +1,59 @@
+<!--
+  Creates a table of quarantined tests.
+
+  Attribute:
+    @builds  a collection of tests to be displayed. required.
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+  The following table displays the tests that are currently in quarantine
+  <t:setIconSize/>
+  <table class="sortable pane bigtable" id="projectStatus">
+    <tr>
+      <th>${%Job}</th>
+      <th>${%Test Case}</th>
+	  <th>${%Current Status}</th>
+	  <th>${%# of Passes Since Last Fail}</th>
+	  <th>${%Quarantined By}</th>
+	  <th>${%Date}</th>
+	  <th>${%Reason}</th>
+    </tr>
+    <!-- TODO: support gradual expansion of the list -->
+    <j:forEach var="t" items="${h.subList(it.quarantinedTests,50)}">
+      <tr>
+        <td>
+        	<a href="${rootURL}/${t.owner.parent.url}">
+	        	${t.owner.parent.displayName}
+	        </a>
+        </td>
+        <td>
+        	<a href="${rootURL}/${t.owner.parent.url}/lastCompletedBuild/testReport/${t.url}">
+				${t.fullName}
+			</a>
+        </td>        	
+        <td>
+        	<j:choose>
+				<j:when test="${t.isPassed()}">
+					<span class="result-passed">${t.status}</span>
+				</j:when>
+				<j:otherwise>
+					<span class="result-failed">${t.status}</span>
+				</j:otherwise>
+			</j:choose>        	
+        </td>
+        <td>
+        	${it.getNumberOfSuccessivePasses(t)}
+        </td>
+        <td>
+        	${it.getAction(t).quarantinedByName()}
+        </td>
+        <td>
+        	<i:formatDate value="${it.getAction(t).date}" type="both" dateStyle="medium" timeStyle="medium"/>
+        </td>
+        <td>
+        	${it.getAction(t).reason}
+        </td>
+      </tr>
+    </j:forEach>
+  </table>
+  <t:rssBar-with-iconSize/>
+</j:jelly>

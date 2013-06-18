@@ -1,0 +1,64 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+    <script type="text/javascript">
+        function ShowQuarantinePopup(hoveritem)
+        {
+            hp = document.getElementById("quarantineHoverPopup");
+            hp.style.display = "block";
+        }
+
+        function HideQuarantinePopup()
+        {
+            hp = document.getElementById("quarantineHoverPopup");
+            hp.style.display = "none";
+        }
+    </script>
+
+        <j:choose>
+            <j:when test="${it.isQuarantined()}">
+				<t:summary icon="${rootUrl}/plugin/claim/icons/quarantine-48x48.png">    
+            	    ${%one.quarantined(it.noun,it.quarantinedByName())}
+                     <i:formatDate value="${it.date}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
+    		   		 <j:if test="${!it.isUserAnonymous()}">
+    		   		 	<j:if test="${it.isLatestResult()}">
+	    		    		${%release.it.link}
+	    		    	</j:if>
+	    		    	<j:if test="${!it.isLatestResult()}">
+	    		    		${%go.to.latest.to.release.link(rootUrl + "/" + it.latestResultUrl)}
+	    		    	</j:if>
+		                <j:if test="${it.hasReason()}">
+		                    <p>${%Reason:} ${it.reason}</p>
+		                </j:if>
+       				</j:if>
+	 		    </t:summary> 
+           	</j:when>
+            <j:otherwise>
+		    	<t:summary icon="${rootUrl}/plugin/claim/icons/quarantine-48x48-inactive.png">    
+			        ${%not.quarantined}
+	    		    <j:if test="${!it.isUserAnonymous()}">
+	    		    	<j:if test="${it.isLatestResult()}">
+	        		    	${%quarantine.it.link("ShowQuarantinePopup(this); return false;")}
+	        		    </j:if>
+	    		    	<j:if test="${!it.isLatestResult()}">
+	    		    		${%go.to.latest.to.quarantine.link(rootUrl + "/" + it.latestResultUrl)}
+	    		    	</j:if>
+	       			</j:if>
+				 	<div id="quarantineHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb; margin-top:5px;">
+				    	<f:form method="post" action="quarantine/quarantine" name="quarantine">
+				        	<f:entry title="${%Reason}" help="/plugin/claim/help-reason-quarantine.html">
+				            	<f:textarea name="reason" value="${it.reason}"/>
+				            </f:entry>
+				            <f:block>
+				            	<div align="right">
+				                	<f:submit value="${%Quarantine}"/>
+				                    <input type="button" onClick="HideQuarantinePopup();" value="${%Cancel}" class="submit-button"/>
+				                </div>
+				            </f:block>
+				        </f:form>
+				    </div>
+				 </t:summary>
+	       	</j:otherwise>
+       </j:choose>
+    
+</j:jelly>

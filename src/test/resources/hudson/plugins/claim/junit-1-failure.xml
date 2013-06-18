@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="4" failures="1" disabled="0" errors="0" time="0" name="AllTests">
+  <testsuite name="SuiteA" tests="2" failures="1" disabled="0" errors="0" time="0">
+    <testcase name="TestA" status="run" time="0" classname="SuiteA" />
+    <testcase name="TestB" status="run" time="0" classname="SuiteA">
+      <failure message="This went wrong" type="" />
+    </testcase>
+  </testsuite>
+  <testsuite name="SuiteB" tests="2" failures="0" disabled="0" errors="0" time="0">
+    <testcase name="TestA" status="run" time="0" classname="SuiteB" />
+    <testcase name="TestB" status="run" time="0" classname="SuiteB" />
+  </testsuite>
+</testsuites>

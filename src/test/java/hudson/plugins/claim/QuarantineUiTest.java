@@ -25,7 +25,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 
-public class QuarantineTestUI extends HudsonTestCase {
+public class QuarantineUiTest extends HudsonTestCase {
 	private String projectName = "x";
 	protected String quarantineText = "quarantineReason";
 	protected FreeStyleProject project;

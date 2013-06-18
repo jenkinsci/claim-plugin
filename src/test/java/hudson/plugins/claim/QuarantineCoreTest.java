@@ -42,7 +42,7 @@ import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import java.io.IOException;
 
-public class QuarantineTestCore extends HudsonTestCase {
+public class QuarantineCoreTest extends HudsonTestCase {
 	private String projectName = "x";
 	protected String quarantineText = "quarantineReason";
 	protected FreeStyleProject project;

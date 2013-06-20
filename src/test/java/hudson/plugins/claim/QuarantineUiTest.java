@@ -94,6 +94,13 @@ public class QuarantineUiTest extends HudsonTestCase {
 		assertTrue(pageShowsText(page,"This test was quarantined by user1"));
 	}
 
+	public void testCanNavigateToQuarantineReport() throws Exception {
+		FreeStyleBuild build = runBuildWithJUnitResult("junit-1-failure.xml");
+		WebClient wc = new WebClient();
+	    HtmlPage page = wc.goTo("quarantine/");
+	    assertNotNull(page);
+	}
+	
 	private HtmlPage whenNavigatingToTestCase(CaseResult testCase, boolean authenticate)
 			throws Exception, IOException, SAXException {
 				WebClient wc = new WebClient();
@@ -117,5 +124,5 @@ public class QuarantineUiTest extends HudsonTestCase {
 	private boolean pageShowsText(HtmlPage page, String text) {
 		return page.asText().indexOf(text) != -1;
 	}
-
+	
 }

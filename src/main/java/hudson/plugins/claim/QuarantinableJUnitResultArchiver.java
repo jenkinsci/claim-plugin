@@ -47,6 +47,8 @@ import java.util.List;
 
 public class QuarantinableJUnitResultArchiver extends JUnitResultArchiver {
 
+	private static final CheckPoint CHECKPOINT = new CheckPoint(
+	"JUnit result archiving");
 	
 	@Deprecated
 	public QuarantinableJUnitResultArchiver()
@@ -105,7 +107,7 @@ public class QuarantinableJUnitResultArchiver extends JUnitResultArchiver {
 
 			action.setData(data);
 
-			//CHECKPOINT.block();
+			CHECKPOINT.block();
 
 		} catch (AbortException e) {
 			if (build.getResult() == Result.FAILURE)
@@ -123,7 +125,7 @@ public class QuarantinableJUnitResultArchiver extends JUnitResultArchiver {
 		}
 
 		build.getActions().add(action);
-		//CHECKPOINT.report();
+		CHECKPOINT.report();
 		
 		if (action.getResult().getFailCount() > 0)
 		{

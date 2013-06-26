@@ -97,6 +97,10 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 	@Extension
 	public static class DescriptorImpl extends Descriptor<TestDataPublisher> {
 		
+		public String getHelpFile() {
+			return "/plugin/claim/help.html";
+		}
+		
 		@Override
 		public String getDisplayName() {
 			return Messages.ClaimTestDataPublisher_DisplayName();

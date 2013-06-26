@@ -1,0 +1,6 @@
+<div>
+  Allows logged in users to put test that fail every now and then into quarantine. A test that is in quarantine
+  is still run, but it does not make the job fail if the test does not pass.<br><br>
+  You need to have the <b>Publish Quarantinable JUnit test result report</b> present in the list of post-build actions,
+  and not the <b>Publish JUnit test result report</b>, otherwise you won't be able to put tests in quarantine
+</div>

@@ -1,7 +1,6 @@
 package hudson.plugins.claim;
 
 import hudson.Extension;
-import hudson.model.TopLevelItem;
 import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.RootAction;
@@ -11,6 +10,7 @@ import hudson.util.RunList;
 
 import java.util.ArrayList;
 import java.util.List;
+import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.Stapler;
 
@@ -65,16 +65,14 @@ public class ClaimedBuildsReport implements RootAction {
 
     public RunList getBuilds() {
         List<Run> lastBuilds = new ArrayList<Run>();
-        for (TopLevelItem item : getOwner().getItems()) {
-            if (item instanceof Job) {
-                Job job = (Job) item;
-                Run lb = job.getLastBuild();
-                while (lb != null && (lb.hasntStartedYet() || lb.isBuilding()))
-                    lb = lb.getPreviousBuild();
+        for (Job item : Jenkins.getInstance().getAllItems(Job.class)) {
+            Job job = (Job) item;
+            Run lb = job.getLastBuild();
+            while (lb != null && (lb.hasntStartedYet() || lb.isBuilding()))
+                lb = lb.getPreviousBuild();
 
-                if (lb != null && lb.getAction(ClaimBuildAction.class) != null) {
-                    lastBuilds.add(lb);
-                }
+            if (lb != null && lb.getAction(ClaimBuildAction.class) != null) {
+                lastBuilds.add(lb);
             }
         }
 

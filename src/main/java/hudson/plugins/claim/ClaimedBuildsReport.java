@@ -1,7 +1,6 @@
 package hudson.plugins.claim;
 
 import hudson.Extension;
-import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.RootAction;
 import hudson.model.Run;
@@ -59,7 +58,7 @@ public class ClaimedBuildsReport implements RootAction {
         if (view != null) {
             return view;
         } else {
-            return Hudson.getInstance().getView("All");
+            return Jenkins.getInstance().getStaplerFallback();
         }
     }
 

@@ -7,6 +7,9 @@ Look at [wiki] for detailed instructions.
 Change Log
 ----------
 
+### v2.3 (18 Nov 2013)
+- Add support for hierarchical projects [JENKINS-17734]
+
 ### v2.2 (27 Mar 2013)
 - Added support for translations and added Chinese translation
 - Added new icon to make claim plugin more visible

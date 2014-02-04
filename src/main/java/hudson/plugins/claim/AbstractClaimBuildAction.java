@@ -28,7 +28,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	private boolean claimed;
 	private String claimedBy;
 	private Date claimDate;
-	private boolean transientClaim;
+	private boolean transientClaim = true;
 	
 	protected T owner;
 	
@@ -106,7 +106,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
 	public void unclaim() {
 		this.claimed = false;
 		this.claimedBy = null;
-		this.transientClaim = false;
+		this.transientClaim = true;
 		this.claimDate = null;
 		// we remember the reason to show it if someone reclaims this build.
 	}

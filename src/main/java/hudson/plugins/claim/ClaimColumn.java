@@ -19,28 +19,28 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
 
 public class ClaimColumn extends ListViewColumn {
-	
-	@DataBoundConstructor
-	public ClaimColumn() {
-	}
 
-	@Override
-	public String getColumnCaption() {
-		return Messages.ClaimColumn_ColumnCaption();
-	}
+    @DataBoundConstructor
+    public ClaimColumn() {
+    }
 
-	@Override
-	public boolean shownByDefault() {
-		return false;
-	}
-	
-	public List<ClaimColumnInformation> getAction(Job<?,?> job) {
+    @Override
+    public String getColumnCaption() {
+        return Messages.ClaimColumn_ColumnCaption();
+    }
+
+    @Override
+    public boolean shownByDefault() {
+        return false;
+    }
+
+    public List<ClaimColumnInformation> getAction(Job<?,?> job) {
                 List<ClaimColumnInformation> result = new ArrayList<ClaimColumnInformation>();
-		Run<?,?> run = job.getLastCompletedBuild();
-		if (run != null) {
+        Run<?,?> run = job.getLastCompletedBuild();
+        if (run != null) {
                     if (run instanceof hudson.matrix.MatrixBuild) {
                         MatrixBuild matrixBuild = (hudson.matrix.MatrixBuild) run;
-                        
+
                         for (MatrixRun combination : matrixBuild.getRuns()) {
                             ClaimBuildAction action = combination.getAction(ClaimBuildAction.class);
                             if (combination.getResult().isWorseThan(Result.SUCCESS) && action != null && action.isClaimed()) {
@@ -59,29 +59,29 @@ public class ClaimColumn extends ListViewColumn {
                                 result.add(holder);
                         }
                     }
-		}
+        }
                 return result;
-	}
+    }
 
-	public Descriptor<ListViewColumn> getDescriptor() {
+    public Descriptor<ListViewColumn> getDescriptor() {
         return Hudson.getInstance().getDescriptorOrDie(getClass());
-	}
-	
-	public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
-	
-	@Extension
-	public static class DescriptorImpl extends Descriptor<ListViewColumn> {
+    }
+
+    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+
+    @Extension
+    public static class DescriptorImpl extends Descriptor<ListViewColumn> {
         @Override
         public ListViewColumn newInstance(StaplerRequest req,
                                           JSONObject formData) throws FormException {
             return new ClaimColumn();
         }
 
-		@Override
-		public String getDisplayName() {
-			return Messages.ClaimColumn_DisplayName();
-		}
-		
-	}
+        @Override
+        public String getDisplayName() {
+            return Messages.ClaimColumn_DisplayName();
+        }
+
+    }
 
 }

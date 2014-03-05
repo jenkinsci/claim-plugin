@@ -1,18 +1,18 @@
 /*
  * The MIT License
- * 
+ *
  * Copyright (c) 2004-2009, Tom Huybrechts
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,8 +43,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 public class ClaimTest extends HudsonTestCase {
     private Build<?,?> build;
     private Project<?, ?> project;
-	private String claimText = "claimReason";
-    
+    private String claimText = "claimReason";
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -65,23 +65,23 @@ public class ClaimTest extends HudsonTestCase {
 
     public void testFirstClaim() throws Exception {
         ClaimBuildAction action = whenClaimingBuildByClicking("claim");
-       
+
         assertEquals("user1", action.getClaimedBy());
         assertEquals(claimText, action.getReason());
         assertTrue(action.isClaimed());
     }
 
-	public void testClaimForYourself() throws Exception {
-		givenBuildClaimedByOtherUser();
+    public void testClaimForYourself() throws Exception {
+        givenBuildClaimedByOtherUser();
         ClaimBuildAction action = whenClaimingBuildByClicking("claimForYourself");
         assertEquals("user1", action.getClaimedBy());
         assertEquals(claimText, action.getReason());
         assertTrue(action.isClaimed());
     }
 
-	public void testDropClaim() throws Exception {
-		givenBuildClaimedByCurrentUser();
-        
+    public void testDropClaim() throws Exception {
+        givenBuildClaimedByCurrentUser();
+
         whenNavigatingToClaimPageAndClicking("dropClaim");
 
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
@@ -111,34 +111,34 @@ public class ClaimTest extends HudsonTestCase {
         assertFalse(action2.isClaimed());
     }
 
-	private void givenBuildClaimedByOtherUser() {
-		build.getAction(ClaimBuildAction.class).claim("user2", "reason", true);
-	}
+    private void givenBuildClaimedByOtherUser() {
+        build.getAction(ClaimBuildAction.class).claim("user2", "reason", true);
+    }
 
-	private void givenBuildClaimedByCurrentUser() {
-		build.getAction(ClaimBuildAction.class).claim("user1", "reason", true);
-	}
-	
-	private ClaimBuildAction whenClaimingBuildByClicking(String claimElement) throws Exception, IOException,
-			SAXException {
-		HtmlPage page = whenNavigatingToClaimPageAndClicking(claimElement);
-	
-	    HtmlForm form = page.getFormByName("claim");
-	    HtmlTextArea textArea = (HtmlTextArea) last(form.selectNodes(".//textarea"));
-	    textArea.setText(claimText);
-	    
-	    form.submit((HtmlButton) last(form.selectNodes(".//button")));
-	
-	    ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-		return action;
-	}
+    private void givenBuildClaimedByCurrentUser() {
+        build.getAction(ClaimBuildAction.class).claim("user1", "reason", true);
+    }
 
-	private HtmlPage whenNavigatingToClaimPageAndClicking(String claimElement)
-			throws Exception, IOException, SAXException {
-		WebClient wc = new WebClient();
-	    wc.login("user1", "user1");
-	    HtmlPage page = wc.goTo("/job/x/" + build.getNumber());
-		((HtmlAnchor) page.getElementById(claimElement)).click();
-		return page;
-	}
+    private ClaimBuildAction whenClaimingBuildByClicking(String claimElement) throws Exception, IOException,
+            SAXException {
+        HtmlPage page = whenNavigatingToClaimPageAndClicking(claimElement);
+
+        HtmlForm form = page.getFormByName("claim");
+        HtmlTextArea textArea = (HtmlTextArea) last(form.selectNodes(".//textarea"));
+        textArea.setText(claimText);
+
+        form.submit((HtmlButton) last(form.selectNodes(".//button")));
+
+        ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
+        return action;
+    }
+
+    private HtmlPage whenNavigatingToClaimPageAndClicking(String claimElement)
+            throws Exception, IOException, SAXException {
+        WebClient wc = new WebClient();
+        wc.login("user1", "user1");
+        HtmlPage page = wc.goTo("/job/x/" + build.getNumber());
+        ((HtmlAnchor) page.getElementById(claimElement)).click();
+        return page;
+    }
 }

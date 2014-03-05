@@ -15,52 +15,52 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class ClaimReportTest extends HudsonTestCase {
 
 
-	private static final String JOB_NAME = "job";
-	private FreeStyleProject job;
+    private static final String JOB_NAME = "job";
+    private FreeStyleProject job;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
 
-		java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
+        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
 
-		job = createFailingJobWithName(JOB_NAME);
+        job = createFailingJobWithName(JOB_NAME);
 
-	}
+    }
 
-	private FreeStyleProject createFailingJobWithName(String jobName) throws IOException,
-	InterruptedException, ExecutionException {
-		FreeStyleProject project = createFreeStyleProject(jobName);
-		project.getBuildersList().add(new FailureBuilder());
-		project.getPublishersList().add(new ClaimPublisher());
-		project.scheduleBuild2(0).get();
-		return project;
-	}
+    private FreeStyleProject createFailingJobWithName(String jobName) throws IOException,
+    InterruptedException, ExecutionException {
+        FreeStyleProject project = createFreeStyleProject(jobName);
+        project.getBuildersList().add(new FailureBuilder());
+        project.getPublishersList().add(new ClaimPublisher());
+        project.scheduleBuild2(0).get();
+        return project;
+    }
 
-	public void testThatJobNotPresentInDefaultViewIsVisibleInClaimReport() throws Exception {
-		ListView view = new ListView("DefaultView");
-		hudson.addView(view);
-		hudson.setPrimaryView(view);
+    public void testThatJobNotPresentInDefaultViewIsVisibleInClaimReport() throws Exception {
+        ListView view = new ListView("DefaultView");
+        hudson.addView(view);
+        hudson.setPrimaryView(view);
 
-		WebClient wc = new WebClient();
-		
-		HtmlPage page = wc.goTo("claims/");
-		HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
-		assertTrue(element.isDisplayed());
-	}
-	
-	public void testJobPresentInDefaultViewIsVisibleInClaimReport() throws Exception {
-		ListView view = new ListView("DefaultView");
-		view.add(job);
-		hudson.addView(view);
-		hudson.setPrimaryView(view);
-		
-		WebClient wc = new WebClient();
-		
-		HtmlPage page = wc.goTo("claims/");
-		HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
-		assertTrue(element.isDisplayed());
-	}
-	
-	
+        WebClient wc = new WebClient();
+
+        HtmlPage page = wc.goTo("claims/");
+        HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
+        assertTrue(element.isDisplayed());
+    }
+
+    public void testJobPresentInDefaultViewIsVisibleInClaimReport() throws Exception {
+        ListView view = new ListView("DefaultView");
+        view.add(job);
+        hudson.addView(view);
+        hudson.setPrimaryView(view);
+
+        WebClient wc = new WebClient();
+
+        HtmlPage page = wc.goTo("claims/");
+        HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
+        assertTrue(element.isDisplayed());
+    }
+
+
 }

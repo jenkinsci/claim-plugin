@@ -6,28 +6,28 @@ import hudson.model.Run;
 
 public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
 
-	private static final long serialVersionUID = 1L;
-	
-	private transient Run run;
+    private static final long serialVersionUID = 1L;
 
-	public ClaimBuildAction(Run run) {
-		super(run);
-	}
+    private transient Run run;
 
-	public String getDisplayName() {
-		return Messages.ClaimBuildAction_DisplayName();
-	}
-	
-	@Override
-	public String getNoun() {
-		return Messages.ClaimBuildAction_Noun();
-	}
+    public ClaimBuildAction(Run run) {
+        super(run);
+    }
 
-	public Object readResolve() throws ObjectStreamException {
-		if (run != null && owner == null) {
-			owner = run;
-		}
-		return this;
-	}
+    public String getDisplayName() {
+        return Messages.ClaimBuildAction_DisplayName();
+    }
+
+    @Override
+    public String getNoun() {
+        return Messages.ClaimBuildAction_Noun();
+    }
+
+    public Object readResolve() throws ObjectStreamException {
+        if (run != null && owner == null) {
+            owner = run;
+        }
+        return this;
+    }
 
 }

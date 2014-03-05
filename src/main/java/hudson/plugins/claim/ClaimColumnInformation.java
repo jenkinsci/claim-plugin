@@ -1,15 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package hudson.plugins.claim;
 
-/**
- *
- * @author henrik
- */
 public class ClaimColumnInformation {
-    
+
     private boolean matrix;
     private String combinationName;
     private ClaimBuildAction claim;
@@ -37,7 +29,4 @@ public class ClaimColumnInformation {
     public void setMatrix(boolean matrix) {
         this.matrix = matrix;
     }
-    
-    
-    
 }

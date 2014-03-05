@@ -18,55 +18,55 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class ClaimPublisher extends Notifier {
 
     @DataBoundConstructor
-	public ClaimPublisher() {
-	}
-	
-    @Extension
-	public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-		@Override
-		public String getHelpFile() {
-			return "/plugin/claim/help.html";
-		}
+    public ClaimPublisher() {
+    }
 
-		@Override
-		public String getDisplayName() {
-			return Messages.ClaimPublisher_DisplayName();
-		}
+    @Extension
+    public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+        @Override
+        public String getHelpFile() {
+            return "/plugin/claim/help.html";
+        }
+
+        @Override
+        public String getDisplayName() {
+            return Messages.ClaimPublisher_DisplayName();
+        }
 
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             return true;
         }
-        
+
     }
-    
+
     @Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl)super.getDescriptor();
     }
 
-	@Override
-	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-			BuildListener listener) throws InterruptedException, IOException {
-		
-		if (build.getResult().isWorseThan(Result.SUCCESS)) {
-			ClaimBuildAction action = new ClaimBuildAction(build);
-			build.addAction(action);
+    @Override
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
+            BuildListener listener) throws InterruptedException, IOException {
 
-			// check if previous build was claimed
-			AbstractBuild<?,?> previousBuild = build.getPreviousBuild();
-			if (previousBuild != null) {
-				ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
-				if (c != null && c.isClaimed() && c.isSticky()) {
-					c.copyTo(action);
-				}
-			}
-		}
-		
-		return true;
-	}
+        if (build.getResult().isWorseThan(Result.SUCCESS)) {
+            ClaimBuildAction action = new ClaimBuildAction(build);
+            build.addAction(action);
 
-	public BuildStepMonitor getRequiredMonitorService() {
-		return BuildStepMonitor.STEP;
-	}
-	
+            // check if previous build was claimed
+            AbstractBuild<?,?> previousBuild = build.getPreviousBuild();
+            if (previousBuild != null) {
+                ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
+                if (c != null && c.isClaimed() && c.isSticky()) {
+                    c.copyTo(action);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public BuildStepMonitor getRequiredMonitorService() {
+        return BuildStepMonitor.STEP;
+    }
+
 }

@@ -58,7 +58,7 @@
             <j:otherwise>
                 ${%not.claimed(it.noun)}
                 <j:if test="${it.canClaim()}">
-                    ${%claim.it.link("ShowPopup(this); return false;")}
+                    <a id="claim" href="#" onClick="ShowPopup(this); return false;">${%Claim it.}</a>
                 </j:if>
             </j:otherwise>
         </j:choose>

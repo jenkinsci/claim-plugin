@@ -9,6 +9,8 @@ import hudson.tasks.junit.TestAction;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -24,6 +26,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
         ProminentProjectAction {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger("claim-plugin");
 
     private boolean claimed;
     private String claimedBy;
@@ -49,8 +52,19 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
     public void doClaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
         Authentication authentication = Hudson.getAuthentication();
-        String name = authentication.getName();
-        String reason = (String) req.getSubmittedForm().get("reason");
+        String name = authentication.getName(); // Default to self-assignment
+        String assignee = req.getSubmittedForm().getString("assignee");
+        if (!StringUtils.isEmpty(assignee) && !name.equals(assignee)) {
+            // Validate the specified assignee.
+            User resolvedAssignee = User.get(assignee, false);
+            if (resolvedAssignee == null) {
+                LOGGER.log(Level.WARNING, "Invalid username specified for assignment: {0}", assignee);
+                resp.forwardToPreviousPage(req);
+                return;
+            }
+            name = assignee;
+        }
+        String reason = req.getSubmittedForm().getString("reason");
         boolean sticky = req.getSubmittedForm().getBoolean("sticky");
         if (StringUtils.isEmpty(reason)) reason = null;
         claim(name, reason, sticky);

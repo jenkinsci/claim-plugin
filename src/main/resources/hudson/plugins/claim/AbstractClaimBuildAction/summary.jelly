@@ -30,6 +30,7 @@
                      </j:choose>
                     <j:if test="${it.canRelease()}">
                         <a id="dropClaim" href="claim/unclaim">${%Drop the claim.}</a>
+                        <st:nbsp/><a id="reassign" href="#" onClick="ShowPopup(this); return false;">${%Reassign the claim.}</a>
                     </j:if>
                 </p>
                 <j:if test="${it.hasReason()}">
@@ -48,7 +49,7 @@
                         </j:otherwise>
                      </j:choose>
                     <j:if test="${it.canClaim()}">
-                        <a id="claimForYourself" href="#" onClick="ShowPopup(this); return false;">${%Claim for yourself.}</a>
+                        <a id="reassign" href="#" onClick="ShowPopup(this); return false;">${%Reassign the claim.}</a>
                     </j:if>
                 </p>
                 <j:if test="${it.hasReason()}">
@@ -64,6 +65,9 @@
         </j:choose>
         <div id="claimHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb;">
             <f:form method="post" action="claim/claim" name="claim">
+                <f:entry title="${%Assignee}" help="/plugin/claim/help-assignee.html">
+                    <f:textbox name="assignee" value="${it.assignee}"/>
+                </f:entry>
                 <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
                     <f:textarea name="reason" value="${it.reason}"/>
                 </f:entry>

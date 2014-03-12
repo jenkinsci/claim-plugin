@@ -23,11 +23,9 @@
  */
 package hudson.plugins.claim;
 
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import hudson.model.Build;
 import hudson.model.Project;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
@@ -56,6 +54,9 @@ public class ClaimTest {
 
         j.jenkins.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        JenkinsRule.WebClient wc = j.createWebClient();
+        wc.login("user2", "user2");
+        wc.closeAllWindows();
 
         project = j.createFreeStyleProject("x");
         project.getBuildersList().add(new FailureBuilder());
@@ -79,11 +80,21 @@ public class ClaimTest {
     }
 
     @Test
+    public void failed_build_can_be_assigned() throws Exception {
+        // When:
+        ClaimBuildAction action = whenAssigningBuildByClicking("claim");
+        // Then:
+        assertThat(action.getClaimedBy(), is("user2"));
+        assertThat(action.getReason(), is(claimText));
+        assertThat(action.isClaimed(), is(true));
+    }
+
+    @Test
     public void claimed_build_can_be_reclaimed_by_you() throws Exception {
         // Given:
         givenBuildClaimedByOtherUser();
         // When:
-        ClaimBuildAction action = whenClaimingBuildByClicking("claimForYourself");
+        ClaimBuildAction action = whenClaimingBuildByClicking("reassign");
         // Then:
         assertThat(action.getClaimedBy(), is("user1"));
         assertThat(action.getReason(), is(claimText));
@@ -99,6 +110,18 @@ public class ClaimTest {
         // Then:
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
         assertThat(action.isClaimed(), is(false));
+    }
+
+    @Test
+    public void claim_can_be_reassigned() throws Exception {
+        // Given:
+        givenBuildClaimedByCurrentUser();
+        // When:
+        ClaimBuildAction action = whenAssigningBuildByClicking("reassign");
+        // Then:
+        assertThat(action.getClaimedBy(), is("user2"));
+        assertThat(action.getReason(), is(claimText));
+        assertThat(action.isClaimed(), is(true));
     }
 
     @Test
@@ -140,13 +163,23 @@ public class ClaimTest {
     }
 
     private ClaimBuildAction whenClaimingBuildByClicking(String claimElement) throws Exception {
+        return applyClaim(claimElement, "", claimText);
+    }
+
+    private ClaimBuildAction whenAssigningBuildByClicking(String claimElement) throws Exception {
+        return applyClaim(claimElement, "user2", claimText);
+    }
+
+    private ClaimBuildAction applyClaim(String claimElement, String assignee, String reason) throws Exception {
         HtmlPage page = whenNavigatingToClaimPageAndClicking(claimElement);
-
         HtmlForm form = page.getFormByName("claim");
-        HtmlTextArea textArea = (HtmlTextArea) j.last(form.selectNodes(".//textarea"));
-        textArea.setText(claimText);
 
-        form.submit((HtmlButton) j.last(form.selectNodes(".//button")));
+        form.getTextAreaByName("reason").setText(reason);
+        if ( assignee!=null ) {
+            j.last(form.getInputsByName("assignee")).setValueAttribute(assignee);
+        }
+
+        form.submit((HtmlButton) j.last(form.getHtmlElementsByTagName("button")));
 
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
         return action;
@@ -156,7 +189,7 @@ public class ClaimTest {
         JenkinsRule.WebClient wc = j.createWebClient();
         wc.login("user1", "user1");
         HtmlPage page = wc.goTo("job/x/" + build.getNumber());
-        ((HtmlAnchor) page.getElementById(claimElement)).click();
+        page.getElementById(claimElement).click();
         return page;
     }
 }

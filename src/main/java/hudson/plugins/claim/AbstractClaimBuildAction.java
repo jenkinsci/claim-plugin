@@ -1,13 +1,14 @@
 package hudson.plugins.claim;
 
 import hudson.model.BuildBadgeAction;
-import hudson.model.Hudson;
+import hudson.model.Describable;
 import hudson.model.ProminentProjectAction;
 import hudson.model.Saveable;
+import hudson.model.Hudson;
 import hudson.model.User;
-import hudson.tasks.junit.TestAction;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,8 +23,8 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility = 2)
-public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestAction implements BuildBadgeAction,
-        ProminentProjectAction {
+public abstract class AbstractClaimBuildAction<T extends Saveable> extends DescribableTestAction implements BuildBadgeAction,
+        ProminentProjectAction, Describable<DescribableTestAction> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
@@ -56,7 +57,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
         String assignee = req.getSubmittedForm().getString("assignee");
         if (!StringUtils.isEmpty(assignee) && !name.equals(assignee)) {
             // Validate the specified assignee.
-            User resolvedAssignee = User.get(assignee, false);
+            User resolvedAssignee = User.get(assignee, false, Collections.EMPTY_MAP);
             if (resolvedAssignee == null) {
                 LOGGER.log(Level.WARNING, "Invalid username specified for assignment: {0}", assignee);
                 resp.forwardToPreviousPage(req);
@@ -85,7 +86,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
     }
 
     public String getClaimedByName() {
-        User user = User.get(claimedBy, false);
+        User user = User.get(claimedBy, false,Collections.EMPTY_MAP);
         if (user != null) {
             return user.getDisplayName();
         } else {
@@ -113,7 +114,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends TestA
     /**
      * Claim a new Run with the same settings as this one.
      */
-    public void copyTo(AbstractClaimBuildAction other) {
+    public void copyTo(AbstractClaimBuildAction<T> other) {
         other.claim(getClaimedBy(), getReason(), isSticky());
     }
 

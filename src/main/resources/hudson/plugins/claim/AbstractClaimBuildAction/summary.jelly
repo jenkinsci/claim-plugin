@@ -64,10 +64,12 @@
             </j:otherwise>
         </j:choose>
         <div id="claimHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb;">
+            <j:set var="descriptor" value="${it.descriptor}"/>
             <f:form method="post" action="claim/claim" name="claim">
-                <f:entry title="${%Assignee}" help="/plugin/claim/help-assignee.html">
-                    <f:textbox name="assignee" value="${it.assignee}"/>
-                </f:entry>
+                <f:entry title="${%Assignee}" field="assignee" help="/plugin/claim/help-assignee.html">
+                    <f:select />        
+                </f:entry>                
+
                 <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
                     <f:textarea name="reason" value="${it.reason}"/>
                 </f:entry>

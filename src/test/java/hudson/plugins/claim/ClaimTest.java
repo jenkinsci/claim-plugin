@@ -23,21 +23,25 @@
  */
 package hudson.plugins.claim;
 
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import hudson.model.Build;
-import hudson.model.Project;
-import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.FailureBuilder;
-import org.jvnet.hudson.test.JenkinsRule;
-
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import hudson.model.Build;
+import hudson.model.Project;
+import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.FailureBuilder;
+
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlOption;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
 public class ClaimTest {
 
@@ -176,7 +180,11 @@ public class ClaimTest {
 
         form.getTextAreaByName("reason").setText(reason);
         if ( assignee!=null ) {
-            j.last(form.getInputsByName("assignee")).setValueAttribute(assignee);
+        	HtmlSelect select = form.getSelectByName("_.assignee");
+        	if (! assignee.isEmpty()) {
+        		HtmlOption option = select.getOptionByValue(assignee);
+        		select.setSelectedAttribute(option, true);
+        	}
         }
 
         form.submit((HtmlButton) j.last(form.getHtmlElementsByTagName("button")));

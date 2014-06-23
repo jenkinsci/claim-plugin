@@ -52,6 +52,7 @@ public class ClaimReportTest {
     public void job_is_visible_in_claim_report() throws Exception {
         // Given:
         view.add(job);
+        //j.interactiveBreak();
         // When:
         HtmlPage page = j.createWebClient().goTo("claims/");
         // Then:

@@ -59,6 +59,8 @@ public class ClaimTest {
         j.jenkins.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         JenkinsRule.WebClient wc = j.createWebClient();
+        // Three users exist, we will be user1 so ensure the others have logged on
+        wc.login("user0", "user0");
         wc.login("user2", "user2");
         wc.closeAllWindows();
 
@@ -76,7 +78,7 @@ public class ClaimTest {
     @Test
     public void failed_build_can_be_claimed_by_you() throws Exception {
         // When:
-        ClaimBuildAction action = whenClaimingBuildByClicking("claim");
+        ClaimBuildAction action = whenClaimingBuild();
         // Then:
         assertThat(action.getClaimedBy(), is("user1"));
         assertThat(action.getReason(), is(claimText));
@@ -166,8 +168,12 @@ public class ClaimTest {
         return action;
     }
 
+    private ClaimBuildAction whenClaimingBuild() throws Exception {
+        return applyClaim("claim", null, claimText);
+    }
+
     private ClaimBuildAction whenClaimingBuildByClicking(String claimElement) throws Exception {
-        return applyClaim(claimElement, "", claimText);
+        return applyClaim(claimElement, "user1", claimText);
     }
 
     private ClaimBuildAction whenAssigningBuildByClicking(String claimElement) throws Exception {
@@ -197,6 +203,7 @@ public class ClaimTest {
         JenkinsRule.WebClient wc = j.createWebClient();
         wc.login("user1", "user1");
         HtmlPage page = wc.goTo("job/x/" + build.getNumber());
+        // expand claim HTML box
         page.getElementById(claimElement).click();
         return page;
     }

@@ -30,4 +30,9 @@ public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
         return this;
     }
 
+    @Override
+    String getUrl() {
+        return owner.getUrl();
+    }
+
 }

@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 
 import org.acegisecurity.Authentication;
@@ -50,6 +51,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     public String getUrlName() {
         return "claim";
     }
+    
+    abstract String getUrl();
 
     public void doClaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
@@ -71,7 +74,15 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         boolean sticky = req.getSubmittedForm().getBoolean("sticky");
         if (StringUtils.isEmpty(reason)) reason = null;
         claim(name, reason, currentUser, sticky);
+        try {
+            ClaimEmailer.sendEmailIfConfigured(User.get(name, false, Collections.EMPTY_MAP), currentUser, owner.toString(), reason, getUrl());
+        } catch (MessagingException e) {
+            LOGGER.log(Level.WARNING, "Exception encountered sending assignment email: " + e.getMessage());
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.WARNING, "Interrupted when sending assignment email",e);
+        }
         owner.save();
+        
         resp.forwardToPreviousPage(req);
     }
 
@@ -220,5 +231,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     }
 
     public abstract String getNoun();
+    
 
 }

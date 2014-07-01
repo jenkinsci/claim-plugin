@@ -26,4 +26,9 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
         return Messages.ClaimTestAction_Noun();
     }
 
+    @Override
+    String getUrl() {
+        return owner.getURL();
+    }
+
 }

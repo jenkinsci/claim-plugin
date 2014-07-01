@@ -64,6 +64,9 @@
                             ${%one.claimed(it.noun,it.claimedByName)}
                         </j:otherwise>
                      </j:choose>
+                    <j:if test="${it.canRelease()}">
+                        <a id="dropClaim" href="claim/unclaim">${%Drop the claim.}</a>
+                    </j:if>
                     <j:if test="${it.canClaim()}">
                         <a id="reassign" href="#" onClick="ShowPopup(this); return false;">${%Reassign the claim.}</a>
                     </j:if>

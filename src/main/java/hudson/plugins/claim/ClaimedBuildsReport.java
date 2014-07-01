@@ -46,10 +46,10 @@ public class ClaimedBuildsReport implements RootAction {
         String reason = claim.getReason();
         if (reason != null) {
             return Messages.ClaimedBuildsReport_ClaimantText_claimedWithReason(
-                    claim.getClaimedBy(), claim.getReason());
+                    claim.getClaimedBy(), claim.getReason(), claim.getAssignedBy());
         } else {
             return Messages.ClaimedBuildsReport_ClaimantText_claimed(claim
-                    .getClaimedBy());
+                    .getClaimedBy(), claim.getAssignedBy());
         }
     }
 

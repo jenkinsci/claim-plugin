@@ -21,8 +21,16 @@
                 <p>
                     <j:choose>
                         <j:when test="${it.hasClaimDate()}">
-                             ${%you.claimed.on(it.noun)}
-                             <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
+                            <j:choose>
+                        		<j:when test="${it.isSelfAssigned()}">
+                            		${%you.claimed.on(it.noun)}
+                             		<i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
+                            	</j:when>
+                            	<j:otherwise>
+                               		${%you.assigned.on(it.noun, it.assignedByName)}
+                             		<i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
+                            	</j:otherwise>
+                            </j:choose>
                         </j:when>
                         <j:otherwise>
                             ${%you.claimed(it.noun)}
@@ -41,8 +49,16 @@
                 <p>
                     <j:choose>
                         <j:when test="${it.hasClaimDate()}">
-                            ${%one.claimed.on(it.noun,it.claimedByName)}
-                            <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
+                        	<j:choose>
+                        		<j:when test="${it.isSelfAssigned()}">
+                            		${%one.claimed.on(it.noun,it.claimedByName)}
+                            		<i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
+                            	</j:when>
+                            	<j:otherwise>
+                               		${%one.assigned.on(it.noun, it.claimedByName,it.assignedByName)}
+                             		<i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
+                            	</j:otherwise>
+                            </j:choose>                            		
                         </j:when>
                         <j:otherwise>
                             ${%one.claimed(it.noun,it.claimedByName)}
@@ -69,7 +85,6 @@
                 <f:entry title="${%Assignee}" field="assignee" help="/plugin/claim/help-assignee.html">
                     <f:select />        
                 </f:entry>                
-
                 <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
                     <f:textarea name="reason" value="${it.reason}"/>
                 </f:entry>

@@ -37,7 +37,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.FailureBuilder;
 
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -83,6 +82,7 @@ public class ClaimTest {
         assertThat(action.getClaimedBy(), is("user1"));
         assertThat(action.getReason(), is(claimText));
         assertThat(action.isClaimed(), is(true));
+        assertThat (action.getAssignedBy(), is("user1"));
     }
 
     @Test
@@ -93,6 +93,7 @@ public class ClaimTest {
         assertThat(action.getClaimedBy(), is("user2"));
         assertThat(action.getReason(), is(claimText));
         assertThat(action.isClaimed(), is(true));
+        assertThat(action.getAssignedBy(), is("user1"));
     }
 
     @Test
@@ -105,6 +106,7 @@ public class ClaimTest {
         assertThat(action.getClaimedBy(), is("user1"));
         assertThat(action.getReason(), is(claimText));
         assertThat(action.isClaimed(), is(true));
+        assertThat(action.getAssignedBy(), is("user1"));
     }
 
     @Test
@@ -128,6 +130,7 @@ public class ClaimTest {
         assertThat(action.getClaimedBy(), is("user2"));
         assertThat(action.getReason(), is(claimText));
         assertThat(action.isClaimed(), is(true));
+        assertThat(action.getAssignedBy(), is("user1"));
     }
 
     @Test
@@ -142,6 +145,7 @@ public class ClaimTest {
         assertThat(action2.getClaimedBy(), is("user1"));
         assertThat(action2.getReason(), is("reason"));
         assertThat(action2.isSticky(), is(true));
+        assertThat(action2.getAssignedBy(),is("user1"));
     }
 
     @Test
@@ -158,13 +162,13 @@ public class ClaimTest {
 
     private ClaimBuildAction givenBuildClaimedByOtherUser() {
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        action.claim("user2", "reason", true);
+        action.claim("user2", "reason", "user1", true);
         return action;
     }
 
     private ClaimBuildAction givenBuildClaimedByCurrentUser() {
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        action.claim("user1", "reason", true);
+        action.claim("user1", "reason", "user1", true);
         return action;
     }
 

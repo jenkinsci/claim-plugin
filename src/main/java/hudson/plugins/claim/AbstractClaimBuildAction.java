@@ -31,6 +31,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     private boolean claimed;
     private String claimedBy;
+    private String assignedBy;
     private Date claimDate;
     private boolean transientClaim;
 
@@ -53,7 +54,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     public void doClaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
         Authentication authentication = Hudson.getAuthentication();
-        String name = authentication.getName(); // Default to self-assignment
+        String currentUser = authentication.getName();
+        String name = currentUser; // Default to self-assignment
         String assignee = req.getSubmittedForm().getString("assignee");
         if (!StringUtils.isEmpty(assignee) && !name.equals(assignee)) {
             // Validate the specified assignee.
@@ -68,7 +70,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         String reason = req.getSubmittedForm().getString("reason");
         boolean sticky = req.getSubmittedForm().getBoolean("sticky");
         if (StringUtils.isEmpty(reason)) reason = null;
-        claim(name, reason, sticky);
+        claim(name, reason, currentUser, sticky);
         owner.save();
         resp.forwardToPreviousPage(req);
     }
@@ -84,6 +86,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     public String getClaimedBy() {
         return claimedBy;
     }
+    
+    @Exported
+    public String getAssignedBy() {
+    	return assignedBy;
+    }
 
     public String getClaimedByName() {
         User user = User.get(claimedBy, false,Collections.EMPTY_MAP);
@@ -93,9 +100,22 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             return claimedBy;
         }
     }
+    
+    public String getAssignedByName() {
+        User user = User.get(assignedBy, false,Collections.EMPTY_MAP);
+        if (user != null) {
+            return user.getDisplayName();
+        } else {
+            return assignedBy;
+        }
+    }
 
     public void setClaimedBy(String claimedBy) {
         this.claimedBy = claimedBy;
+    }
+    
+    public void setAssignedBy (String assignedBy) {
+    	this.assignedBy = assignedBy;
     }
 
     @Exported
@@ -103,19 +123,20 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         return claimed;
     }
 
-    public void claim(String claimedBy, String reason, boolean sticky) {
+    public void claim(String claimedBy, String reason, String assignedBy, boolean sticky) {
         this.claimed = true;
         this.claimedBy = claimedBy;
         this.reason = reason;
         this.transientClaim = !sticky;
         this.claimDate = new Date();
+        this.assignedBy = assignedBy;
     }
 
     /**
      * Claim a new Run with the same settings as this one.
      */
     public void copyTo(AbstractClaimBuildAction<T> other) {
-        other.claim(getClaimedBy(), getReason(), isSticky());
+        other.claim(getClaimedBy(), getReason(), getAssignedBy(), isSticky());
     }
 
     public void unclaim() {
@@ -123,6 +144,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         this.claimedBy = null;
         this.transientClaim = false;
         this.claimDate = null;
+        this.assignedBy = null;
         // we remember the reason to show it if someone reclaims this build.
     }
 
@@ -179,6 +201,22 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     public boolean hasClaimDate() {
         return this.claimDate != null;
+    }
+    
+    /**
+     * was the action claimed by someone to themselves?
+     * @return true if the item was claimed by the user to themselves, false otherwise 
+     */
+    public boolean isSelfAssigned() {
+    	boolean ret = true;
+    	if (! isClaimed()) {
+    		ret = false;
+    	} else if (getClaimedBy() == null) {
+    		ret = false;
+    	} else if (! getClaimedBy().equals(getAssignedBy())) {
+    		ret = false;
+    	}
+    	return ret;
     }
 
     public abstract String getNoun();

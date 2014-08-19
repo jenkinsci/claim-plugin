@@ -1,7 +1,7 @@
 Jenkins Claim Plugin
 =========================
 
-A plugin for Jenkins CI that allows users to claim(take responsibility) for a failing build.<br>
+A plugin for Jenkins CI that allows users to claim (take responsibility) for a failing build or assign it to another user (aka blame).<br>
 Look at [wiki] for detailed instructions.
 
 Change Log

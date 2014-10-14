@@ -57,6 +57,10 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
         public Data(AbstractBuild<?,?> build) {
             this.build = build;
         }
+        
+        public String getURL() {
+            return build.getUrl();
+        }
 
         @Override
         public List<TestAction> getTestAction(TestObject testObject) {

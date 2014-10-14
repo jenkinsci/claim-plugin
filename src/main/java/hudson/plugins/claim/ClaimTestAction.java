@@ -16,14 +16,19 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
     }
 
     @Override
-    public void claim(String claimedBy, String reason, boolean sticky) {
-        super.claim(claimedBy, reason, sticky);
+    public void claim(String claimedBy, String reason, String assignedBy, boolean sticky) {
+        super.claim(claimedBy, reason, assignedBy, sticky);
         owner.addClaim(testObjectId, this);
     }
 
     @Override
     public String getNoun() {
         return Messages.ClaimTestAction_Noun();
+    }
+
+    @Override
+    String getUrl() {
+        return owner.getURL();
     }
 
 }

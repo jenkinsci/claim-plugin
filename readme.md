@@ -7,6 +7,9 @@ Look at [wiki] for detailed instructions.
 Change Log
 ----------
 
+### v2.4 (14 Oct 2014)
+- You can now claim for other users than yourself [JENKINS-7824]
+
 ### v2.3 (18 Nov 2013)
 - Add support for hierarchical projects [JENKINS-17734]
 
@@ -38,6 +41,8 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-17734]: https://issues.jenkins-ci.org/browse/JENKINS-17734
 [JENKINS-16801]: https://issues.jenkins-ci.org/browse/JENKINS-16801
 [JENKINS-16766]: https://issues.jenkins-ci.org/browse/JENKINS-16766
+[JENKINS-7824]: https://issues.jenkins-ci.org/browse/JENKINS-7824
 [wiki]: https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin

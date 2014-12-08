@@ -7,7 +7,7 @@ Look at [wiki] for detailed instructions.
 Change Log
 ----------
 
-### v2.4 (14 Oct 2014)
+### v2.4 (8 Dec 2014)
 - You can now claim for other users than yourself [JENKINS-7824]
 
 ### v2.3 (18 Nov 2013)

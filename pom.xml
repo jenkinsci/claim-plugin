@@ -19,6 +19,14 @@
   </scm>  
   <build>
     <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <!-- work around MRELEASE-875 -->
+        <version>2.5</version>
+      </plugin>
+    </plugins>
   </build>
 
     <repositories>
@@ -42,14 +50,6 @@
     		<optional>true</optional>
     	</dependency>
     </dependencies>
-<plugins>
-  <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-release-plugin</artifactId>
-    <!-- work around MRELEASE-875 -->
-    <version>2.5</version>
-  </plugin>
-</plugins>
 </project>  
   
 

@@ -1,56 +1,59 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  
-  <parent>
-    <groupId>org.jenkins-ci.plugins</groupId>
-    <artifactId>plugin</artifactId>
-    <version>1.509.4</version>
-  </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <artifactId>claim</artifactId>
-  <version>2.6-SNAPSHOT</version>
-  <packaging>hpi</packaging>
-  <name>Jenkins Claim Plugin</name>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin</url>
-  <scm>
-    <url>https://github.com/jenkinsci/claim-plugin</url>
-    <connection>scm:git:git://github.com/jenkinsci/claim-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/claim-plugin.git</developerConnection>
-    <tag>claim-2.4</tag>
-  </scm>  
-  <build>
-    <finalName>${project.artifactId}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <!-- work around MRELEASE-875 -->
-        <version>2.5</version>
-      </plugin>
-    </plugins>
-  </build>
+	<parent>
+		<groupId>org.jenkins-ci.plugins</groupId>
+		<artifactId>plugin</artifactId>
+		<version>1.509.4</version>
+	</parent>
 
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
+	<artifactId>claim</artifactId>
+	<version>2.6-SNAPSHOT</version>
+	<packaging>hpi</packaging>
+	<name>Jenkins Claim Plugin</name>
+	<url>https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin</url>
+	<scm>
+		<url>https://github.com/jenkinsci/claim-plugin</url>
+		<connection>scm:git:git://github.com/jenkinsci/claim-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:jenkinsci/claim-plugin.git</developerConnection>
+		<tag>claim-2.4</tag>
+	</scm>
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<!-- work around MRELEASE-875 -->
+					<version>2.5</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
-    <dependencies>
-    	<dependency>
-    		<groupId>org.jenkins-ci.plugins</groupId>
-    		<artifactId>mailer</artifactId>
-    		<version>1.5</version>
-    		<optional>true</optional>
-    	</dependency>
-    </dependencies>
+	<repositories>
+		<repository>
+			<id>repo.jenkins-ci.org</id>
+			<url>http://repo.jenkins-ci.org/public/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>repo.jenkins-ci.org</id>
+			<url>http://repo.jenkins-ci.org/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>mailer</artifactId>
+			<version>1.5</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
 </project>  
   
 

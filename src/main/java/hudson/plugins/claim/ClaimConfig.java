@@ -18,6 +18,10 @@ public class ClaimConfig extends GlobalConfiguration {
      */
     private boolean sendEmails;
 
+    /**
+     * Default global value for the stickiness of the build claims.
+     */
+    private boolean stickyByDefault = true;
 
     /**
      * This human readable name is used in the configuration screen.
@@ -31,6 +35,7 @@ public class ClaimConfig extends GlobalConfiguration {
         // To persist global configuration information,
         // set that to properties and call save().
         sendEmails = formData.getBoolean("sendEmails");
+        stickyByDefault = formData.getBoolean("stickyByDefault");
         save();
         return super.configure(req,formData);
     }
@@ -51,6 +56,25 @@ public class ClaimConfig extends GlobalConfiguration {
         sendEmails = val;
     }
     
+    /**
+     * Returns true if the claims should be sticky by default, false otherwise.
+     * 
+     * @return true to make claims sticky by default, else false.
+     */
+    public boolean isStickyByDefault() {
+	return stickyByDefault;
+    }
+
+    /**
+     * Sets the default stickiness behaviour for build claims.
+     * 
+     * @param stickyByDefault
+     *            the default stickiness value.
+     */
+    public void setStickyByDefault(boolean stickyByDefault) {
+	this.stickyByDefault = stickyByDefault;
+    }
+
     /**
      * get the current claim configuration
      * @return the global claim configuration

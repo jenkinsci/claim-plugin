@@ -34,7 +34,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     private String claimedBy;
     private String assignedBy;
     private Date claimDate;
-    private boolean transientClaim;
+    private boolean transientClaim = !ClaimConfig.get().isStickyByDefault();
 
     protected T owner;
 

@@ -1,5 +1,7 @@
 package hudson.plugins.claim;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 import hudson.model.BuildBadgeAction;
 import hudson.model.Describable;
 import hudson.model.ProminentProjectAction;
@@ -82,6 +84,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             LOGGER.log(Level.WARNING, "Interrupted when sending assignment email",e);
         }
         owner.save();
+        evalGroovyScript();
         
         resp.forwardToPreviousPage(req);
     }
@@ -90,6 +93,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             throws ServletException, IOException {
         unclaim();
         owner.save();
+        evalGroovyScript();
         resp.forwardToPreviousPage(req);
     }
 
@@ -232,5 +236,18 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     public abstract String getNoun();
     
-
+    protected void evalGroovyScript() {
+        ClaimConfig config = ClaimConfig.get();
+        String groovyScript = config.getGroovyScript();
+        if ((groovyScript != null) && (!groovyScript.isEmpty())) {
+            Binding binding = new Binding();
+            binding.setVariable("action", this);
+            GroovyShell shell = new GroovyShell(binding);
+            try {
+                shell.evaluate(groovyScript);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error evaluating Groovy script",e);
+            }
+        }
+    }
 }

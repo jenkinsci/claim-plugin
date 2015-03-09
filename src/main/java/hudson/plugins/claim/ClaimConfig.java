@@ -24,6 +24,11 @@ public class ClaimConfig extends GlobalConfiguration {
     private boolean stickyByDefault = true;
 
     /**
+     * Groovy script to be run when a claim is changed.
+     */
+    private String groovyScript;
+
+    /**
      * This human readable name is used in the configuration screen.
      */
     public String getDisplayName() {
@@ -36,6 +41,7 @@ public class ClaimConfig extends GlobalConfiguration {
         // set that to properties and call save().
         sendEmails = formData.getBoolean("sendEmails");
         stickyByDefault = formData.getBoolean("stickyByDefault");
+        groovyScript = formData.getString("groovyScript");
         save();
         return super.configure(req,formData);
     }
@@ -75,6 +81,22 @@ public class ClaimConfig extends GlobalConfiguration {
 	this.stickyByDefault = stickyByDefault;
     }
 
+    /**
+     * This method returns the Groovy script as a String
+     * @return String containing the Groovy script to run when claims are changed.
+     */
+    public String getGroovyScript() {
+        return groovyScript;
+    }
+    
+    /**
+     * Set the Groovy script to run when a claim is changed.
+     * @param val the script to use
+     */
+    public void setGroovyScript(String val) {
+        groovyScript = val;
+    }
+    
     /**
      * get the current claim configuration
      * @return the global claim configuration

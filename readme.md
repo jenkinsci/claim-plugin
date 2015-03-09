@@ -7,6 +7,10 @@ Look at [wiki] for detailed instructions.
 Change Log
 ----------
 
+### v2.6 (9 Mar 2015)
+- Claim stickiness default value is now a globally configurable [JENKINS-27002]
+- Added support for running a global groovy script whenever a claim is changed
+
 ### v2.5 (8 Dec 2014)
 - You can now claim for other users than yourself [JENKINS-7824]
 
@@ -43,6 +47,7 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-27002]: https://issues.jenkins-ci.org/browse/JENKINS-27002
 [JENKINS-17734]: https://issues.jenkins-ci.org/browse/JENKINS-17734
 [JENKINS-16801]: https://issues.jenkins-ci.org/browse/JENKINS-16801
 [JENKINS-16766]: https://issues.jenkins-ci.org/browse/JENKINS-16766

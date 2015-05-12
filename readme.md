@@ -6,6 +6,8 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.7 (12 May 2015)
+- Fixed compatibility with Jenkins Core 1.577 and newer [JENKINS-27091]
 
 ### v2.6 (9 Mar 2015)
 - Claim stickiness default value is now a globally configurable [JENKINS-27002]
@@ -47,6 +49,7 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-27091]: https://issues.jenkins-ci.org/browse/JENKINS-27091
 [JENKINS-27002]: https://issues.jenkins-ci.org/browse/JENKINS-27002
 [JENKINS-17734]: https://issues.jenkins-ci.org/browse/JENKINS-17734
 [JENKINS-16801]: https://issues.jenkins-ci.org/browse/JENKINS-16801

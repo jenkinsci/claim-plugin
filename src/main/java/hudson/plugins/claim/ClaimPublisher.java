@@ -51,6 +51,7 @@ public class ClaimPublisher extends Notifier {
         if (build.getResult().isWorseThan(Result.SUCCESS)) {
             ClaimBuildAction action = new ClaimBuildAction(build);
             build.addAction(action);
+            build.save();
 
             // check if previous build was claimed
             AbstractBuild<?,?> previousBuild = build.getPreviousBuild();

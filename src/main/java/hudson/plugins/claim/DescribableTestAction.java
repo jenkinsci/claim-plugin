@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class DescribableTestAction extends TestAction implements Describable<DescribableTestAction> {
@@ -48,7 +49,6 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 			if (currentUser != null) {
 				items.add(currentUser.getDisplayName(), currentUser.getId());
 			}
-			
 			Collection<User> c = User.getAll();
 			if (c != null && currentUser != null) {
 				if (c.contains(currentUser)) {
@@ -65,8 +65,29 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 			}
 
 			return items;
+		}
 
+		public ListBoxModel doFillErrorsItems() throws Exception {
+			ListBoxModel items = new ListBoxModel();
+			if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {
+				LinkedList<String> list = ClaimBuildFailureAnalyzer.getDropdownList();
+				if (!AbstractClaimBuildAction.isReclaim) {
+					items.add("---None---", "Default");
+					for (String cause : list) {
+						items.add(cause, cause);
+					}
+				} else {
+					if (!ClaimBuildFailureAnalyzer.ERROR.equals("Default")) {
+						items.add(ClaimBuildFailureAnalyzer.ERROR, ClaimBuildFailureAnalyzer.ERROR);
+					}
+					items.add("---None---", "Default");
+					for (String cause : list) {
+						if (!cause.equals(ClaimBuildFailureAnalyzer.ERROR))
+							items.add(cause, cause);
+					}
+				}
+			}
+			return items;
 		}
 	}
-
 }

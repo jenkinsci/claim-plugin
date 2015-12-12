@@ -5,6 +5,7 @@ import groovy.lang.GroovyShell;
 import hudson.model.BuildBadgeAction;
 import hudson.model.Describable;
 import hudson.model.ProminentProjectAction;
+import hudson.model.Run;
 import hudson.model.Saveable;
 import hudson.model.Hudson;
 import hudson.model.User;
@@ -12,12 +13,14 @@ import hudson.model.User;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 
+import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
@@ -37,11 +40,14 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     private String assignedBy;
     private Date claimDate;
     private boolean transientClaim = !ClaimConfig.get().isStickyByDefault();
+    public static boolean isReclaim = false;
+    private ClaimBuildFailureAnalyzer BFAClaimer = null;
 
     protected T owner;
 
     AbstractClaimBuildAction(T owner) {
         this.owner = owner;
+        isReclaim = false;
     }
 
     private String reason;
@@ -57,7 +63,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     abstract String getUrl();
 
     public void doClaim(StaplerRequest req, StaplerResponse resp)
-            throws ServletException, IOException {
+            throws Exception {
         Authentication authentication = Hudson.getAuthentication();
         String currentUser = authentication.getName();
         String name = currentUser; // Default to self-assignment
@@ -73,6 +79,24 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             name = assignee;
         }
         String reason = req.getSubmittedForm().getString("reason");
+
+        if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
+            String error = req.getSubmittedForm().getString("errors");
+            BFAClaimer = new ClaimBuildFailureAnalyzer(error);
+            if(!ClaimBuildFailureAnalyzer.ERROR.equals("Default")){
+                try{
+                    BFAClaimer.createFailAction((Run) owner);
+                } catch (IndexOutOfBoundsException e){
+                    LOGGER.log(Level.WARNING, "No FailureCauseBuildAction detected for this build");
+                    resp.forwardToPreviousPage(req);
+                    return;
+                }
+            }
+            else{
+                BFAClaimer.removeFailAction((Run) owner);
+            }
+        }
+
         boolean sticky = req.getSubmittedForm().getBoolean("sticky");
         if (StringUtils.isEmpty(reason)) reason = null;
         claim(name, reason, currentUser, sticky);
@@ -83,15 +107,18 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Interrupted when sending assignment email",e);
         }
+        isReclaim = true;
         owner.save();
         evalGroovyScript();
-        
         resp.forwardToPreviousPage(req);
     }
 
     public void doUnclaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
         unclaim();
+        if(ClaimBuildFailureAnalyzer.isBFAEnabled() && BFAClaimer!=null)
+            BFAClaimer.removeFailAction((Run) owner);
+        isReclaim = false;
         owner.save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
@@ -128,7 +155,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     public void setClaimedBy(String claimedBy) {
         this.claimedBy = claimedBy;
     }
-    
+
     public void setAssignedBy (String assignedBy) {
     	this.assignedBy = assignedBy;
     }
@@ -185,6 +212,19 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         return reason;
     }
 
+    public String fillReason() throws Exception {
+        if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
+            HashMap<String, String> map = ClaimBuildFailureAnalyzer.getFillReasonMap();
+            JSONObject json = new JSONObject();
+            for (String key : map.keySet()) {
+                json.put(key, map.get(key));
+            }
+            String causeMap = json.toString();
+            return causeMap;
+        }
+        return null;
+    }
+
     public void setReason(String reason) {
         this.reason = reason;
     }
@@ -209,6 +249,14 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         this.transientClaim = !sticky;
     }
 
+    public String getError(){
+        return ClaimBuildFailureAnalyzer.ERROR;
+    }
+
+    public boolean isBFAEnabled(){
+        return ClaimBuildFailureAnalyzer.isBFAEnabled();
+    }
+
     @Exported
     public Date getClaimDate() {
         return this.claimDate;
@@ -217,7 +265,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     public boolean hasClaimDate() {
         return this.claimDate != null;
     }
-    
     /**
      * was the action claimed by someone to themselves?
      * @return true if the item was claimed by the user to themselves, false otherwise 

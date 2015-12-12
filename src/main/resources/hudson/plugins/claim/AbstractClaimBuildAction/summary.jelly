@@ -1,6 +1,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
+    <script src="${resURL}/plugin/claim/JS/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
         function ShowPopup(hoveritem)
         {
@@ -13,7 +14,20 @@
             hp = document.getElementById("claimHoverPopup");
             hp.style.display = "none";
         }
-    </script>
+
+        function Display(error)
+        {
+            reasonText = document.getElementById("errordesc");
+            var json = '${it.fillReason()}';
+            obj = JSON.parse(json);
+            if(error == "Default"){
+                reasonText.textContent = "";
+            } else{
+                reasonText.textContent = obj[error];
+            }
+            reasonText.readOnly = true;
+        }
+   </script>
 
     <t:summary icon="${rootUrl}/plugin/claim/icons/claim-48x48.png">
         <j:choose>
@@ -87,9 +101,17 @@
             <f:form method="post" action="claim/claim" name="claim">
                 <f:entry title="${%Assignee}" field="assignee" help="/plugin/claim/help-assignee.html">
                     <f:select />        
-                </f:entry>                
+                </f:entry>
+                <j:if test="${it.isBFAEnabled()}">
+                    <f:entry title="${%Error}" field="errors" help="/plugin/claim/help-errors.html">
+                        <f:select onChange="Display(this.value);"/>
+                    </f:entry>
+                    <f:entry title="${%Description}" help="/plugin/claim/help-description.html">
+                      <f:textarea name="errordesc" id="errordesc" value=""/>
+                  </f:entry>
+                </j:if>
                 <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
-                    <f:textarea name="reason" value="${it.reason}"/>
+                    <f:textarea name="reason" id="reason" value="${it.reason}"/>
                 </f:entry>
                 <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html"> 
                     <f:checkbox name="sticky" checked="${it.sticky}"/>

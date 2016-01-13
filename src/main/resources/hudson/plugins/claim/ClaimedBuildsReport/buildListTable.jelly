@@ -24,22 +24,22 @@
                  alt="${b.iconColor.description}"/>
           </a>
         </td>
-        <td id="claim.build.${b.project.name}">
-          <a href="${rootURL}/${b.project.url}">${b.project.fullName}</a>
+        <td id="claim.build.${b.parent.name}">
+          <a href="${rootURL}/${b.parent.url}">${b.parent.fullName}</a>
           <st:nbsp/>
           <a href="${rootURL}/${b.url}">#${b.number}</a>
         </td>
-        <td id="claim.date.${b.project.name}" data="${b.timestampString2}">
+        <td id="claim.date.${b.parent.name}" data="${b.timestampString2}">
           ${b.timestampString}
         </td>
         <j:set var="firstBad" value="${it.getFirstFail(b)}"/>
-        <td id="claim.firstBad.${b.project.name}" data="${firstBad.timestampString2}">
+        <td id="claim.firstBad.${b.parent.name}" data="${firstBad.timestampString2}">
           ${firstBad.timestampString}
         </td>
-        <td id="claim.claimant.${b.project.name}">
+        <td id="claim.claimant.${b.parent.name}">
           ${it.getClaimantText(b)}
         </td>
-        <td id="claim.desc.${b.project.name}">
+        <td id="claim.desc.${b.parent.name}">
           ${b.description}
         </td>
       </tr>

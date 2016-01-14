@@ -6,6 +6,10 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.8 (14 Jan 2016)
+- Integrate Build-Failure-Analyzer Plugin [JENKINS-28722]
+- Add support for workflow (use SimpleBuildStep) [JENKINS-27206]
+
 ### v2.7 (12 May 2015)
 - Fixed compatibility with Jenkins Core 1.577 and newer [JENKINS-27091]
 
@@ -49,6 +53,8 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-28722]: https://issues.jenkins-ci.org/browse/JENKINS-28722
+[JENKINS-27206]: https://issues.jenkins-ci.org/browse/JENKINS-27206
 [JENKINS-27091]: https://issues.jenkins-ci.org/browse/JENKINS-27091
 [JENKINS-27002]: https://issues.jenkins-ci.org/browse/JENKINS-27002
 [JENKINS-17734]: https://issues.jenkins-ci.org/browse/JENKINS-17734

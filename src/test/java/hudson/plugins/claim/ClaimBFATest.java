@@ -39,8 +39,10 @@ public class ClaimBFATest {
 
     private static final String CAUSE_NAME_1 = "Cause1";
     private static final String CAUSE_NAME_2 = "Cause2";
+    private static final String CAUSE_NAME_3 = "Cause3";
     private static final String CAUSE_DESCRIPTION_1 = "DescriptionForCause1";
     private static final String CAUSE_DESCRIPTION_2 = "DescriptionForCause2";
+    private static final String CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE = "DescriptionWith'ForCause3";
     private static final String IDENTIFIED_PROBLEMS = "Identified problems";
     private static final String REASON = "Test Reason";
 
@@ -86,6 +88,14 @@ public class ClaimBFATest {
         HtmlPage page = whenNavigatingtoClaimPage();
         assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));
         assertTrue(page.asXml().contains(CAUSE_NAME_1));
+    }
+
+    @Test
+    public void canClaimFailureWithSingleQuoteInDescription() throws Exception {
+        FailureCause cause3 = new FailureCause(CAUSE_NAME_3, CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
+        PluginImpl.getInstance().getKnowledgeBase().addCause(cause3);
+        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_3, REASON, CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
+        assertThat(action.isClaimed(), is(true));
     }
 
     @Test

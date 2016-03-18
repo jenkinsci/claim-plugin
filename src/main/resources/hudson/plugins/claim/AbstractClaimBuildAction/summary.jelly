@@ -1,7 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-    <script src="${resURL}/plugin/claim/JS/json2.js" type="text/javascript"></script>
     <script type="text/javascript">
         function ShowPopup(hoveritem)
         {

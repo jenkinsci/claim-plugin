@@ -18,8 +18,7 @@
         function Display(error)
         {
             reasonText = document.getElementById("errordesc");
-            var json = '${it.fillReason()}';
-            obj = JSON.parse(json);
+            obj = ${it.fillReason()};
             if(error == "Default"){
                 reasonText.textContent = "";
             } else{

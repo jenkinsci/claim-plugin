@@ -83,17 +83,21 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
             String error = req.getSubmittedForm().getString("errors");
             BFAClaimer = new ClaimBuildFailureAnalyzer(error);
-            if(!ClaimBuildFailureAnalyzer.ERROR.equals("Default")){
-                try{
-                    BFAClaimer.createFailAction((Run) owner);
-                } catch (IndexOutOfBoundsException e){
-                    LOGGER.log(Level.WARNING, "No FailureCauseBuildAction detected for this build");
-                    resp.forwardToPreviousPage(req);
-                    return;
+            if (this.owner instanceof Run)
+            {
+                Run run = (Run) owner;
+                if(!ClaimBuildFailureAnalyzer.ERROR.equals("Default")){
+                    try{
+                        BFAClaimer.createFailAction(run);
+                    } catch (IndexOutOfBoundsException e){
+                        LOGGER.log(Level.WARNING, "No FailureCauseBuildAction detected for this build");
+                        resp.forwardToPreviousPage(req);
+                        return;
+                    }
                 }
-            }
-            else{
-                BFAClaimer.removeFailAction((Run) owner);
+                else{
+                    BFAClaimer.removeFailAction(run);
+                }
             }
         }
 

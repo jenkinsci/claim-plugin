@@ -54,7 +54,7 @@ public class ClaimBuildFailureAnalyzer {
         List<FoundIndication> indications = new LinkedList<FoundIndication>();
         for(FailureCause cause : getFailureCauses()){
             if(cause.getName().equals(ERROR)) {
-                indications.add(new ClaimIndication((AbstractBuild) run,"Null",matchingFile,"Null"));
+                indications.add(new ClaimIndication( run,"Null",matchingFile,"Null"));
                 newClaimedFailureCause = new FoundFailureCause(cause, indications);
                 break;
             }

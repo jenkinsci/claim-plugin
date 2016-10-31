@@ -1,11 +1,9 @@
 package hudson.plugins.claim;
 
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.Descriptor;
-import hudson.model.Saveable;
+import hudson.model.*;
 import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestAction;
 import hudson.tasks.junit.TestDataPublisher;
@@ -27,10 +25,9 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
     public ClaimTestDataPublisher() {}
 
     @Override
-    public Data getTestData(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener, TestResult testResult) {
-
-        Data data = new Data(build);
+    public Data contributeTestData(Run<?, ?> run, FilePath workspace, Launcher launcher,
+        TaskListener listener, TestResult testResult) throws IOException, InterruptedException {
+        Data data = new Data(run);
 
         for (CaseResult result: testResult.getFailedTests()) {
             CaseResult previous = result.getPreviousResult();
@@ -43,23 +40,36 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
                 }
             }
         }
-
         return data;
+    }
 
+    @Override
+    public Data getTestData(AbstractBuild<?, ?> build, Launcher launcher,
+            BuildListener listener, TestResult testResult) {
+        try {
+            return contributeTestData(build, null, launcher, null, testResult);
+        } catch (IOException | InterruptedException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public static class Data extends TestResultAction.Data implements Saveable {
 
         private Map<String,ClaimTestAction> claims = new HashMap<String,ClaimTestAction>();
 
-        private final AbstractBuild<?,?> build;
 
-        public Data(AbstractBuild<?,?> build) {
+        private final Run<?,?> build;
+
+        public Data(Run<?,?> build) {
             this.build = build;
         }
         
         public String getURL() {
             return build.getUrl();
+        }
+
+        public Run<?, ?> getBuild() {
+            return build;
         }
 
         @Override

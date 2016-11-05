@@ -217,16 +217,14 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     }
 
     public String fillReason() throws Exception {
+        JSONObject json = new JSONObject();
         if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
             HashMap<String, String> map = ClaimBuildFailureAnalyzer.getFillReasonMap();
-            JSONObject json = new JSONObject();
             for (String key : map.keySet()) {
                 json.put(key, map.get(key));
             }
-            String causeMap = json.toString();
-            return causeMap;
         }
-        return null;
+        return json.toString();
     }
 
     public void setReason(String reason) {

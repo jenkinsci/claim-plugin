@@ -48,7 +48,9 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
             BuildListener listener, TestResult testResult) {
         try {
             return contributeTestData(build, null, launcher, null, testResult);
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }
     }

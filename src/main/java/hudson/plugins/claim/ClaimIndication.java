@@ -2,10 +2,11 @@ package hudson.plugins.claim;
 
 import com.sonyericsson.jenkins.plugins.bfa.model.indication.FoundIndication;
 import hudson.model.AbstractBuild;
+import hudson.model.Run;
 
 public class ClaimIndication extends FoundIndication {
 
-    public ClaimIndication(AbstractBuild build, String originalPattern, String matchingFile, String matchingString) {
-        super(build, originalPattern, matchingFile, matchingString);
+    public ClaimIndication(Run run, String originalPattern, String matchingFile, String matchingString) {
+        super(run, originalPattern, matchingFile, matchingString);
     }
 }

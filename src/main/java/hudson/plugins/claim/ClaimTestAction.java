@@ -1,13 +1,17 @@
 package hudson.plugins.claim;
 
+import hudson.model.Run;
 import hudson.plugins.claim.ClaimTestDataPublisher.Data;
 
-public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
+public class ClaimTestAction extends AbstractClaimBuildAction<Run> {
 
     private String testObjectId;
 
-    ClaimTestAction(Data owner, String testObjectId) {
-        super(owner);
+    private Data data;
+
+    ClaimTestAction(Data data, String testObjectId) {
+        super(data.getBuild());
+        this.data = data;
         this.testObjectId = testObjectId;
     }
 
@@ -18,7 +22,7 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
     @Override
     public void claim(String claimedBy, String reason, String assignedBy, boolean sticky) {
         super.claim(claimedBy, reason, assignedBy, sticky);
-        owner.addClaim(testObjectId, this);
+        data.addClaim(testObjectId, this);
     }
 
     @Override
@@ -28,7 +32,7 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Data> {
 
     @Override
     String getUrl() {
-        return owner.getURL();
+        return data.getURL();
     }
 
 }

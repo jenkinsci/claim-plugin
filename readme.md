@@ -6,6 +6,14 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.9 (8 Nov 2016)
+- Fixed single quote failure introduced in 2.8 [JENKINS-28722]
+- Removed unused json2.js [JENKINS-33078]
+- Fix Class Cast Exception when claiming test [JENKINS-33715]
+- Support new version of build failure plugin
+- "Claim it" link for tests didn't work when BFA plugin isn't installed [JENKINS-39538]
+- Claiming tests isn't compatible with Jenkins 2.0 pipelines [JENKINS-39537]
+
 ### v2.8 (14 Jan 2016)
 - Integrate Build-Failure-Analyzer Plugin [JENKINS-28722]
 - Add support for workflow (use SimpleBuildStep) [JENKINS-27206]
@@ -53,6 +61,10 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-39538]: https://issues.jenkins-ci.org/browse/JENKINS-39538
+[JENKINS-39537]: https://issues.jenkins-ci.org/browse/JENKINS-39537
+[JENKINS-33715]: https://issues.jenkins-ci.org/browse/JENKINS-33715
+[JENKINS-33078]: https://issues.jenkins-ci.org/browse/JENKINS-33078
 [JENKINS-28722]: https://issues.jenkins-ci.org/browse/JENKINS-28722
 [JENKINS-27206]: https://issues.jenkins-ci.org/browse/JENKINS-27206
 [JENKINS-27091]: https://issues.jenkins-ci.org/browse/JENKINS-27091

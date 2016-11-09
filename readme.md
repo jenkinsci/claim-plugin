@@ -6,7 +6,7 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
-### v2.9 (8 Nov 2016)
+### v2.9 (9 Nov 2016)
 - Fixed single quote failure introduced in 2.8 [JENKINS-28722]
 - Removed unused json2.js [JENKINS-33078]
 - Fix Class Cast Exception when claiming test [JENKINS-33715]

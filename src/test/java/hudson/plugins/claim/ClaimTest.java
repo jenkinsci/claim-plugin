@@ -26,6 +26,8 @@ package hudson.plugins.claim;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+
+import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
 import hudson.model.Build;
 import hudson.model.Project;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
@@ -36,7 +38,6 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.FailureBuilder;
 
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -197,7 +198,7 @@ public class ClaimTest {
         	}
         }
 
-        form.submit((HtmlButton) j.last(form.getHtmlElementsByTagName("button")));
+        HtmlFormUtil.submit(form, j.last(form.getHtmlElementsByTagName("button")));
 
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
         return action;

@@ -1,16 +1,13 @@
 package hudson.plugins.claim;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import hudson.model.FreeStyleProject;
-import hudson.model.Job;
 import hudson.model.ListView;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
@@ -64,7 +61,7 @@ public class ClaimWorkflowTest {
         // When:
         HtmlPage page = j.createWebClient().goTo("claims/");
         // Then:
-        HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
+        DomElement element = page.getElementById("claim.build." + JOB_NAME);
         assertThat(element.isDisplayed(), is(true));
     }
 
@@ -73,7 +70,7 @@ public class ClaimWorkflowTest {
         // When:
         HtmlPage page = j.createWebClient().goTo("claims/");
         // Then:
-        HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
+        DomElement element = page.getElementById("claim.build." + JOB_NAME);
         assertThat(element.isDisplayed(), is(true));
     }
 

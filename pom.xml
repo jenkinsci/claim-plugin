@@ -19,8 +19,11 @@
 		<tag>claim-2.4</tag>
 	</scm>
 	
+	
+	
 	<properties>
 		<jenkins.version>1.596.1</jenkins.version>
+		<findbugs.failOnError>true</findbugs.failOnError> <!-- TODO fix 19 bugs -->
 	</properties>
 
 	<build>

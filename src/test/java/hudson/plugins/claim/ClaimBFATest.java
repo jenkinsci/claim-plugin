@@ -1,7 +1,7 @@
 package hudson.plugins.claim;
 
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
@@ -10,23 +10,18 @@ import com.sonyericsson.jenkins.plugins.bfa.model.FailureCause;
 import hudson.model.Build;
 import hudson.model.Project;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import java.io.IOException;
 import java.util.HashSet;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertThat;
 
 public class ClaimBFATest {
@@ -151,7 +146,7 @@ public class ClaimBFATest {
 
         assertEquals(description, form.getTextAreaByName("errordesc").getTextContent());
 
-        form.submit((HtmlButton) j.last(form.getHtmlElementsByTagName("button")));
+        HtmlFormUtil.submit(form, j.last(form.getHtmlElementsByTagName("button")));
 
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
         return action;

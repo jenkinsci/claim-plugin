@@ -1,6 +1,6 @@
 package hudson.plugins.claim;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.FreeStyleProject;
 import hudson.model.ListView;
@@ -56,7 +56,7 @@ public class ClaimReportTest {
         // When:
         HtmlPage page = j.createWebClient().goTo("claims/");
         // Then:
-        HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
+        DomElement element = page.getElementById("claim.build." + JOB_NAME);
         assertThat(element.isDisplayed(), is(true));
     }
 
@@ -65,7 +65,7 @@ public class ClaimReportTest {
         // When:
         HtmlPage page = j.createWebClient().goTo("claims/");
         // Then:
-        HtmlElement element = page.getElementById("claim.build." + JOB_NAME);
+        DomElement element = page.getElementById("claim.build." + JOB_NAME);
         assertThat(element.isDisplayed(), is(true));
     }
 

@@ -19,10 +19,12 @@ public class ClaimedBuildsReport implements RootAction {
     public ClaimedBuildsReport() {
     }
 
+    @Override
     public String getIconFileName() {
         return "/plugin/claim/icons/claim-24x24.png";
     }
 
+    @Override
     public String getUrlName() {
         return "/claims";
     }
@@ -46,10 +48,10 @@ public class ClaimedBuildsReport implements RootAction {
         String reason = claim.getReason();
         if (reason != null) {
             return Messages.ClaimedBuildsReport_ClaimantText_claimedWithReason(
-                    claim.getClaimedBy(), claim.getReason(), claim.getAssignedBy());
+                claim.getClaimedBy(), claim.getReason(), claim.getAssignedBy());
         } else {
             return Messages.ClaimedBuildsReport_ClaimantText_claimed(claim
-                    .getClaimedBy(), claim.getAssignedBy());
+                                                                         .getClaimedBy(), claim.getAssignedBy());
         }
     }
 
@@ -78,6 +80,7 @@ public class ClaimedBuildsReport implements RootAction {
         return RunList.fromRuns(lastBuilds).failureOnly();
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.ClaimedBuildsReport_DisplayName();
     }

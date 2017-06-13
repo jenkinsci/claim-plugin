@@ -38,31 +38,32 @@ public class ClaimColumn extends ListViewColumn {
                 List<ClaimColumnInformation> result = new ArrayList<ClaimColumnInformation>();
         Run<?,?> run = job.getLastCompletedBuild();
         if (run != null) {
-                    if (run instanceof hudson.matrix.MatrixBuild) {
-                        MatrixBuild matrixBuild = (hudson.matrix.MatrixBuild) run;
+            if (run instanceof hudson.matrix.MatrixBuild) {
+                MatrixBuild matrixBuild = (hudson.matrix.MatrixBuild) run;
 
-                        for (MatrixRun combination : matrixBuild.getRuns()) {
-                            ClaimBuildAction action = combination.getAction(ClaimBuildAction.class);
-                            if (combination.getResult().isWorseThan(Result.SUCCESS) && action != null && action.isClaimed()) {
-                                ClaimColumnInformation holder = new ClaimColumnInformation();
-                                holder.setClaim(action);
-                                holder.setMatrix(true);
-                                holder.setCombinationName(combination.getParent().getCombination().toString()+": ");
-                                result.add(holder);
-                            }
-                        }
-                    } else {
-                        ClaimBuildAction action = run.getAction(ClaimBuildAction.class);
-                        if (action != null && action.isClaimed()) {
-                                ClaimColumnInformation holder = new ClaimColumnInformation();
-                                holder.setClaim(action);
-                                result.add(holder);
-                        }
+                for (MatrixRun combination : matrixBuild.getRuns()) {
+                    ClaimBuildAction action = combination.getAction(ClaimBuildAction.class);
+                    if (combination.getResult().isWorseThan(Result.SUCCESS) && action != null && action.isClaimed()) {
+                        ClaimColumnInformation holder = new ClaimColumnInformation();
+                        holder.setClaim(action);
+                        holder.setMatrix(true);
+                        holder.setCombinationName(combination.getParent().getCombination().toString()+": ");
+                        result.add(holder);
                     }
+                }
+            } else {
+                ClaimBuildAction action = run.getAction(ClaimBuildAction.class);
+                if (action != null && action.isClaimed()) {
+                    ClaimColumnInformation holder = new ClaimColumnInformation();
+                    holder.setClaim(action);
+                    result.add(holder);
+                }
+            }
         }
-                return result;
+        return result;
     }
 
+    @Override
     public Descriptor<ListViewColumn> getDescriptor() {
         return Hudson.getInstance().getDescriptorOrDie(getClass());
     }

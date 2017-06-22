@@ -17,8 +17,9 @@ import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.util.HashSet;
+import java.util.logging.*;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static org.hamcrest.Matchers.is;
@@ -44,7 +45,7 @@ public class ClaimBFATest {
 
     @Before
     public void setUp() throws Exception {
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
+        Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.SEVERE);
 
         j.jenkins.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
@@ -119,7 +120,7 @@ public class ClaimBFATest {
         page.getElementById("claim").click();
         HtmlForm form = page.getFormByName("claim");
         HtmlSelect select = form.getSelectByName("_.errors");
-        HashSet<String> set = new HashSet<String>();
+        HashSet<String> set = new HashSet<>();
         for(HtmlOption option:select.getOptions()){
             set.add(option.getValueAttribute());
         }

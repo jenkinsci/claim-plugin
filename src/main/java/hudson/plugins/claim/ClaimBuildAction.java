@@ -14,6 +14,7 @@ public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
         super(run);
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.ClaimBuildAction_DisplayName();
     }

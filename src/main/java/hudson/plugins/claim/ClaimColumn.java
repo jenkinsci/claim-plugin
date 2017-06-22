@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import hudson.views.*;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
@@ -10,7 +11,7 @@ import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
-import hudson.views.ListViewColumn;
+
 import java.util.ArrayList;
 import java.util.List;
 

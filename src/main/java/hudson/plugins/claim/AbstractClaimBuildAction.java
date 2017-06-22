@@ -21,6 +21,7 @@ import javax.servlet.ServletException;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.control.*;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
@@ -63,7 +64,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     abstract String getUrl();
 
     public void doClaim(StaplerRequest req, StaplerResponse resp)
-        throws Exception {
+        throws Exception, ServletException, IOException {
         Authentication authentication = Hudson.getAuthentication();
         String currentUser = authentication.getName();
         String name = currentUser; // Default to self-assignment
@@ -140,20 +141,12 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     public String getClaimedByName() {
         User user = User.get(claimedBy, false,Collections.EMPTY_MAP);
-        if (user != null) {
-            return user.getDisplayName();
-        } else {
-            return claimedBy;
-        }
+        return user != null ? user.getDisplayName() : claimedBy;
     }
 
     public String getAssignedByName() {
         User user = User.get(assignedBy, false,Collections.EMPTY_MAP);
-        if (user != null) {
-            return user.getDisplayName();
-        } else {
-            return assignedBy;
-        }
+        return user != null ? user.getDisplayName() : assignedBy;
     }
 
     public void setClaimedBy(String claimedBy) {
@@ -182,7 +175,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
      * Claim a new Run with the same settings as this one.
      */
     public void copyTo(AbstractClaimBuildAction<T> other) {
-        other.claim(claimedBy, reason, assignedBy, isSticky());
+        other.claim(getClaimedBy(), getReason(), getAssignedBy(), isSticky());
     }
 
     public void unclaim() {
@@ -273,11 +266,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
      */
     public boolean isSelfAssigned() {
         boolean ret = true;
-        if (! claimed) {
+        if (! isClaimed()) {
             ret = false;
-        } else if (claimedBy == null) {
+        } else if (getClaimedBy() == null) {
             ret = false;
-        } else if (! claimedBy.equals(assignedBy)) {
+        } else if (! getClaimedBy().equals(getAssignedBy())) {
             ret = false;
         }
         return ret;
@@ -294,6 +287,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             GroovyShell shell = new GroovyShell(binding);
             try {
                 shell.evaluate(groovyScript);
+            } catch (CompilationFailedException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error evaluating Groovy script",e);
             }

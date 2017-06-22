@@ -62,7 +62,7 @@ public class ClaimEmailer {
     }
     
     private static MimeMessage createMessage(User assignee, String assignedBy, String build, String reason, String URL)
-            throws MessagingException, IOException, InterruptedException {
+            throws MessagingException, InterruptedException, AddressException, UnsupportedEncodingException {
         MimeMessage msg = null;
         // create Session
         final Mailer.DescriptorImpl mailDescriptor = new Mailer.DescriptorImpl();

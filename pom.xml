@@ -21,7 +21,7 @@
 
 
 	<properties>
-		<jenkins.version>1.596.1</jenkins.version>
+		<jenkins.version>1.651.3</jenkins.version>
 		<findbugs.failOnError>false</findbugs.failOnError> <!-- TODO fix 19 bugs -->
 	</properties>
 

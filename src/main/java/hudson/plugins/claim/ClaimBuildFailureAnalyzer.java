@@ -31,15 +31,15 @@ public class ClaimBuildFailureAnalyzer {
     }
 
     public static Map<String, String> getFillReasonMap() throws Exception {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (FailureCause cause : getFailureCauses()) {
             map.put(cause.getName(), cause.getDescription());
         }
         return map;
     }
 
-    public static LinkedList<String> getDropdownList() throws Exception {
-        List<String> list = new LinkedList<String>();
+    public static List<String> getDropdownList() throws Exception {
+        List<String> list = new LinkedList<>();
         for (FailureCause cause : getFailureCauses()) {
             list.add(cause.getName());
         }
@@ -48,7 +48,7 @@ public class ClaimBuildFailureAnalyzer {
 
     public void createFailAction(Run run) throws Exception {
         FoundFailureCause newClaimedFailureCause = null;
-        List<FoundIndication> indications = new LinkedList<FoundIndication>();
+        List<FoundIndication> indications = new LinkedList<>();
         for(FailureCause cause : getFailureCauses()){
             if(cause.getName().equals(ERROR)) {
                 indications.add(new ClaimIndication( run,"Null",matchingFile,"Null"));

@@ -12,10 +12,12 @@ import javax.mail.internet.InternetAddress;
 import jenkins.model.JenkinsLocationConfiguration;
 
 import org.junit.Test;
-import org.jvnet.hudson.test.HudsonTestCase;
+import static org.junit.Assert.assertTrue;
+import static junit.framework.TestCase.assertEquals;
+import org.jvnet.hudson.test.*;
 import org.jvnet.mock_javamail.Mailbox;
 
-public class ClaimEmailerTest extends HudsonTestCase {
+public class ClaimEmailerTest extends JenkinsRule {
     
     /*
      * Test that no mail is sent if mail sending is not configured

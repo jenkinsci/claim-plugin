@@ -70,7 +70,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 		public ListBoxModel doFillErrorsItems() throws Exception {
 			ListBoxModel items = new ListBoxModel();
 			if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {
-				LinkedList<String> list = ClaimBuildFailureAnalyzer.getDropdownList();
+				List<String> list = ClaimBuildFailureAnalyzer.getDropdownList();
 				if (!AbstractClaimBuildAction.isReclaim) {
 					items.add("---None---", "Default");
 					for (String cause : list) {

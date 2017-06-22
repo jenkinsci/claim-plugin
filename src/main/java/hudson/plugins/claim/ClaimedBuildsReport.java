@@ -32,11 +32,7 @@ public class ClaimedBuildsReport implements RootAction {
     public Run getFirstFail(Run r) {
         Run lastGood = r.getPreviousNotFailedBuild();
         Run firstFail;
-        if (lastGood == null) {
-            firstFail = r.getParent().getFirstBuild();
-        } else {
-            firstFail = lastGood.getNextBuild();
-        }
+        firstFail = lastGood == null ? r.getParent().getFirstBuild() : lastGood.getNextBuild();
         return firstFail;
     }
 
@@ -57,11 +53,7 @@ public class ClaimedBuildsReport implements RootAction {
 
     public View getOwner() {
         View view = Stapler.getCurrentRequest().findAncestorObject(View.class);
-        if (view != null) {
-            return view;
-        } else {
-            return Jenkins.getInstance().getStaplerFallback();
-        }
+        return view != null ? view : Jenkins.getInstance().getStaplerFallback();
     }
 
     public RunList getBuilds() {

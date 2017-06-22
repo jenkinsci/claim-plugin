@@ -43,6 +43,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlOption;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
+import java.util.logging.*;
+
 public class ClaimTest {
 
     @Rule
@@ -54,7 +56,7 @@ public class ClaimTest {
 
     @Before
     public void setUp() throws Exception {
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
+        Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.SEVERE);
 
         j.jenkins.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
@@ -62,7 +64,7 @@ public class ClaimTest {
         // Three users exist, we will be user1 so ensure the others have logged on
         wc.login("user0", "user0");
         wc.login("user2", "user2");
-        wc.closeAllWindows();
+        wc.close();
 
         project = j.createFreeStyleProject("x");
         project.getBuildersList().add(new FailureBuilder());

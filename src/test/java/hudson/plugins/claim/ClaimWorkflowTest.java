@@ -12,7 +12,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
+import java.util.logging.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -29,7 +29,7 @@ public class ClaimWorkflowTest {
     @Before
     public void setUp() throws Exception {
 
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.FINE);
+        Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.FINE);
 
         job = createFailingJobWithName(JOB_NAME);
 

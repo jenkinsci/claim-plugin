@@ -108,7 +108,6 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
                              ClaimTestAction claim) {
             claims.put(testObjectId, claim);
         }
-
     }
 
     @Extension

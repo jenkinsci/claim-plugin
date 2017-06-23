@@ -20,7 +20,7 @@ import java.util.List;
 public class ClaimBuildFailureAnalyzer {
 
     public static String ERROR = "Default";
-    private static final String matchingFile = "Claim";
+    private static final String MATCHING_FILE = "Claim";
 
     public ClaimBuildFailureAnalyzer(String error) throws Exception {
         ERROR=error;
@@ -55,7 +55,7 @@ public class ClaimBuildFailureAnalyzer {
         List<FoundIndication> indications = new LinkedList<>();
         for(FailureCause cause : getFailureCauses()){
             if(cause.getName().equals(ERROR)) {
-                indications.add(new ClaimIndication( run,"Null",matchingFile,"Null"));
+                indications.add(new ClaimIndication(run, "Null", MATCHING_FILE, "Null"));
                 newClaimedFailureCause = new FoundFailureCause(cause, indications);
                 break;
             }
@@ -75,7 +75,7 @@ public class ClaimBuildFailureAnalyzer {
             if(cause.getName().equals(newClaimedFailureCause.getName()) && cause.getIndications().get(0).getMatchingFile().equals("log")){
                 hasFailureCauseFromBFA = true;
             }
-            if (cause.getIndications().get(0).getMatchingFile()==matchingFile) {
+            if (cause.getIndications().get(0).getMatchingFile()==MATCHING_FILE) {
                 existingClaimedFoundFailureCause = cause;
                 break;
             }
@@ -101,7 +101,7 @@ public class ClaimBuildFailureAnalyzer {
             List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
             List<FoundFailureCause> toRemove = Lists.newArrayList();
             for (FoundFailureCause cause : foundFailureCauses) {
-                if (cause.getIndications().get(0).getMatchingFile() == "Claim") {
+                if (cause.getIndications().size() > 0 && cause.getIndications().get(0).getMatchingFile() == MATCHING_FILE) {
                     toRemove.add(cause);
                 }
             }

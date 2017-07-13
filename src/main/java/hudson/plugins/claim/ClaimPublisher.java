@@ -59,7 +59,7 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
     public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher,
                            TaskListener listener) throws InterruptedException, IOException {
 
-        if (build.getResult().isWorseThan(Result.SUCCESS)) {
+        if (build.resultIsWorseOrEqualTo("UNSTABLE")) {
             ClaimBuildAction action = new ClaimBuildAction(build);
             build.addAction(action);
             build.save();

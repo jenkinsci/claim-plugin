@@ -25,11 +25,9 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 		return DESCRIPTOR;
 	}
 	
-	private static Comparator<User> comparator = new Comparator<User>() {
-		public int compare(User c1, User c2) {
-			return c1.getId().compareTo(c2.getId()); 
-		}
-	};
+	private static Comparator<User> idComparator = Comparator.comparing(User::getId);
+	private static Comparator<User> fullNameComparator = Comparator.comparing(User::getFullName)
+			                                                           .thenComparing(idComparator);
 
 	@Extension
 	public static final class DescriptorImpl extends Descriptor<DescribableTestAction> {
@@ -58,7 +56,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 			
 			if (c!= null ) {
 				List<User> l = new ArrayList<User>(c);
-				Collections.sort(l, comparator); 
+				Collections.sort(l, getComparator());
 				for (User u : l) {
 					items.add(u.getDisplayName(), u.getId());
 				}
@@ -89,5 +87,11 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 			}
 			return items;
 		}
+	}
+
+	private static Comparator<? super User> getComparator() {
+		return ClaimConfig.get().isSortUsersByFullName()
+				? fullNameComparator
+				: idComparator;
 	}
 }

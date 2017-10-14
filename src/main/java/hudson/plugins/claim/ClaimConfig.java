@@ -24,6 +24,11 @@ public class ClaimConfig extends GlobalConfiguration {
     private boolean stickyByDefault = true;
 
     /**
+     * Sort users by full name.
+     */
+    private boolean sortUsersByFullName;
+
+    /**
      * Groovy script to be run when a claim is changed.
      */
     private String groovyScript;
@@ -41,6 +46,7 @@ public class ClaimConfig extends GlobalConfiguration {
         // set that to properties and call save().
         sendEmails = formData.getBoolean("sendEmails");
         stickyByDefault = formData.getBoolean("stickyByDefault");
+        sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
         groovyScript = formData.getString("groovyScript");
         save();
         return super.configure(req,formData);
@@ -79,6 +85,26 @@ public class ClaimConfig extends GlobalConfiguration {
      */
     public void setStickyByDefault(boolean stickyByDefault) {
 	this.stickyByDefault = stickyByDefault;
+    }
+
+
+    /**
+     * Returns true if the users should be sorted by full name instead of ids.
+     *
+     * @return true to make users sorted by full name, else false.
+     */
+    public boolean isSortUsersByFullName() {
+        return sortUsersByFullName;
+    }
+
+    /**
+     * Sets the user sort method.
+     *
+     * @param sortUsersByFullName
+     *            true to make users sorted by full name, else false.
+     */
+    public void setSortUsersByFullName(boolean sortUsersByFullName) {
+        this.sortUsersByFullName = sortUsersByFullName;
     }
 
     /**

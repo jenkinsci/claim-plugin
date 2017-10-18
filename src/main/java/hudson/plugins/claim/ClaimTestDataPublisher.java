@@ -19,14 +19,16 @@ import java.util.Map;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import javax.annotation.Nonnull;
+
 public class ClaimTestDataPublisher extends TestDataPublisher {
 
     @DataBoundConstructor
     public ClaimTestDataPublisher() {}
 
     @Override
-    public Data contributeTestData(Run<?, ?> run, FilePath workspace, Launcher launcher,
-        TaskListener listener, TestResult testResult) throws IOException, InterruptedException {
+    public Data contributeTestData(Run<?, ?> run, @Nonnull FilePath workspace, Launcher launcher,
+                                   TaskListener listener, TestResult testResult) throws IOException, InterruptedException {
         Data data = new Data(run);
 
         for (CaseResult result: testResult.getFailedTests()) {
@@ -43,21 +45,9 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
         return data;
     }
 
-    @Override
-    public Data getTestData(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener, TestResult testResult) {
-        try {
-            return contributeTestData(build, null, launcher, null, testResult);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
     public static class Data extends TestResultAction.Data implements Saveable {
 
-        private Map<String,ClaimTestAction> claims = new HashMap<String,ClaimTestAction>();
+        private Map<String,ClaimTestAction> claims = new HashMap<>();
 
 
         private final Run<?,?> build;
@@ -75,7 +65,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
         }
 
         @Override
-        public List<TestAction> getTestAction(TestObject testObject) {
+        public List<TestAction> getTestAction(@SuppressWarnings("deprecation") TestObject testObject) {
             String id = testObject.getId();
             ClaimTestAction result = claims.get(id);
 
@@ -113,6 +103,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
     @Extension
     public static class DescriptorImpl extends Descriptor<TestDataPublisher> {
 
+        @Nonnull
         @Override
         public String getDisplayName() {
             return Messages.ClaimTestDataPublisher_DisplayName();

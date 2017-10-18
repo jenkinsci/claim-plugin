@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import com.google.common.collect.Lists;
 import com.sonyericsson.jenkins.plugins.bfa.PluginImpl;
 import com.sonyericsson.jenkins.plugins.bfa.model.FailureCause;
 import com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseBuildAction;
@@ -98,10 +99,14 @@ public class ClaimBuildFailureAnalyzer {
         if(!bfaActionList.isEmpty()) {
             FailureCauseBuildAction bfaAction = bfaActionList.get(0);
             List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
+            List<FoundFailureCause> toRemove = Lists.newArrayList();
             for (FoundFailureCause cause : foundFailureCauses) {
                 if (cause.getIndications().get(0).getMatchingFile() == "Claim") {
-                    foundFailureCauses.remove(cause);
+                    toRemove.add(cause);
                 }
+            }
+            for (FoundFailureCause cause : toRemove) {
+                foundFailureCauses.remove(cause);
             }
         }
     }

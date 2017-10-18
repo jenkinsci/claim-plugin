@@ -35,7 +35,7 @@ public class ClaimBuildFailureAnalyzer {
     }
 
     public static HashMap<String, String> getFillReasonMap() throws Exception {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         for (FailureCause cause : getFailureCauses()) {
             map.put(cause.getName(), cause.getDescription());
         }
@@ -43,7 +43,7 @@ public class ClaimBuildFailureAnalyzer {
     }
 
     public static LinkedList<String> getDropdownList() throws Exception {
-        LinkedList<String> list = new LinkedList<String>();
+        LinkedList<String> list = new LinkedList<>();
         for (FailureCause cause : getFailureCauses()) {
             list.add(cause.getName());
         }
@@ -52,7 +52,7 @@ public class ClaimBuildFailureAnalyzer {
 
     public void createFailAction(Run run) throws Exception {
         FoundFailureCause newClaimedFailureCause = null;
-        List<FoundIndication> indications = new LinkedList<FoundIndication>();
+        List<FoundIndication> indications = new LinkedList<>();
         for(FailureCause cause : getFailureCauses()){
             if(cause.getName().equals(ERROR)) {
                 indications.add(new ClaimIndication( run,"Null",matchingFile,"Null"));

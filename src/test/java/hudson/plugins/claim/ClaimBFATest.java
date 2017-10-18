@@ -119,7 +119,7 @@ public class ClaimBFATest {
         page.getElementById("claim").click();
         HtmlForm form = page.getFormByName("claim");
         HtmlSelect select = form.getSelectByName("_.errors");
-        HashSet<String> set = new HashSet<String>();
+        HashSet<String> set = new HashSet<>();
         for(HtmlOption option:select.getOptions()){
             set.add(option.getValueAttribute());
         }

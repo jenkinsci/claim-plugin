@@ -1,7 +1,6 @@
 package hudson.plugins.claim;
 
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 import hudson.model.BuildBadgeAction;
 import hudson.model.Describable;
 import hudson.model.ProminentProjectAction;

@@ -11,10 +11,8 @@ import javax.mail.internet.InternetAddress;
 
 import jenkins.model.JenkinsLocationConfiguration;
 
-import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.HudsonTestCase;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.mock_javamail.Mailbox;
 

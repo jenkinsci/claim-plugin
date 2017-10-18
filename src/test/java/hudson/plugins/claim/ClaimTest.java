@@ -62,7 +62,7 @@ public class ClaimTest {
         // Three users exist, we will be user1 so ensure the others have logged on
         wc.login("user0", "user0");
         wc.login("user2", "user2");
-        wc.closeAllWindows();
+        wc.close();
 
         project = j.createFreeStyleProject("x");
         project.getBuildersList().add(new FailureBuilder());

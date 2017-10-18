@@ -7,7 +7,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import hudson.Extension;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixRun;
-import hudson.model.Descriptor;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -31,7 +30,7 @@ public class ClaimColumn extends ListViewColumn {
     }
 
     public List<ClaimColumnInformation> getAction(Job<?,?> job) {
-                List<ClaimColumnInformation> result = new ArrayList<ClaimColumnInformation>();
+                List<ClaimColumnInformation> result = new ArrayList<>();
         Run<?,?> run = job.getLastCompletedBuild();
         if (run != null) {
                     if (run instanceof hudson.matrix.MatrixBuild) {

@@ -4,9 +4,14 @@ import hudson.Extension;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
+import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
 import org.kohsuke.stapler.StaplerRequest;
 
-@Extension 
+import javax.annotation.CheckForNull;
+
+@Extension
 public class ClaimConfig extends GlobalConfiguration {
 
     public ClaimConfig() {
@@ -31,7 +36,9 @@ public class ClaimConfig extends GlobalConfiguration {
     /**
      * Groovy script to be run when a claim is changed.
      */
+    @Deprecated
     private String groovyScript;
+    private SecureGroovyScript groovyTrigger;
 
     /**
      * This human readable name is used in the configuration screen.
@@ -42,14 +49,20 @@ public class ClaimConfig extends GlobalConfiguration {
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
+
         // To persist global configuration information,
         // set that to properties and call save().
         sendEmails = formData.getBoolean("sendEmails");
         stickyByDefault = formData.getBoolean("stickyByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
-        groovyScript = formData.getString("groovyScript");
+        if(formData.containsKey("groovyTrigger")) {
+            this.groovyTrigger = req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger"));
+            setGroovyTrigger(groovyTrigger);
+        } else {
+            this.groovyTrigger = null;
+        }
         save();
-        return super.configure(req,formData);
+        return super.configure(req, formData);
     }
 
     /**
@@ -59,7 +72,7 @@ public class ClaimConfig extends GlobalConfiguration {
     public boolean getSendEmails() {
         return sendEmails;
     }
-    
+
     /**
      * Set whether we should send emails
      * @param val the setting to use
@@ -67,24 +80,24 @@ public class ClaimConfig extends GlobalConfiguration {
     public void setSendEmails(boolean val) {
         sendEmails = val;
     }
-    
+
     /**
      * Returns true if the claims should be sticky by default, false otherwise.
-     * 
+     *
      * @return true to make claims sticky by default, else false.
      */
     public boolean isStickyByDefault() {
-	return stickyByDefault;
+        return stickyByDefault;
     }
 
     /**
      * Sets the default stickiness behaviour for build claims.
-     * 
+     *
      * @param stickyByDefault
      *            the default stickiness value.
      */
     public void setStickyByDefault(boolean stickyByDefault) {
-	this.stickyByDefault = stickyByDefault;
+        this.stickyByDefault = stickyByDefault;
     }
 
 
@@ -107,22 +120,23 @@ public class ClaimConfig extends GlobalConfiguration {
         this.sortUsersByFullName = sortUsersByFullName;
     }
 
-    /**
-     * This method returns the Groovy script as a String
-     * @return String containing the Groovy script to run when claims are changed.
-     */
-    public String getGroovyScript() {
-        return groovyScript;
+    @CheckForNull
+    public SecureGroovyScript getGroovyTrigger() {
+        return groovyTrigger;
     }
-    
-    /**
-     * Set the Groovy script to run when a claim is changed.
-     * @param val the script to use
-     */
-    public void setGroovyScript(String val) {
-        groovyScript = val;
+
+    public void setGroovyTrigger(SecureGroovyScript groovyTrigger) {
+        if (groovyTrigger == null) {
+            this.groovyTrigger = null;
+        } else {
+            this.groovyTrigger = groovyTrigger.configuringWithKeyItem();
+        }
     }
-    
+
+    public boolean hasGroovyTrigger() {
+        return groovyTrigger != null && StringUtils.isNotEmpty(groovyTrigger.getScript());
+    }
+
     /**
      * get the current claim configuration
      * @return the global claim configuration
@@ -130,4 +144,14 @@ public class ClaimConfig extends GlobalConfiguration {
     public static ClaimConfig get() {
         return GlobalConfiguration.all().get(ClaimConfig.class);
     }
+
+    private Object readResolve() {
+        // JENKINS-43811 migration logic
+        if (groovyScript != null) {
+            groovyTrigger = new SecureGroovyScript(groovyScript, true, null).configuring(ApprovalContext.create());
+            groovyScript = null;
+        }
+        return this;
+    }
+
 }

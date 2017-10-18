@@ -1,13 +1,12 @@
 package hudson.plugins.claim;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.cli.CLICommandInvoker;
 import hudson.cli.CreateJobCommand;
 import hudson.model.*;
 import hudson.security.ACL;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.hamcrest.Matcher;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,7 +17,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import java.io.ByteArrayInputStream;
-import java.util.concurrent.Callable;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -41,6 +39,9 @@ public class ClaimGroovyTest {
     strategy.grantWithoutImplication(Jenkins.ADMINISTER, Jenkins.READ)
         .everywhere()
         .to(j.jenkins.getUser("user0"));
+    strategy.grant(Jenkins.ADMINISTER, Jenkins.READ)
+        .everywhere()
+        .to(j.jenkins.getUser("user1"));
     j.jenkins.setAuthorizationStrategy(strategy);
 
     ACL.impersonate(User.get("user0").impersonate(), new Runnable() {
@@ -54,12 +55,28 @@ public class ClaimGroovyTest {
 
   @Issue("JENKINS-43811")
   @Test
-  public void scriptSecurity() throws Exception {
-    ACL.impersonate(User.get("user0").impersonate(), new Runnable() {
+  public void userWithNoRunScriptsRightTest() throws Exception {
+    doConfigureScriptWithUser("user0");
+    assertNull(j.jenkins.getSystemMessage());
+  }
+
+  @Issue("JENKINS-43811")
+  @Test
+  public void userWithRunScriptsRightTest() throws Exception {
+    doConfigureScriptWithUser("user1");
+    assertEquals("pwned", j.jenkins.getSystemMessage());
+  }
+
+  private void doConfigureScriptWithUser(String userName) throws InterruptedException, java.util.concurrent.ExecutionException {
+    ACL.impersonate(User.get(userName).impersonate(), new Runnable() {
       @Override
       public void run() {
-        ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
-        config.setGroovyScript("jenkins.model.Jenkins.instance.systemMessage = 'pwned'");
+        try {
+          ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
+          config.setGroovyTrigger(new SecureGroovyScript("jenkins.model.Jenkins.instance.systemMessage = 'pwned'", false, null));
+        } catch (Exception e) {
+          fail(e.getMessage());
+        }
       }
     });
 
@@ -95,9 +112,5 @@ public class ClaimGroovyTest {
         }
       }
     });
-
-
-
-    assertNull(j.jenkins.getSystemMessage());
   }
 }

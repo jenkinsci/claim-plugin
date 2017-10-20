@@ -10,9 +10,6 @@
     <f:entry title="${%SortUsersByFullName}" field="sortUsersByFullName" help="/plugin/claim/help-sortUsersByFullName.html">
       <f:checkbox />
     </f:entry>
-    <f:entry title="${%GroovyScript}" field="groovyScript" help="/plugin/claim/help-groovyScript.html">
-	    <f:textarea checkMethod="post" codemirror-mode="clike"
-	    codemirror-config="mode: 'text/x-groovy', lineNumbers: true, matchBrackets: true, onBlur: function(editor){editor.save()}"/>
-    </f:entry>
+    <f:property field="groovyTrigger"/>
   </f:section>
 </j:jelly>

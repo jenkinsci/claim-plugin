@@ -37,7 +37,8 @@ public class ClaimConfig extends GlobalConfiguration {
      * Groovy script to be run when a claim is changed.
      */
     @Deprecated
-    private String groovyScript;
+    private transient String groovyScript;
+    @CheckForNull
     private SecureGroovyScript groovyTrigger;
 
     /**
@@ -125,7 +126,7 @@ public class ClaimConfig extends GlobalConfiguration {
         return groovyTrigger;
     }
 
-    public void setGroovyTrigger(SecureGroovyScript groovyTrigger) {
+    void setGroovyTrigger(SecureGroovyScript groovyTrigger) {
         if (groovyTrigger == null) {
             this.groovyTrigger = null;
         } else {

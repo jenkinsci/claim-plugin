@@ -181,6 +181,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     /**
      * Claim a new Run with the same settings as this one.
+     * @param other the source data
      */
     public void copyTo(AbstractClaimBuildAction<T> other) {
         other.claim(getClaimedBy(), getReason(), getAssignedBy(), isSticky());

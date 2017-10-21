@@ -66,7 +66,7 @@ public class ClaimGroovyTest {
     @Issue("JENKINS-43811")
     @Test
     public void userWithRunScriptsRightTest() throws Exception {
-        doConfigureScriptWithUser("user1");
+        doConfigureScriptWithUser(adminWithAllRights);
         assertEquals("pwned", j.jenkins.getSystemMessage());
     }
 

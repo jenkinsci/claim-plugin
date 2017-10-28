@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 @Extension
 public class ClaimConfig extends GlobalConfiguration {
 
+    private static final String GROOVY_SCRIPT_KEY = "hudson.plugins.claim.ClaimConfig.groovyTrigger";
 
     public ClaimConfig() {
         load();
@@ -127,8 +128,7 @@ public class ClaimConfig extends GlobalConfiguration {
     }
 
     void setGroovyTrigger(@Nonnull SecureGroovyScript groovyTrigger) {
-        this.groovyTrigger = groovyTrigger.configuringWithKeyItem();
-    }
+        this.groovyTrigger = groovyTrigger.configuring(ApprovalContext.create().withCurrentUser().withKey(GROOVY_SCRIPT_KEY));    }
 
     public boolean hasGroovyTrigger() {
         return StringUtils.isNotEmpty(groovyTrigger.getScript());

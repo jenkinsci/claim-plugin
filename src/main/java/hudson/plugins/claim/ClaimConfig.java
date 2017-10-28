@@ -9,13 +9,17 @@ import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 @Extension
 public class ClaimConfig extends GlobalConfiguration {
 
+
     public ClaimConfig() {
         load();
+        if (groovyTrigger == null) {
+            setGroovyTrigger(new SecureGroovyScript("", true));
+        }
     }
 
     /**
@@ -38,12 +42,13 @@ public class ClaimConfig extends GlobalConfiguration {
      */
     @Deprecated
     private transient String groovyScript;
-    @CheckForNull
+    @Nonnull
     private SecureGroovyScript groovyTrigger;
 
     /**
      * This human readable name is used in the configuration screen.
      */
+    @Nonnull
     public String getDisplayName() {
         return "Claim";
     }
@@ -56,12 +61,7 @@ public class ClaimConfig extends GlobalConfiguration {
         sendEmails = formData.getBoolean("sendEmails");
         stickyByDefault = formData.getBoolean("stickyByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
-        if(formData.containsKey("groovyTrigger")) {
-            this.groovyTrigger = req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger"));
-            setGroovyTrigger(groovyTrigger);
-        } else {
-            this.groovyTrigger = null;
-        }
+        setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
         save();
         return super.configure(req, formData);
     }
@@ -121,21 +121,17 @@ public class ClaimConfig extends GlobalConfiguration {
         this.sortUsersByFullName = sortUsersByFullName;
     }
 
-    @CheckForNull
+    @Nonnull
     public SecureGroovyScript getGroovyTrigger() {
         return groovyTrigger;
     }
 
-    void setGroovyTrigger(SecureGroovyScript groovyTrigger) {
-        if (groovyTrigger == null) {
-            this.groovyTrigger = null;
-        } else {
-            this.groovyTrigger = groovyTrigger.configuringWithKeyItem();
-        }
+    void setGroovyTrigger(@Nonnull SecureGroovyScript groovyTrigger) {
+        this.groovyTrigger = groovyTrigger.configuringWithKeyItem();
     }
 
     public boolean hasGroovyTrigger() {
-        return groovyTrigger != null && StringUtils.isNotEmpty(groovyTrigger.getScript());
+        return StringUtils.isNotEmpty(groovyTrigger.getScript());
     }
 
     /**
@@ -148,11 +144,7 @@ public class ClaimConfig extends GlobalConfiguration {
 
     private Object readResolve() {
         // JENKINS-43811 migration logic
-        if (groovyScript != null) {
-            groovyTrigger = new SecureGroovyScript(groovyScript, true, null).configuring(ApprovalContext.create());
-            groovyScript = null;
-        }
-        return this;
+        setGroovyTrigger(new SecureGroovyScript(groovyScript != null ? groovyScript : "", true, null));        return this;
     }
 
 }

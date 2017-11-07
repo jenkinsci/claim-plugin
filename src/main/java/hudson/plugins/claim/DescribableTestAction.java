@@ -55,7 +55,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 			}
 			
 			if (c!= null ) {
-				List<User> l = new ArrayList<User>(c);
+				List<User> l = new ArrayList<>(c);
 				Collections.sort(l, getComparator());
 				for (User u : l) {
 					items.add(u.getDisplayName(), u.getId());

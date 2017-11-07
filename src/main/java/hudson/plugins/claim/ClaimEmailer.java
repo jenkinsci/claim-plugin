@@ -94,7 +94,7 @@ public class ClaimEmailer {
      */
     private static MimeMessage createMimeMessage(final Mailer.DescriptorImpl mailDescriptor) throws AddressException, UnsupportedEncodingException, MessagingException {
         MimeMessage ret = new MimeMessage(mailDescriptor.createSession());
-        ret.setFrom(Mailer.StringToAddress(JenkinsLocationConfiguration.get().getAdminAddress(), mailDescriptor.getCharset()));
+        ret.setFrom(Mailer.stringToAddress(JenkinsLocationConfiguration.get().getAdminAddress(), mailDescriptor.getCharset()));
         return ret;
     }
     

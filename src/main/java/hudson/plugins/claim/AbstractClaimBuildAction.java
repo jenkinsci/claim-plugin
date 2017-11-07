@@ -1,7 +1,6 @@
 package hudson.plugins.claim;
 
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 import hudson.model.BuildBadgeAction;
 import hudson.model.Describable;
 import hudson.model.ProminentProjectAction;
@@ -20,9 +19,11 @@ import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
@@ -180,6 +181,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     /**
      * Claim a new Run with the same settings as this one.
+     * @param other the source data
      */
     public void copyTo(AbstractClaimBuildAction<T> other) {
         other.claim(getClaimedBy(), getReason(), getAssignedBy(), isSticky());
@@ -287,13 +289,12 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     
     protected void evalGroovyScript() {
         ClaimConfig config = ClaimConfig.get();
-        String groovyScript = config.getGroovyScript();
-        if ((groovyScript != null) && (!groovyScript.isEmpty())) {
+        if (config.hasGroovyTrigger()) {
+            SecureGroovyScript groovyScript = config.getGroovyTrigger();
             Binding binding = new Binding();
             binding.setVariable("action", this);
-            GroovyShell shell = new GroovyShell(binding);
             try {
-                shell.evaluate(groovyScript);
+                groovyScript.evaluate(Jenkins.getInstance().getPluginManager().uberClassLoader, binding);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error evaluating Groovy script",e);
             }

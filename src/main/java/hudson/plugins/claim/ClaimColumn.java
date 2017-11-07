@@ -1,12 +1,12 @@
 package hudson.plugins.claim;
 
+import hudson.views.ListViewColumnDescriptor;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixRun;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -29,13 +29,8 @@ public class ClaimColumn extends ListViewColumn {
         return Messages.ClaimColumn_ColumnCaption();
     }
 
-    @Override
-    public boolean shownByDefault() {
-        return false;
-    }
-
     public List<ClaimColumnInformation> getAction(Job<?,?> job) {
-                List<ClaimColumnInformation> result = new ArrayList<ClaimColumnInformation>();
+                List<ClaimColumnInformation> result = new ArrayList<>();
         Run<?,?> run = job.getLastCompletedBuild();
         if (run != null) {
                     if (run instanceof hudson.matrix.MatrixBuild) {
@@ -63,14 +58,12 @@ public class ClaimColumn extends ListViewColumn {
                 return result;
     }
 
-    public Descriptor<ListViewColumn> getDescriptor() {
-        return Hudson.getInstance().getDescriptorOrDie(getClass());
+    public DescriptorImpl getDescriptor() {
+        return (DescriptorImpl) Jenkins.getInstance().getDescriptorOrDie(getClass());
     }
 
-    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
-
     @Extension
-    public static class DescriptorImpl extends Descriptor<ListViewColumn> {
+    public static class DescriptorImpl extends ListViewColumnDescriptor {
         @Override
         public ListViewColumn newInstance(StaplerRequest req,
                                           JSONObject formData) throws FormException {
@@ -80,6 +73,11 @@ public class ClaimColumn extends ListViewColumn {
         @Override
         public String getDisplayName() {
             return Messages.ClaimColumn_DisplayName();
+        }
+
+        @Override
+        public boolean shownByDefault() {
+            return false;
         }
 
     }

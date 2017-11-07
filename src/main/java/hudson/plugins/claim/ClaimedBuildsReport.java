@@ -19,10 +19,12 @@ public class ClaimedBuildsReport implements RootAction {
     public ClaimedBuildsReport() {
     }
 
+    @Override
     public String getIconFileName() {
         return "/plugin/claim/icons/claim-24x24.png";
     }
 
+    @Override
     public String getUrlName() {
         return "/claims";
     }
@@ -30,11 +32,7 @@ public class ClaimedBuildsReport implements RootAction {
     public Run getFirstFail(Run r) {
         Run lastGood = r.getPreviousNotFailedBuild();
         Run firstFail;
-        if (lastGood == null) {
-            firstFail = r.getParent().getFirstBuild();
-        } else {
-            firstFail = lastGood.getNextBuild();
-        }
+        firstFail = lastGood == null ? r.getParent().getFirstBuild() : lastGood.getNextBuild();
         return firstFail;
     }
 
@@ -46,20 +44,16 @@ public class ClaimedBuildsReport implements RootAction {
         String reason = claim.getReason();
         if (reason != null) {
             return Messages.ClaimedBuildsReport_ClaimantText_claimedWithReason(
-                    claim.getClaimedBy(), claim.getReason(), claim.getAssignedBy());
+                claim.getClaimedBy(), claim.getReason(), claim.getAssignedBy());
         } else {
             return Messages.ClaimedBuildsReport_ClaimantText_claimed(claim
-                    .getClaimedBy(), claim.getAssignedBy());
+                                                                         .getClaimedBy(), claim.getAssignedBy());
         }
     }
 
     public View getOwner() {
         View view = Stapler.getCurrentRequest().findAncestorObject(View.class);
-        if (view != null) {
-            return view;
-        } else {
-            return Jenkins.getInstance().getStaplerFallback();
-        }
+        return view != null ? view : Jenkins.getInstance().getStaplerFallback();
     }
 
     public RunList getBuilds() {
@@ -78,6 +72,7 @@ public class ClaimedBuildsReport implements RootAction {
         return RunList.fromRuns(lastBuilds).failureOnly();
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.ClaimedBuildsReport_DisplayName();
     }

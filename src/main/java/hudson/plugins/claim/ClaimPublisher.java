@@ -37,6 +37,7 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
             return Messages.ClaimPublisher_DisplayName();
         }
 
+        @Override
         public boolean isApplicable(Class jobType) {
             return true;
         }
@@ -76,6 +77,7 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
     }
 
+    @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }

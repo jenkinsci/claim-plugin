@@ -26,7 +26,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 
     @Override
     public Data contributeTestData(Run<?, ?> run, FilePath workspace, Launcher launcher,
-        TaskListener listener, TestResult testResult) throws IOException, InterruptedException {
+                                   TaskListener listener, TestResult testResult) throws IOException, InterruptedException {
         Data data = new Data(run);
 
         for (CaseResult result: testResult.getFailedTests()) {
@@ -45,7 +45,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 
     @Override
     public Data getTestData(AbstractBuild<?, ?> build, Launcher launcher,
-            BuildListener listener, TestResult testResult) {
+                            BuildListener listener, TestResult testResult) {
         try {
             return contributeTestData(build, null, launcher, null, testResult);
         } catch (IOException e) {
@@ -65,7 +65,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
         public Data(Run<?,?> build) {
             this.build = build;
         }
-        
+
         public String getURL() {
             return build.getUrl();
         }
@@ -99,15 +99,15 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
             return Collections.emptyList();
         }
 
+        @Override
         public void save() throws IOException {
             build.save();
         }
 
         public void addClaim(String testObjectId,
-                ClaimTestAction claim) {
+                             ClaimTestAction claim) {
             claims.put(testObjectId, claim);
         }
-
     }
 
     @Extension

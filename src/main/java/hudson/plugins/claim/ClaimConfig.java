@@ -6,7 +6,7 @@ import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.StaplerRequest;
 
-@Extension 
+@Extension
 public class ClaimConfig extends GlobalConfiguration {
 
     public ClaimConfig() {
@@ -31,6 +31,7 @@ public class ClaimConfig extends GlobalConfiguration {
     /**
      * This human readable name is used in the configuration screen.
      */
+    @Override
     public String getDisplayName() {
         return "Claim";
     }
@@ -53,7 +54,7 @@ public class ClaimConfig extends GlobalConfiguration {
     public boolean getSendEmails() {
         return sendEmails;
     }
-    
+
     /**
      * Set whether we should send emails
      * @param val the setting to use
@@ -61,24 +62,24 @@ public class ClaimConfig extends GlobalConfiguration {
     public void setSendEmails(boolean val) {
         sendEmails = val;
     }
-    
+
     /**
      * Returns true if the claims should be sticky by default, false otherwise.
-     * 
+     *
      * @return true to make claims sticky by default, else false.
      */
     public boolean isStickyByDefault() {
-	return stickyByDefault;
+        return stickyByDefault;
     }
 
     /**
      * Sets the default stickiness behaviour for build claims.
-     * 
+     *
      * @param stickyByDefault
      *            the default stickiness value.
      */
     public void setStickyByDefault(boolean stickyByDefault) {
-	this.stickyByDefault = stickyByDefault;
+        this.stickyByDefault = stickyByDefault;
     }
 
     /**
@@ -88,7 +89,7 @@ public class ClaimConfig extends GlobalConfiguration {
     public String getGroovyScript() {
         return groovyScript;
     }
-    
+
     /**
      * Set the Groovy script to run when a claim is changed.
      * @param val the script to use
@@ -96,7 +97,7 @@ public class ClaimConfig extends GlobalConfiguration {
     public void setGroovyScript(String val) {
         groovyScript = val;
     }
-    
+
     /**
      * get the current claim configuration
      * @return the global claim configuration

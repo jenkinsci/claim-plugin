@@ -15,6 +15,7 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Run> {
         this.testObjectId = testObjectId;
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.ClaimTestAction_DisplayName();
     }

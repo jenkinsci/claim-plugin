@@ -11,10 +11,7 @@ import hudson.model.Run;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ClaimBuildFailureAnalyzer {
 
@@ -33,16 +30,16 @@ public class ClaimBuildFailureAnalyzer {
         return (Jenkins.getInstance().getPlugin("build-failure-analyzer")!=null && Jenkins.getInstance().getPlugin(PluginImpl.class).isGlobalEnabled());
     }
 
-    public static HashMap<String, String> getFillReasonMap() throws Exception {
-        HashMap<String, String> map = new HashMap<String, String>();
+    public static Map<String, String> getFillReasonMap() throws Exception {
+        Map<String, String> map = new HashMap<>();
         for (FailureCause cause : getFailureCauses()) {
             map.put(cause.getName(), cause.getDescription());
         }
         return map;
     }
 
-    public static LinkedList<String> getDropdownList() throws Exception {
-        LinkedList<String> list = new LinkedList<String>();
+    public static List<String> getDropdownList() throws Exception {
+        List<String> list = new LinkedList<>();
         for (FailureCause cause : getFailureCauses()) {
             list.add(cause.getName());
         }
@@ -51,7 +48,7 @@ public class ClaimBuildFailureAnalyzer {
 
     public void createFailAction(Run run) throws Exception {
         FoundFailureCause newClaimedFailureCause = null;
-        List<FoundIndication> indications = new LinkedList<FoundIndication>();
+        List<FoundIndication> indications = new LinkedList<>();
         for(FailureCause cause : getFailureCauses()){
             if(cause.getName().equals(ERROR)) {
                 indications.add(new ClaimIndication( run,"Null",matchingFile,"Null"));
@@ -74,7 +71,7 @@ public class ClaimBuildFailureAnalyzer {
             if(cause.getName().equals(newClaimedFailureCause.getName()) && cause.getIndications().get(0).getMatchingFile().equals("log")){
                 hasFailureCauseFromBFA = true;
             }
-            if (cause.getIndications().get(0).getMatchingFile()==matchingFile) {
+            if (cause.getIndications().get(0).getMatchingFile().equals(matchingFile)) {
                 existingClaimedFoundFailureCause = cause;
                 break;
             }
@@ -98,10 +95,15 @@ public class ClaimBuildFailureAnalyzer {
         if(!bfaActionList.isEmpty()) {
             FailureCauseBuildAction bfaAction = bfaActionList.get(0);
             List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
+            List<FoundFailureCause> failureCausesToRemove = new ArrayList<>();
             for (FoundFailureCause cause : foundFailureCauses) {
-                if (cause.getIndications().get(0).getMatchingFile() == "Claim") {
-                    foundFailureCauses.remove(cause);
+                if (cause.getIndications().get(0).getMatchingFile().equals("Claim")) {
+                    failureCausesToRemove.add(cause);
                 }
+            }
+
+            if (!failureCausesToRemove.isEmpty()) {
+                foundFailureCauses.removeAll(failureCausesToRemove);
             }
         }
     }

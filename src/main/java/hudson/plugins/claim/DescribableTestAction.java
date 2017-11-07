@@ -21,13 +21,15 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 
 	public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
+	@Override
 	public Descriptor<DescribableTestAction> getDescriptor() {
 		return DESCRIPTOR;
 	}
-	
+
 	private static Comparator<User> comparator = new Comparator<User>() {
+		@Override
 		public int compare(User c1, User c2) {
-			return c1.getId().compareTo(c2.getId()); 
+			return c1.getId().compareTo(c2.getId());
 		}
 	};
 
@@ -50,15 +52,13 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 				items.add(currentUser.getDisplayName(), currentUser.getId());
 			}
 			Collection<User> c = User.getAll();
-			if (c != null && currentUser != null) {
-				if (c.contains(currentUser)) {
-					c.remove(currentUser);
-				}
+			if (c != null && currentUser != null && c.contains(currentUser)) {
+				c.remove(currentUser);
 			}
-			
+
 			if (c!= null ) {
 				List<User> l = new ArrayList<User>(c);
-				Collections.sort(l, comparator); 
+				Collections.sort(l, comparator);
 				for (User u : l) {
 					items.add(u.getDisplayName(), u.getId());
 				}
@@ -70,7 +70,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 		public ListBoxModel doFillErrorsItems() throws Exception {
 			ListBoxModel items = new ListBoxModel();
 			if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {
-				LinkedList<String> list = ClaimBuildFailureAnalyzer.getDropdownList();
+				List<String> list = ClaimBuildFailureAnalyzer.getDropdownList();
 				if (!AbstractClaimBuildAction.isReclaim) {
 					items.add("---None---", "Default");
 					for (String cause : list) {

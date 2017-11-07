@@ -11,9 +11,7 @@ import hudson.model.Hudson;
 import hudson.model.User;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +21,7 @@ import javax.servlet.ServletException;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.control.*;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
@@ -30,7 +29,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility = 2)
 public abstract class AbstractClaimBuildAction<T extends Saveable> extends DescribableTestAction implements BuildBadgeAction,
-        ProminentProjectAction, Describable<DescribableTestAction> {
+    ProminentProjectAction, Describable<DescribableTestAction> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
@@ -52,18 +51,20 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     private String reason;
 
+    @Override
     public String getIconFileName() {
         return null;
     }
 
+    @Override
     public String getUrlName() {
         return "claim";
     }
-    
+
     abstract String getUrl();
 
     public void doClaim(StaplerRequest req, StaplerResponse resp)
-            throws Exception {
+        throws Exception, ServletException, IOException {
         Authentication authentication = Hudson.getAuthentication();
         String currentUser = authentication.getName();
         String name = currentUser; // Default to self-assignment
@@ -118,7 +119,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     }
 
     public void doUnclaim(StaplerRequest req, StaplerResponse resp)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         unclaim();
         if(ClaimBuildFailureAnalyzer.isBFAEnabled() && BFAClaimer!=null)
             BFAClaimer.removeFailAction((Run) owner);
@@ -132,28 +133,20 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     public String getClaimedBy() {
         return claimedBy;
     }
-    
+
     @Exported
     public String getAssignedBy() {
-    	return assignedBy;
+        return assignedBy;
     }
 
     public String getClaimedByName() {
         User user = User.get(claimedBy, false,Collections.EMPTY_MAP);
-        if (user != null) {
-            return user.getDisplayName();
-        } else {
-            return claimedBy;
-        }
+        return user != null ? user.getDisplayName() : claimedBy;
     }
-    
+
     public String getAssignedByName() {
         User user = User.get(assignedBy, false,Collections.EMPTY_MAP);
-        if (user != null) {
-            return user.getDisplayName();
-        } else {
-            return assignedBy;
-        }
+        return user != null ? user.getDisplayName() : assignedBy;
     }
 
     public void setClaimedBy(String claimedBy) {
@@ -161,7 +154,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     }
 
     public void setAssignedBy (String assignedBy) {
-    	this.assignedBy = assignedBy;
+        this.assignedBy = assignedBy;
     }
 
     @Exported
@@ -196,7 +189,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     public boolean isClaimedByMe() {
         return !isUserAnonymous()
-                && Hudson.getAuthentication().getName().equals(claimedBy);
+            && Hudson.getAuthentication().getName().equals(claimedBy);
     }
 
     public boolean canClaim() {
@@ -219,7 +212,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     public String fillReason() throws Exception {
         JSONObject json = new JSONObject();
         if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
-            HashMap<String, String> map = ClaimBuildFailureAnalyzer.getFillReasonMap();
+            Map<String, String> map = ClaimBuildFailureAnalyzer.getFillReasonMap();
             for (String key : map.keySet()) {
                 json.put(key, map.get(key));
             }
@@ -269,22 +262,22 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     }
     /**
      * was the action claimed by someone to themselves?
-     * @return true if the item was claimed by the user to themselves, false otherwise 
+     * @return true if the item was claimed by the user to themselves, false otherwise
      */
     public boolean isSelfAssigned() {
-    	boolean ret = true;
-    	if (! isClaimed()) {
-    		ret = false;
-    	} else if (getClaimedBy() == null) {
-    		ret = false;
-    	} else if (! getClaimedBy().equals(getAssignedBy())) {
-    		ret = false;
-    	}
-    	return ret;
+        boolean ret = true;
+        if (! isClaimed()) {
+            ret = false;
+        } else if (getClaimedBy() == null) {
+            ret = false;
+        } else if (! getClaimedBy().equals(getAssignedBy())) {
+            ret = false;
+        }
+        return ret;
     }
 
     public abstract String getNoun();
-    
+
     protected void evalGroovyScript() {
         ClaimConfig config = ClaimConfig.get();
         String groovyScript = config.getGroovyScript();
@@ -294,6 +287,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             GroovyShell shell = new GroovyShell(binding);
             try {
                 shell.evaluate(groovyScript);
+            } catch (CompilationFailedException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error evaluating Groovy script",e);
             }

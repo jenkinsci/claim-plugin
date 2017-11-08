@@ -6,6 +6,12 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+
+### v2.10 (08 Nov 2016)
+- Fixed an arbitrary code execution vulnerability [JENKINS-43811]
+- Added an option to sort users by their full name in the claim page [JENKINS-47437]
+- Fixed an Index Out of Bounds Exception when claiming a test failure [JENKINS-44024]
+
 ### v2.9 (14 Nov 2016)
 - Fixed single quote failure introduced in 2.8 [JENKINS-28722]
 - Removed unused json2.js [JENKINS-33078]
@@ -61,6 +67,9 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-44024]: https://issues.jenkins-ci.org/browse/JENKINS-44024
+[JENKINS-47437]: https://issues.jenkins-ci.org/browse/JENKINS-47437
+[JENKINS-43811]: https://issues.jenkins-ci.org/browse/JENKINS-43811
 [JENKINS-39538]: https://issues.jenkins-ci.org/browse/JENKINS-39538
 [JENKINS-39537]: https://issues.jenkins-ci.org/browse/JENKINS-39537
 [JENKINS-33715]: https://issues.jenkins-ci.org/browse/JENKINS-33715

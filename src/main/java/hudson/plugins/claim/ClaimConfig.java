@@ -43,6 +43,7 @@ public class ClaimConfig extends GlobalConfiguration {
      */
     @Deprecated
     private transient String groovyScript;
+
     @Nonnull
     private SecureGroovyScript groovyTrigger;
 

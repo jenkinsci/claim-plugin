@@ -1,7 +1,5 @@
 package hudson.plugins.claim;
 
-import java.io.ObjectStreamException;
-
 import hudson.model.Run;
 
 public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
@@ -23,7 +21,7 @@ public class ClaimBuildAction extends AbstractClaimBuildAction<Run> {
         return Messages.ClaimBuildAction_Noun();
     }
 
-    public Object readResolve() throws ObjectStreamException {
+    public Object readResolve() {
         if (run != null && owner == null) {
             owner = run;
         }

@@ -200,8 +200,7 @@ public class ClaimTest {
 
         HtmlFormUtil.submit(form, j.last(form.getHtmlElementsByTagName("button")));
 
-        ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        return action;
+        return build.getAction(ClaimBuildAction.class);
     }
 
     private HtmlPage whenNavigatingToClaimPageAndClicking(String claimElement) throws Exception {

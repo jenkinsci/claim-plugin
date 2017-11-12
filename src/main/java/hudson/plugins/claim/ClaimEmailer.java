@@ -63,10 +63,9 @@ public class ClaimEmailer {
     
     private static MimeMessage createMessage(User assignee, String assignedBy, String build, String reason, String URL)
             throws MessagingException, IOException, InterruptedException {
-        MimeMessage msg = null;
         // create Session
         final Mailer.DescriptorImpl mailDescriptor = new Mailer.DescriptorImpl();
-        msg = createMimeMessage(mailDescriptor);
+        MimeMessage msg = createMimeMessage(mailDescriptor);
 
         msg.setSentDate(new Date());
         msg.setSubject(Messages.ClaimEmailer_Subject(build),mailDescriptor.getCharset());

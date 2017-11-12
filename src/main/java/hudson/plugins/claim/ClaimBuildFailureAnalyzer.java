@@ -22,7 +22,7 @@ public class ClaimBuildFailureAnalyzer {
     public static String ERROR = "Default";
     private static final String MATCHING_FILE = "Claim";
 
-    public ClaimBuildFailureAnalyzer(String error) throws Exception {
+    public ClaimBuildFailureAnalyzer(String error) {
         ERROR=error;
     }
 
@@ -88,7 +88,7 @@ public class ClaimBuildFailureAnalyzer {
         }
         try {
             run.save();
-            StatisticsLogger.getInstance().log((AbstractBuild) run, bfaAction.getFoundFailureCauses());
+            StatisticsLogger.getInstance().log(run, bfaAction.getFoundFailureCauses());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,9 +105,7 @@ public class ClaimBuildFailureAnalyzer {
                     toRemove.add(cause);
                 }
             }
-            for (FoundFailureCause cause : toRemove) {
-                foundFailureCauses.remove(cause);
-            }
+            foundFailureCauses.removeAll(toRemove);
         }
     }
 

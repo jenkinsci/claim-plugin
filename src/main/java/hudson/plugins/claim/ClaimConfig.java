@@ -19,7 +19,7 @@ public class ClaimConfig extends GlobalConfiguration {
     public ClaimConfig() {
         load();
         if (groovyTrigger == null) {
-            setGroovyTrigger(new SecureGroovyScript("", true));
+            setGroovyTrigger(new SecureGroovyScript("", true, null));
         }
     }
 

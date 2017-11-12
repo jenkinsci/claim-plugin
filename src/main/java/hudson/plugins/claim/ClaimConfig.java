@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
@@ -16,6 +17,9 @@ public class ClaimConfig extends GlobalConfiguration {
 
     private static final String GROOVY_SCRIPT_KEY = "hudson.plugins.claim.ClaimConfig.groovyTrigger";
 
+    @SuppressFBWarnings(
+            value = "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
+            justification = "groovyTrigger is initialized in setGroovyTrigger")
     public ClaimConfig() {
         load();
         if (groovyTrigger == null) {

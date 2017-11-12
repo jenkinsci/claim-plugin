@@ -18,7 +18,7 @@ public class ClaimConfig extends GlobalConfiguration {
     private static final String GROOVY_SCRIPT_KEY = "hudson.plugins.claim.ClaimConfig.groovyTrigger";
 
     @SuppressFBWarnings(
-            value = "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
+            value = {"NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"},
             justification = "groovyTrigger is initialized in setGroovyTrigger")
     public ClaimConfig() {
         load();

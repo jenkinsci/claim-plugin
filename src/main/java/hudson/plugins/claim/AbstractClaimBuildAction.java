@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -222,9 +223,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         JSONObject json = new JSONObject();
         if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
             HashMap<String, String> map = ClaimBuildFailureAnalyzer.getFillReasonMap();
-            for (String key : map.keySet()) {
-                json.put(key, map.get(key));
-            }
+            json.accumulateAll(map);
         }
         return json.toString();
     }
@@ -263,7 +262,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     @Exported
     public Date getClaimDate() {
-        return this.claimDate;
+        return (Date) this.claimDate.clone();
     }
 
     public boolean hasClaimDate() {

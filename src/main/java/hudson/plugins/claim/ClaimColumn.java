@@ -32,32 +32,35 @@ public class ClaimColumn extends ListViewColumn {
     }
 
     public List<ClaimColumnInformation> getAction(Job<?,?> job) {
-                List<ClaimColumnInformation> result = new ArrayList<>();
+        List<ClaimColumnInformation> result = new ArrayList<>();
         Run<?,?> run = job.getLastCompletedBuild();
         if (run != null) {
-                    if (run instanceof hudson.matrix.MatrixBuild) {
-                        MatrixBuild matrixBuild = (hudson.matrix.MatrixBuild) run;
+            if (run instanceof hudson.matrix.MatrixBuild) {
+                MatrixBuild matrixBuild = (hudson.matrix.MatrixBuild) run;
 
-                        for (MatrixRun combination : matrixBuild.getRuns()) {
-                            ClaimBuildAction action = combination.getAction(ClaimBuildAction.class);
-                            if (combination.getResult().isWorseThan(Result.SUCCESS) && action != null && action.isClaimed()) {
-                                ClaimColumnInformation holder = new ClaimColumnInformation();
-                                holder.setClaim(action);
-                                holder.setMatrix(true);
-                                holder.setCombinationName(combination.getParent().getCombination().toString()+": ");
-                                result.add(holder);
-                            }
-                        }
-                    } else {
-                        ClaimBuildAction action = run.getAction(ClaimBuildAction.class);
-                        if (action != null && action.isClaimed()) {
-                                ClaimColumnInformation holder = new ClaimColumnInformation();
-                                holder.setClaim(action);
-                                result.add(holder);
+                for (MatrixRun combination : matrixBuild.getRuns()) {
+                    ClaimBuildAction action = combination.getAction(ClaimBuildAction.class);
+                    if (action != null && action.isClaimed()) {
+                        Result runResult = combination.getResult();
+                        if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {
+                            ClaimColumnInformation holder = new ClaimColumnInformation();
+                            holder.setClaim(action);
+                            holder.setMatrix(true);
+                            holder.setCombinationName(combination.getParent().getCombination().toString() + ": ");
+                            result.add(holder);
                         }
                     }
+                }
+            } else {
+                ClaimBuildAction action = run.getAction(ClaimBuildAction.class);
+                if (action != null && action.isClaimed()) {
+                    ClaimColumnInformation holder = new ClaimColumnInformation();
+                    holder.setClaim(action);
+                    result.add(holder);
+                }
+            }
         }
-                return result;
+        return result;
     }
 
     public DescriptorImpl getDescriptor() {

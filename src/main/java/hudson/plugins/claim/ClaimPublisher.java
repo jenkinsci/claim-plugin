@@ -51,17 +51,11 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
     }
 
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-                           BuildListener listener) throws InterruptedException, IOException {
-        perform(build, build.getWorkspace(), launcher, listener);
-        return true;
-    }
-
-    @Override
     public void perform(@Nonnull Run<?, ?> build, @Nonnull FilePath workspace, @Nonnull Launcher launcher,
                         @Nonnull TaskListener listener) throws InterruptedException, IOException {
 
-        if (build.getResult().isWorseThan(Result.SUCCESS)) {
+        Result runResult = build.getResult();
+        if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {
             ClaimBuildAction action = new ClaimBuildAction(build);
             build.addAction(action);
             build.save();

@@ -8,12 +8,7 @@ import hudson.model.User;
 import hudson.tasks.junit.TestAction;
 import hudson.util.ListBoxModel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public abstract class DescribableTestAction extends TestAction implements Describable<DescribableTestAction> {
 
@@ -48,19 +43,17 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 				items.add(currentUser.getDisplayName(), currentUser.getId());
 			}
 			Collection<User> c = User.getAll();
-			if (c != null && currentUser != null) {
+			if (currentUser != null) {
 				if (c.contains(currentUser)) {
 					c.remove(currentUser);
 				}
 			}
-			
-			if (c!= null ) {
-				List<User> l = new ArrayList<>(c);
-				Collections.sort(l, getComparator());
-				for (User u : l) {
-					items.add(u.getDisplayName(), u.getId());
-				}
-			}
+
+			List<User> l = new ArrayList<>(c);
+			l.sort(getComparator());
+			for (User u : l) {
+                items.add(u.getDisplayName(), u.getId());
+            }
 
 			return items;
 		}

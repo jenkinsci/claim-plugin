@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
 import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -63,6 +64,7 @@ public class ClaimEmailer {
     
     private static MimeMessage createMessage(User assignee, String assignedBy, String build, String reason, String URL)
             throws MessagingException, IOException, InterruptedException {
+
         // create Session
         final Mailer.DescriptorImpl mailDescriptor = new Mailer.DescriptorImpl();
         MimeMessage msg = createMimeMessage(mailDescriptor);
@@ -73,7 +75,7 @@ public class ClaimEmailer {
         final String text = Messages.ClaimEmailer_Text(build, assignedBy) + 
                 System.getProperty("line.separator") + Messages.ClaimEmailer_Reason(reason) + 
                 System.getProperty("line.separator") + System.getProperty("line.separator") + 
-                Messages.ClaimEmailer_Details(JenkinsLocationConfiguration.get().getUrl() + URL);
+                Messages.ClaimEmailer_Details(getJenkinsLocationConfiguration().getUrl() + URL);
 
         msg.setText(text, mailDescriptor.getCharset());
         msg.setRecipient(RecipientType.TO, getUserEmail(assignee,mailDescriptor));
@@ -86,14 +88,12 @@ public class ClaimEmailer {
      * 
      * @param mailDescriptor a reference to the mailer plugin from which we can get mailing parameters
      * @return mimemessage a message which can be emailed
-     * @throws MessagingException 
-     * @throws UnsupportedEncodingException 
-     * @throws AddressException 
-     * 
+     * @throws MessagingException if there has been some problem with sending the email
+     * @throws UnsupportedEncodingException if an address provided is not in a correct format
      */
-    private static MimeMessage createMimeMessage(final Mailer.DescriptorImpl mailDescriptor) throws AddressException, UnsupportedEncodingException, MessagingException {
+    private static MimeMessage createMimeMessage(final Mailer.DescriptorImpl mailDescriptor) throws UnsupportedEncodingException, MessagingException {
         MimeMessage ret = new MimeMessage(mailDescriptor.createSession());
-        ret.setFrom(Mailer.stringToAddress(JenkinsLocationConfiguration.get().getAdminAddress(), mailDescriptor.getCharset()));
+        ret.setFrom(Mailer.stringToAddress(getJenkinsLocationConfiguration().getAdminAddress(), mailDescriptor.getCharset()));
         return ret;
     }
     
@@ -120,4 +120,12 @@ public class ClaimEmailer {
         return null;
     }
 
+    @Nonnull
+    private static JenkinsLocationConfiguration getJenkinsLocationConfiguration() {
+        final JenkinsLocationConfiguration jlc = JenkinsLocationConfiguration.get();
+        if (jlc == null) {
+            throw new IllegalStateException("JenkinsLocationConfiguration not available");
+        }
+        return jlc;
+    }
 }

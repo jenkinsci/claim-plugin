@@ -143,6 +143,7 @@ public class ClaimConfig extends GlobalConfiguration {
         return GlobalConfiguration.all().get(ClaimConfig.class);
     }
 
+    @SuppressWarnings("deprecation")
     private Object readResolve() {
         // JENKINS-43811 migration logic
         setGroovyTrigger(new SecureGroovyScript(groovyScript != null ? groovyScript : "", true, null));        return this;

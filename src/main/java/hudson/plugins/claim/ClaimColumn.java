@@ -18,6 +18,8 @@ import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.Nonnull;
+
 public class ClaimColumn extends ListViewColumn {
 
     @DataBoundConstructor
@@ -66,10 +68,11 @@ public class ClaimColumn extends ListViewColumn {
     public static class DescriptorImpl extends ListViewColumnDescriptor {
         @Override
         public ListViewColumn newInstance(StaplerRequest req,
-                                          JSONObject formData) throws FormException {
+                                          @Nonnull JSONObject formData) throws FormException {
             return new ClaimColumn();
         }
 
+        @Nonnull
         @Override
         public String getDisplayName() {
             return Messages.ClaimColumn_DisplayName();

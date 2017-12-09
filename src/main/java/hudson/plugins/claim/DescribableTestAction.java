@@ -1,12 +1,11 @@
 package hudson.plugins.claim;
 
 import hudson.Extension;
-import hudson.model.Describable;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.model.User;
+import hudson.model.*;
 import hudson.tasks.junit.TestAction;
 import hudson.util.ListBoxModel;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.QueryParameter;
 
 import java.util.*;
 
@@ -58,22 +57,25 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 			return items;
 		}
 
-		public ListBoxModel doFillErrorsItems() throws Exception {
+		public ListBoxModel doFillErrorsItems(@AncestorInPath Run run) throws Exception {
+
 			ListBoxModel items = new ListBoxModel();
 			if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {
 				LinkedList<String> list = ClaimBuildFailureAnalyzer.getDropdownList();
-				if (!AbstractClaimBuildAction.isReclaim) {
-					items.add("---None---", "Default");
+				AbstractClaimBuildAction action = run.getAction(AbstractClaimBuildAction.class);
+				if (action == null || action.getBFAClaimer() == null || !action.isReclaim()) {
+					items.add("---None---", ClaimBuildFailureAnalyzer.DEFAULT_ERROR);
 					for (String cause : list) {
 						items.add(cause, cause);
 					}
 				} else {
-					if (!ClaimBuildFailureAnalyzer.ERROR.equals("Default")) {
-						items.add(ClaimBuildFailureAnalyzer.ERROR, ClaimBuildFailureAnalyzer.ERROR);
+					ClaimBuildFailureAnalyzer bfaClaimer = action.getBFAClaimer();
+					if (!bfaClaimer.isDefaultError()) {
+						items.add(bfaClaimer.getError(), bfaClaimer.getError());
 					}
-					items.add("---None---", "Default");
+					items.add("---None---", ClaimBuildFailureAnalyzer.DEFAULT_ERROR);
 					for (String cause : list) {
-						if (!cause.equals(ClaimBuildFailureAnalyzer.ERROR))
+						if (!cause.equals(bfaClaimer.getError()))
 							items.add(cause, cause);
 					}
 				}

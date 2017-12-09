@@ -86,7 +86,7 @@ public class ClaimBuildFailureAnalyzer {
             if(cause.getName().equals(newClaimedFailureCause.getName()) && cause.getIndications().get(0).getMatchingFile().equals("log")){
                 hasFailureCauseFromBFA = true;
             }
-            if (cause.getIndications().get(0).getMatchingFile()==MATCHING_FILE) {
+            if (cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
                 existingClaimedFoundFailureCause = cause;
                 break;
             }
@@ -112,7 +112,7 @@ public class ClaimBuildFailureAnalyzer {
             List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
             List<FoundFailureCause> toRemove = Lists.newArrayList();
             for (FoundFailureCause cause : foundFailureCauses) {
-                if (cause.getIndications().size() > 0 && cause.getIndications().get(0).getMatchingFile() == MATCHING_FILE) {
+                if (cause.getIndications().size() > 0 && cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
                     toRemove.add(cause);
                 }
             }

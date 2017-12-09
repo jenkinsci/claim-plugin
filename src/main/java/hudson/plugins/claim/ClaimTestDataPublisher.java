@@ -49,14 +49,13 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 
         private Map<String,ClaimTestAction> claims = new HashMap<>();
 
-
         private final Run<?,?> build;
 
         public Data(Run<?,?> build) {
             this.build = build;
         }
         
-        public String getURL() {
+        public String getUrl() {
             return build.getUrl();
         }
 

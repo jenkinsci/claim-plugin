@@ -33,7 +33,6 @@
 
 	<properties>
 		<jenkins.version>2.7.3</jenkins.version>
-		<findbugs.failOnError>false</findbugs.failOnError>
 		<java.level>8</java.level>
 	</properties>
 

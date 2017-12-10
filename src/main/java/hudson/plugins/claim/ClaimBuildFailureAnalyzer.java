@@ -7,10 +7,10 @@ import com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseBuildAction;
 import com.sonyericsson.jenkins.plugins.bfa.model.FoundFailureCause;
 import com.sonyericsson.jenkins.plugins.bfa.model.indication.FoundIndication;
 import com.sonyericsson.jenkins.plugins.bfa.statistics.StatisticsLogger;
-import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import jenkins.model.Jenkins;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,11 +19,22 @@ import java.util.List;
 
 public class ClaimBuildFailureAnalyzer {
 
-    public static String ERROR = "Default";
+    public static final String DEFAULT_ERROR = "Default";
     private static final String MATCHING_FILE = "Claim";
 
-    public ClaimBuildFailureAnalyzer(String error) throws Exception {
-        ERROR=error;
+    @Nonnull
+    private final String error;
+
+    public ClaimBuildFailureAnalyzer(@Nonnull String error) {
+        this.error=error;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public boolean isDefaultError() {
+        return DEFAULT_ERROR.equals(error);
     }
 
     public static Collection<FailureCause> getFailureCauses() throws Exception {
@@ -54,7 +65,7 @@ public class ClaimBuildFailureAnalyzer {
         FoundFailureCause newClaimedFailureCause = null;
         List<FoundIndication> indications = new LinkedList<>();
         for(FailureCause cause : getFailureCauses()){
-            if(cause.getName().equals(ERROR)) {
+            if(cause.getName().equals(error)) {
                 indications.add(new ClaimIndication(run, "Null", MATCHING_FILE, "Null"));
                 newClaimedFailureCause = new FoundFailureCause(cause, indications);
                 break;
@@ -75,7 +86,7 @@ public class ClaimBuildFailureAnalyzer {
             if(cause.getName().equals(newClaimedFailureCause.getName()) && cause.getIndications().get(0).getMatchingFile().equals("log")){
                 hasFailureCauseFromBFA = true;
             }
-            if (cause.getIndications().get(0).getMatchingFile()==MATCHING_FILE) {
+            if (cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
                 existingClaimedFoundFailureCause = cause;
                 break;
             }
@@ -88,7 +99,7 @@ public class ClaimBuildFailureAnalyzer {
         }
         try {
             run.save();
-            StatisticsLogger.getInstance().log((AbstractBuild) run, bfaAction.getFoundFailureCauses());
+            StatisticsLogger.getInstance().log(run, bfaAction.getFoundFailureCauses());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,13 +112,11 @@ public class ClaimBuildFailureAnalyzer {
             List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
             List<FoundFailureCause> toRemove = Lists.newArrayList();
             for (FoundFailureCause cause : foundFailureCauses) {
-                if (cause.getIndications().size() > 0 && cause.getIndications().get(0).getMatchingFile() == MATCHING_FILE) {
+                if (cause.getIndications().size() > 0 && cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
                     toRemove.add(cause);
                 }
             }
-            for (FoundFailureCause cause : toRemove) {
-                foundFailureCauses.remove(cause);
-            }
+            foundFailureCauses.removeAll(toRemove);
         }
     }
 

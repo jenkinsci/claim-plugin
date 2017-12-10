@@ -18,6 +18,8 @@ import java.io.IOException;
 import jenkins.tasks.SimpleBuildStep;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import javax.annotation.Nonnull;
+
 public class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
     @DataBoundConstructor
@@ -31,6 +33,7 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
             return "/plugin/claim/help.html";
         }
 
+        @Nonnull
         @Override
         public String getDisplayName() {
             return Messages.ClaimPublisher_DisplayName();
@@ -48,17 +51,11 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
     }
 
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-                           BuildListener listener) throws InterruptedException, IOException {
-        perform(build, build.getWorkspace(), launcher, listener);
-        return true;
-    }
+    public void perform(@Nonnull Run<?, ?> build, @Nonnull FilePath workspace, @Nonnull Launcher launcher,
+                        @Nonnull TaskListener listener) throws InterruptedException, IOException {
 
-    @Override
-    public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher,
-                           TaskListener listener) throws InterruptedException, IOException {
-
-        if (build.getResult().isWorseThan(Result.SUCCESS)) {
+        Result runResult = build.getResult();
+        if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {
             ClaimBuildAction action = new ClaimBuildAction(build);
             build.addAction(action);
             build.save();

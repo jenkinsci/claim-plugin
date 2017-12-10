@@ -64,8 +64,7 @@ public class ClaimedBuildsReport implements RootAction {
 
     public RunList getBuilds() {
         List<Run> lastBuilds = new ArrayList<>();
-        for (Job item : Jenkins.getInstance().getAllItems(Job.class)) {
-            Job job = (Job) item;
+        for (Job job : Jenkins.getInstance().getAllItems(Job.class)) {
             Run lb = job.getLastBuild();
             while (lb != null && (lb.hasntStartedYet() || lb.isBuilding()))
                 lb = lb.getPreviousBuild();

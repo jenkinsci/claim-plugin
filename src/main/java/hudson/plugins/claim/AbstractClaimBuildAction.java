@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +32,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility = 2)
 public abstract class AbstractClaimBuildAction<T extends Saveable> extends DescribableTestAction implements BuildBadgeAction,
-        ProminentProjectAction, Describable<DescribableTestAction> {
+        ProminentProjectAction {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
@@ -41,17 +42,24 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     private String assignedBy;
     private Date claimDate;
     private boolean transientClaim = !ClaimConfig.get().isStickyByDefault();
-    public static boolean isReclaim = false;
+    private boolean reclaim;
     private ClaimBuildFailureAnalyzer BFAClaimer = null;
+    private String reason;
 
     protected T owner;
 
     AbstractClaimBuildAction(T owner) {
         this.owner = owner;
-        isReclaim = false;
+        reclaim = false;
     }
 
-    private String reason;
+    public boolean isReclaim() {
+        return reclaim;
+    }
+
+    public ClaimBuildFailureAnalyzer getBFAClaimer() {
+        return BFAClaimer;
+    }
 
     public String getIconFileName() {
         return null;
@@ -87,7 +95,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             if (this.owner instanceof Run)
             {
                 Run run = (Run) owner;
-                if(!ClaimBuildFailureAnalyzer.ERROR.equals("Default")){
+                if(!BFAClaimer.isDefaultError()){
                     try{
                         BFAClaimer.createFailAction(run);
                     } catch (IndexOutOfBoundsException e){
@@ -112,7 +120,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Interrupted when sending assignment email",e);
         }
-        isReclaim = true;
+        reclaim = true;
         owner.save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
@@ -123,7 +131,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         unclaim();
         if(ClaimBuildFailureAnalyzer.isBFAEnabled() && BFAClaimer!=null)
             BFAClaimer.removeFailAction((Run) owner);
-        isReclaim = false;
+        reclaim = false;
         owner.save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
@@ -222,9 +230,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         JSONObject json = new JSONObject();
         if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
             HashMap<String, String> map = ClaimBuildFailureAnalyzer.getFillReasonMap();
-            for (String key : map.keySet()) {
-                json.put(key, map.get(key));
-            }
+            json.accumulateAll(map);
         }
         return json.toString();
     }
@@ -254,7 +260,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     }
 
     public String getError(){
-        return ClaimBuildFailureAnalyzer.ERROR;
+        return BFAClaimer.getError();
     }
 
     public boolean isBFAEnabled(){
@@ -263,7 +269,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
 
     @Exported
     public Date getClaimDate() {
-        return this.claimDate;
+        return (Date) this.claimDate.clone();
     }
 
     public boolean hasClaimDate() {

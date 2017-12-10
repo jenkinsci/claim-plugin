@@ -34,7 +34,7 @@ public class DescribableTestActionTest {
     wc.login("user2", "user2");
     wc.login("user3", "user3");
     wc.login("user4", "user4");
-    wc.closeAllWindows();
+    wc.close();
 
     (user0 = j.jenkins.getUser("user0")).setFullName("T-800");
     (user1 = j.jenkins.getUser("user1")).setFullName("Sarah CONNOR");

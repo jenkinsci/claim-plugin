@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
@@ -16,10 +17,13 @@ public class ClaimConfig extends GlobalConfiguration {
 
     private static final String GROOVY_SCRIPT_KEY = "hudson.plugins.claim.ClaimConfig.groovyTrigger";
 
+    @SuppressFBWarnings(
+            value = {"NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"},
+            justification = "groovyTrigger is initialized in setGroovyTrigger")
     public ClaimConfig() {
         load();
         if (groovyTrigger == null) {
-            setGroovyTrigger(new SecureGroovyScript("", true));
+            setGroovyTrigger(new SecureGroovyScript("", true, null));
         }
     }
 
@@ -43,6 +47,7 @@ public class ClaimConfig extends GlobalConfiguration {
      */
     @Deprecated
     private transient String groovyScript;
+
     @Nonnull
     private SecureGroovyScript groovyTrigger;
 
@@ -142,6 +147,7 @@ public class ClaimConfig extends GlobalConfiguration {
         return GlobalConfiguration.all().get(ClaimConfig.class);
     }
 
+    @SuppressWarnings("deprecation")
     private Object readResolve() {
         // JENKINS-43811 migration logic
         setGroovyTrigger(new SecureGroovyScript(groovyScript != null ? groovyScript : "", true, null));        return this;

@@ -148,15 +148,13 @@ public class ClaimBFATest {
 
         HtmlFormUtil.submit(form, j.last(form.getHtmlElementsByTagName("button")));
 
-        ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        return action;
+        return build.getAction(ClaimBuildAction.class);
     }
 
     private HtmlPage whenNavigatingtoClaimPage() throws Exception{
         JenkinsRule.WebClient wc = j.createWebClient();
         wc.login("user1", "user1");
-        HtmlPage page = wc.goTo("job/x/" + build.getNumber());
-        return page;
+        return wc.goTo("job/x/" + build.getNumber());
     }
 
 }

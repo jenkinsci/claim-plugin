@@ -32,7 +32,7 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Run> {
 
     @Override
     String getUrl() {
-        return data.getURL();
+        return data.getUrl();
     }
 
 }

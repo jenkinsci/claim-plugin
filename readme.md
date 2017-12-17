@@ -7,7 +7,7 @@ Look at [wiki] for detailed instructions.
 Change Log
 ----------
 
-### v2.10 (08 Nov 2016)
+### v2.10 (08 Nov 2017)
 - Fixed an arbitrary code execution vulnerability [JENKINS-43811]
 - Added an option to sort users by their full name in the claim page [JENKINS-47437]
 - Fixed an Index Out of Bounds Exception when claiming a test failure [JENKINS-44024]

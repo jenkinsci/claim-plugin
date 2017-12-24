@@ -11,16 +11,34 @@ import java.util.ArrayList;
 import java.util.List;
 import jenkins.model.Jenkins;
 
+import org.apache.commons.jelly.JellyContext;
+import org.jenkins.ui.icon.Icon;
+import org.jenkins.ui.icon.IconSet;
+import org.jenkins.ui.icon.IconSpec;
 import org.kohsuke.stapler.Stapler;
 
 @Extension
-public class ClaimedBuildsReport implements RootAction {
+public class ClaimedBuildsReport implements RootAction, IconSpec {
 
     public ClaimedBuildsReport() {
     }
 
+    @Override
+    public String getIconClassName() {
+        return "icon-claim-claim";
+    }
+
     public String getIconFileName() {
-        return "/plugin/claim/icons/claim-24x24.png";
+        String iconClassName = getIconClassName();
+        if (iconClassName != null) {
+            Icon icon = IconSet.icons.getIconByClassSpec(iconClassName + " icon-md");
+            if (icon != null) {
+                JellyContext ctx = new JellyContext();
+                ctx.setVariable("resURL", Stapler.getCurrentRequest().getContextPath() + Jenkins.RESOURCE_PATH);
+                return icon.getQualifiedUrl(ctx);
+            }
+        }
+        return null;
     }
 
     public String getUrlName() {
@@ -41,7 +59,7 @@ public class ClaimedBuildsReport implements RootAction {
     public String getClaimantText(Run r) {
         ClaimBuildAction claim = r.getAction(ClaimBuildAction.class);
         if (claim == null || !claim.isClaimed()) {
-            return Messages.ClaimedBuildsReport_ClaimantText_unclimed();
+            return Messages.ClaimedBuildsReport_ClaimantText_unclaimed();
         }
         String reason = claim.getReason();
         if (reason != null) {

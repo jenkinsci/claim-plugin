@@ -133,7 +133,16 @@ public class ClaimConfig extends GlobalConfiguration {
     }
 
     void setGroovyTrigger(@Nonnull SecureGroovyScript groovyTrigger) {
-        this.groovyTrigger = groovyTrigger.configuring(ApprovalContext.create().withCurrentUser().withKey(GROOVY_SCRIPT_KEY));    }
+        this.setGroovyTrigger(groovyTrigger, true);
+    }
+
+    private void setGroovyTrigger(@Nonnull SecureGroovyScript groovyTrigger, boolean withCurrentUser ) {
+        ApprovalContext approvalContext = ApprovalContext.create().withKey(GROOVY_SCRIPT_KEY);
+        if (withCurrentUser) {
+            approvalContext = approvalContext.withCurrentUser();
+        }
+        this.groovyTrigger = groovyTrigger.configuring(approvalContext);
+    }
 
     public boolean hasGroovyTrigger() {
         return StringUtils.isNotEmpty(groovyTrigger.getScript());
@@ -150,7 +159,7 @@ public class ClaimConfig extends GlobalConfiguration {
     @SuppressWarnings("deprecation")
     private Object readResolve() {
         // JENKINS-43811 migration logic
-        setGroovyTrigger(new SecureGroovyScript(groovyScript != null ? groovyScript : "", true, null));        return this;
+        setGroovyTrigger(new SecureGroovyScript(groovyScript != null ? groovyScript : "", true, null), false);        return this;
     }
 
 }

@@ -7,6 +7,9 @@ Look at [wiki] for detailed instructions.
 Change Log
 ----------
 
+### v2.11 (24 Dec 2017)
+- Fixed a regression introduced in 2.10 preventing the plugin to start [JENKINS-47972]
+
 ### v2.10 (08 Nov 2017)
 - Fixed an arbitrary code execution vulnerability [JENKINS-43811]
 - Added an option to sort users by their full name in the claim page [JENKINS-47437]
@@ -67,6 +70,7 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-47972]: https://issues.jenkins-ci.org/browse/JENKINS-47972
 [JENKINS-44024]: https://issues.jenkins-ci.org/browse/JENKINS-44024
 [JENKINS-47437]: https://issues.jenkins-ci.org/browse/JENKINS-47437
 [JENKINS-43811]: https://issues.jenkins-ci.org/browse/JENKINS-43811

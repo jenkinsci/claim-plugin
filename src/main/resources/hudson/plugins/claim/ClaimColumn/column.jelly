@@ -31,7 +31,7 @@ THE SOFTWARE.
                 <j:choose>
                     <j:when test="${action.claim.claimedBy.equals(action.claim.assignedBy)}">
                         <l:icon class="icon-claim-claim ${subIconSizeClass}"
-                                title="${%climed.reason(action.combinationName,action.claim.claimedBy,action.claim.reason)}"/>
+                                title="${%claimed.reason(action.combinationName,action.claim.claimedBy,action.claim.reason)}"/>
                     </j:when>
                     <j:otherwise>
                         <l:icon class="icon-claim-claim ${subIconSizeClass}"
@@ -43,11 +43,11 @@ THE SOFTWARE.
                 <j:choose>
                     <j:when test="${action.claim.claimedBy.equals(action.claim.assignedBy)}">
                         <l:icon class="icon-claim-claim ${subIconSizeClass}"
-                                title="${%climed(action.combinationName,action.claim.claimedBy)}"/>
+                                title="${%claimed(action.combinationName,action.claim.claimedBy)}"/>
                     </j:when>
                     <j:otherwise>
                         <l:icon class="icon-claim-claim ${subIconSizeClass}"
-                                title="$${%climed(action.claim.claimedBy,action.claim.assignedBy)}"/>
+                                title="$${%claimed(action.claim.claimedBy,action.claim.assignedBy)}"/>
                     </j:otherwise>
                 </j:choose>
              </j:otherwise>

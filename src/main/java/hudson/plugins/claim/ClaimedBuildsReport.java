@@ -59,7 +59,7 @@ public class ClaimedBuildsReport implements RootAction, IconSpec {
     public String getClaimantText(Run r) {
         ClaimBuildAction claim = r.getAction(ClaimBuildAction.class);
         if (claim == null || !claim.isClaimed()) {
-            return Messages.ClaimedBuildsReport_ClaimantText_unclimed();
+            return Messages.ClaimedBuildsReport_ClaimantText_unclaimed();
         }
         String reason = claim.getReason();
         if (reason != null) {

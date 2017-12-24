@@ -56,7 +56,7 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
         Result runResult = build.getResult();
         if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {
-            ClaimBuildAction action = new ClaimBuildAction(build);
+            ClaimBuildAction action = new ClaimBuildAction();
             build.addAction(action);
             build.save();
 

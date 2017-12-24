@@ -46,10 +46,9 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     private ClaimBuildFailureAnalyzer BFAClaimer = null;
     private String reason;
 
-    protected T owner;
+    protected abstract T getOwner();
 
-    AbstractClaimBuildAction(T owner) {
-        this.owner = owner;
+    AbstractClaimBuildAction() {
         reclaim = false;
     }
 
@@ -92,9 +91,9 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
             String error = req.getSubmittedForm().getString("errors");
             BFAClaimer = new ClaimBuildFailureAnalyzer(error);
-            if (this.owner instanceof Run)
+            if (getOwner() instanceof Run)
             {
-                Run run = (Run) owner;
+                Run run = (Run) getOwner();
                 if(!BFAClaimer.isDefaultError()){
                     try{
                         BFAClaimer.createFailAction(run);
@@ -114,14 +113,14 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         if (StringUtils.isEmpty(reason)) reason = null;
         claim(name, reason, currentUser, sticky);
         try {
-            ClaimEmailer.sendEmailIfConfigured(User.get(name, false, Collections.EMPTY_MAP), currentUser, owner.toString(), reason, getUrl());
+            ClaimEmailer.sendEmailIfConfigured(User.get(name, false, Collections.EMPTY_MAP), currentUser, getOwner().toString(), reason, getUrl());
         } catch (MessagingException e) {
             LOGGER.log(Level.WARNING, "Exception encountered sending assignment email: " + e.getMessage());
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Interrupted when sending assignment email",e);
         }
         reclaim = true;
-        owner.save();
+        this.getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
     }
@@ -129,10 +128,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     public void doUnclaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
         unclaim();
+
         if(ClaimBuildFailureAnalyzer.isBFAEnabled() && BFAClaimer!=null)
-            BFAClaimer.removeFailAction((Run) owner);
+            BFAClaimer.removeFailAction((Run) getOwner());
         reclaim = false;
-        owner.save();
+        getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
     }

@@ -6,11 +6,9 @@ import hudson.plugins.claim.ClaimTestDataPublisher.Data;
 public class ClaimTestAction extends AbstractClaimBuildAction<Run> {
 
     private String testObjectId;
-
     private Data data;
 
     ClaimTestAction(Data data, String testObjectId) {
-        super(data.getBuild());
         this.data = data;
         this.testObjectId = testObjectId;
     }
@@ -35,4 +33,8 @@ public class ClaimTestAction extends AbstractClaimBuildAction<Run> {
         return data.getUrl();
     }
 
+    @Override
+    protected Run getOwner() {
+        return data.getBuild();
+    }
 }

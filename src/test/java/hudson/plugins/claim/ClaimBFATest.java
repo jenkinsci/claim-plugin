@@ -143,7 +143,10 @@ public class ClaimBFATest {
         HtmlSelect select = form.getSelectByName("_.errors");
         HtmlOption option = select.getOptionByValue(error);
         select.setSelectedAttribute(option, true);
-
+        // wait for async javascript callback to execute
+        synchronized (page) {
+            page.wait(1000);
+        }
         assertEquals(description, form.getTextAreaByName("errordesc").getTextContent());
 
         HtmlFormUtil.submit(form, j.last(form.getHtmlElementsByTagName("button")));

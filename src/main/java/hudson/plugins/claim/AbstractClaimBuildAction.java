@@ -2,7 +2,6 @@ package hudson.plugins.claim;
 
 import groovy.lang.Binding;
 import hudson.model.BuildBadgeAction;
-import hudson.model.Describable;
 import hudson.model.ProminentProjectAction;
 import hudson.model.Run;
 import hudson.model.Saveable;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -233,6 +232,18 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             json.accumulateAll(map);
         }
         return json.toString();
+    }
+
+    @JavaScriptMethod
+    public String getReason(String error) throws Exception {
+        final String defaultValue = "";
+        if(!ClaimBuildFailureAnalyzer.isBFAEnabled()) {
+            return defaultValue;
+        }
+        if (error == null || ClaimBuildFailureAnalyzer.DEFAULT_ERROR.equals(error)) {
+            return defaultValue;
+        }
+        return ClaimBuildFailureAnalyzer.getFillReasonMap().getOrDefault(error, defaultValue);
     }
 
     public void setReason(String reason) {

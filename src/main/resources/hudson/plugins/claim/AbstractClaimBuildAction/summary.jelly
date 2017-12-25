@@ -18,13 +18,10 @@
         function Display(error)
         {
             reasonText = document.getElementById("errordesc");
-            obj = ${it.fillReason()};
-            if(error == "Default"){
-                reasonText.textContent = "";
-            } else{
-                reasonText.textContent = obj[error];
-            }
-            reasonText.readOnly = true;
+            var action = <st:bind value="${it}" />
+            action.getReason(error, function(content) {
+                reasonText.textContent = content.responseObject();
+            });
         }
    </script>
 
@@ -106,7 +103,7 @@
                         <f:select onChange="Display(this.value);"/>
                     </f:entry>
                     <f:entry title="${%Description}" help="/plugin/claim/help-description.html">
-                      <f:textarea name="errordesc" id="errordesc" value=""/>
+                      <f:textarea name="errordesc" id="errordesc" value="${it.getReason(it.error)}" readonly="true"/>
                   </f:entry>
                 </j:if>
                 <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">

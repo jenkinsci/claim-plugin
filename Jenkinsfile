@@ -1,5 +1,5 @@
 buildPlugin(
-  jenkinsVersion: [null, '2.89.2'],
+  jenkinsVersions: [null, '2.89.2'],
   findbugs: [
     run: true,
     archive: true,

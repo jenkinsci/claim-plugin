@@ -13,7 +13,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.annotation.Nonnull;
 
 @Extension
-public class ClaimConfig extends GlobalConfiguration {
+public final class ClaimConfig extends GlobalConfiguration {
 
     private static final String GROOVY_SCRIPT_KEY = "hudson.plugins.claim.ClaimConfig.groovyTrigger";
 
@@ -28,7 +28,7 @@ public class ClaimConfig extends GlobalConfiguration {
     }
 
     /**
-     * Whether we want to send emails to the assignee when items are claimed/assigned
+     * Whether we want to send emails to the assignee when items are claimed/assigned.
      */
     private boolean sendEmails;
 
@@ -73,7 +73,7 @@ public class ClaimConfig extends GlobalConfiguration {
     }
 
     /**
-     * This method returns true if the global configuration says we should send mails on build claims
+     * This method returns true if the global configuration says we should send mails on build claims.
      * @return true if configuration is that we send emails for claims, false otherwise
      */
     public boolean getSendEmails() {
@@ -81,7 +81,7 @@ public class ClaimConfig extends GlobalConfiguration {
     }
 
     /**
-     * Set whether we should send emails
+     * Set whether we should send emails.
      * @param val the setting to use
      */
     public void setSendEmails(boolean val) {
@@ -136,12 +136,12 @@ public class ClaimConfig extends GlobalConfiguration {
         this.setGroovyTrigger(groovyTrigger, true);
     }
 
-    private void setGroovyTrigger(@Nonnull SecureGroovyScript groovyTrigger, boolean withCurrentUser ) {
+    private void setGroovyTrigger(@Nonnull SecureGroovyScript trigger, boolean withCurrentUser) {
         ApprovalContext approvalContext = ApprovalContext.create().withKey(GROOVY_SCRIPT_KEY);
         if (withCurrentUser) {
             approvalContext = approvalContext.withCurrentUser();
         }
-        this.groovyTrigger = groovyTrigger.configuring(approvalContext);
+        this.groovyTrigger = trigger.configuring(approvalContext);
     }
 
     public boolean hasGroovyTrigger() {
@@ -149,7 +149,7 @@ public class ClaimConfig extends GlobalConfiguration {
     }
 
     /**
-     * get the current claim configuration
+     * Gets the current claim configuration.
      * @return the global claim configuration
      */
     public static ClaimConfig get() {
@@ -159,7 +159,13 @@ public class ClaimConfig extends GlobalConfiguration {
     @SuppressWarnings("deprecation")
     private Object readResolve() {
         // JENKINS-43811 migration logic
-        setGroovyTrigger(new SecureGroovyScript(groovyScript != null ? groovyScript : "", true, null), false);        return this;
+        String script;
+        if (groovyScript != null) {
+            script = groovyScript;
+        } else {
+            script = "";
+        }
+        setGroovyTrigger(new SecureGroovyScript(script, true, null), false);
+        return this;
     }
-
 }

@@ -22,47 +22,50 @@ import jenkins.model.JenkinsLocationConfiguration;
 /**
  * Email utility class to allow sending of emails using the setup of the mailer plug-in to do so.
  * If the mailer plug-in is not installed, then no emails are sent
- * 
- *
  */
-public class ClaimEmailer {
+public final class ClaimEmailer {
 
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
 
-    private static final boolean mailerLoaded = isMailerLoaded();
-    
-    private static boolean isMailerLoaded () {
+    private static final boolean MAILER_LOADED = isMailerLoaded();
+
+    private static boolean isMailerLoaded() {
         boolean ret = true;
         try {
             new Mailer.DescriptorImpl();
         } catch (Throwable e) {
-            LOGGER.warning("Mailer plugin is not installed. Mailer plugin must be installed if you want to send emails");
+            LOGGER.warning(
+                    "Mailer plugin is not installed. Mailer plugin must be installed if you want to send emails");
             ret = false;
         }
         return ret;
     }
-    
+
+    private ClaimEmailer() {
+        // makes no sense
+    }
     /**
-     * Send an email to the assignee indicating that the given build has been assigned
+     * Sends an email to the assignee indicating that the given build has been assigned.
      * @param assignee the user assigned the failed build
      * @param assignedBy the user assigning the build
      * @param build the build/action which has been assigned
      * @param reason the reason given for the assignment
-     * @param URL the URL the user can view for the assigned build
+     * @param url the URL the user can view for the assigned build
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      * @throws InterruptedException if the send operation is interrupted
      */
-    public static void sendEmailIfConfigured (User assignee, String assignedBy, String build, String reason, String URL) throws MessagingException, IOException, InterruptedException {
+    public static void sendEmailIfConfigured(User assignee, String assignedBy, String build, String reason, String url)
+            throws MessagingException, IOException, InterruptedException {
 
         ClaimConfig config = ClaimConfig.get();
-        if (config.getSendEmails() && mailerLoaded) {
-            MimeMessage msg = createMessage(assignee, assignedBy, build, reason, URL);
+        if (config.getSendEmails() && MAILER_LOADED) {
+            MimeMessage msg = createMessage(assignee, assignedBy, build, reason, url);
             Transport.send(msg);
         }
     }
-    
-    private static MimeMessage createMessage(User assignee, String assignedBy, String build, String reason, String URL)
+
+    private static MimeMessage createMessage(User assignee, String assignedBy, String build, String reason, String url)
             throws MessagingException, IOException, InterruptedException {
 
         // create Session
@@ -70,36 +73,38 @@ public class ClaimEmailer {
         MimeMessage msg = createMimeMessage(mailDescriptor);
 
         msg.setSentDate(new Date());
-        msg.setSubject(Messages.ClaimEmailer_Subject(build),mailDescriptor.getCharset());
+        msg.setSubject(Messages.ClaimEmailer_Subject(build), mailDescriptor.getCharset());
         //TODO configurable formatting, through email-ext plugin
-        final String text = Messages.ClaimEmailer_Text(build, assignedBy) + 
-                System.getProperty("line.separator") + Messages.ClaimEmailer_Reason(reason) + 
-                System.getProperty("line.separator") + System.getProperty("line.separator") + 
-                Messages.ClaimEmailer_Details(getJenkinsLocationConfiguration().getUrl() + URL);
+        final String text = Messages.ClaimEmailer_Text(build, assignedBy)
+                + System.getProperty("line.separator") + Messages.ClaimEmailer_Reason(reason)
+                + System.getProperty("line.separator") + System.getProperty("line.separator")
+                + Messages.ClaimEmailer_Details(getJenkinsLocationConfiguration().getUrl() + url);
 
         msg.setText(text, mailDescriptor.getCharset());
-        msg.setRecipient(RecipientType.TO, getUserEmail(assignee,mailDescriptor));
+        msg.setRecipient(RecipientType.TO, getUserEmail(assignee, mailDescriptor));
 
         return msg;
     }
-    
+
     /**
      * Creates MimeMessage using the mailer plugin for jenkins.
-     * 
+     *
      * @param mailDescriptor a reference to the mailer plugin from which we can get mailing parameters
      * @return mimemessage a message which can be emailed
      * @throws MessagingException if there has been some problem with sending the email
      * @throws UnsupportedEncodingException if an address provided is not in a correct format
      */
-    private static MimeMessage createMimeMessage(final Mailer.DescriptorImpl mailDescriptor) throws UnsupportedEncodingException, MessagingException {
+    private static MimeMessage createMimeMessage(final Mailer.DescriptorImpl mailDescriptor)
+            throws UnsupportedEncodingException, MessagingException {
         MimeMessage ret = new MimeMessage(mailDescriptor.createSession());
-        ret.setFrom(Mailer.stringToAddress(getJenkinsLocationConfiguration().getAdminAddress(), mailDescriptor.getCharset()));
+        ret.setFrom(Mailer.stringToAddress(getJenkinsLocationConfiguration().getAdminAddress(),
+                mailDescriptor.getCharset()));
         return ret;
     }
-    
+
     /**
      * Returns the email address of a given user.
-     * 
+     *
      * @param user the user
      * @param mailDescriptor the descriptor allowing us to access mail config
      * @return email address for this user, null if none can be derived

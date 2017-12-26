@@ -71,23 +71,23 @@ public class ClaimTest {
     }
 
     @Test
-    public void failed_build_with_claim_publisher_has_claim_action() {
+    public void failedBuildWithClaimPublisherHasClaimAction() {
         assertThat(build.getAction(ClaimBuildAction.class), is(notNullValue()));
     }
 
     @Test
-    public void failed_build_can_be_claimed_by_you() throws Exception {
+    public void failedBuildCanBeClaimedByYou() throws Exception {
         // When:
         ClaimBuildAction action = whenClaimingBuild();
         // Then:
         assertThat(action.getClaimedBy(), is("user1"));
         assertThat(action.getReason(), is(claimText));
         assertThat(action.isClaimed(), is(true));
-        assertThat (action.getAssignedBy(), is("user1"));
+        assertThat(action.getAssignedBy(), is("user1"));
     }
 
     @Test
-    public void failed_build_can_be_assigned() throws Exception {
+    public void failedBuildCanBeAssigned() throws Exception {
         // When:
         ClaimBuildAction action = whenAssigningBuildByClicking("claim");
         // Then:
@@ -98,7 +98,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void claimed_build_can_be_reclaimed_by_you() throws Exception {
+    public void claimedBuildCanBeReclaimedByYou() throws Exception {
         // Given:
         givenBuildClaimedByOtherUser();
         // When:
@@ -111,7 +111,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void claim_can_be_dropped() throws Exception {
+    public void claimCanBeDropped() throws Exception {
         // Given:
         givenBuildClaimedByCurrentUser();
         // When:
@@ -122,7 +122,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void claim_can_be_reassigned() throws Exception {
+    public void claimCanBeReassigned() throws Exception {
         // Given:
         givenBuildClaimedByCurrentUser();
         // When:
@@ -135,7 +135,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void sticky_claim_propagates_to_next_build() throws Exception {
+    public void stickyClaimPropagatesToNextBuild() throws Exception {
         // Given:
         givenBuildClaimedByCurrentUser();
         // When:
@@ -146,11 +146,11 @@ public class ClaimTest {
         assertThat(action2.getClaimedBy(), is("user1"));
         assertThat(action2.getReason(), is("reason"));
         assertThat(action2.isSticky(), is(true));
-        assertThat(action2.getAssignedBy(),is("user1"));
+        assertThat(action2.getAssignedBy(), is("user1"));
     }
 
     @Test
-    public void non_sticky_claim_does_not_propagate_to_next_build() throws Exception {
+    public void nonStickyClaimDoesNotPropagateToNextBuild() throws Exception {
         // Given:
         ClaimBuildAction action1 = givenBuildClaimedByCurrentUser();
         action1.setSticky(false);
@@ -190,12 +190,12 @@ public class ClaimTest {
         HtmlForm form = page.getFormByName("claim");
 
         form.getTextAreaByName("reason").setText(reason);
-        if ( assignee!=null ) {
-        	HtmlSelect select = form.getSelectByName("_.assignee");
-        	if (! assignee.isEmpty()) {
-        		HtmlOption option = select.getOptionByValue(assignee);
-        		select.setSelectedAttribute(option, true);
-        	}
+        if (assignee != null) {
+            HtmlSelect select = form.getSelectByName("_.assignee");
+            if (!assignee.isEmpty()) {
+                HtmlOption option = select.getOptionByValue(assignee);
+                select.setSelectedAttribute(option, true);
+            }
         }
 
         HtmlFormUtil.submit(form, j.last(form.getHtmlElementsByTagName("button")));

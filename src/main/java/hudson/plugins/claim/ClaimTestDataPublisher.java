@@ -3,7 +3,10 @@ package hudson.plugins.claim;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.*;
+import hudson.model.Descriptor;
+import hudson.model.Run;
+import hudson.model.Saveable;
+import hudson.model.TaskListener;
 import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestAction;
 import hudson.tasks.junit.TestDataPublisher;
@@ -24,11 +27,14 @@ import javax.annotation.Nonnull;
 public class ClaimTestDataPublisher extends TestDataPublisher {
 
     @DataBoundConstructor
-    public ClaimTestDataPublisher() {}
+    public ClaimTestDataPublisher() {
+        // nothing to do
+    }
 
     @Override
     public Data contributeTestData(Run<?, ?> run, @Nonnull FilePath workspace, Launcher launcher,
-                                   TaskListener listener, TestResult testResult) throws IOException, InterruptedException {
+                                   TaskListener listener, TestResult testResult)
+            throws IOException, InterruptedException {
         Data data = new Data(run);
 
         for (CaseResult result: testResult.getFailedTests()) {
@@ -45,16 +51,16 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
         return data;
     }
 
-    public static class Data extends TestResultAction.Data implements Saveable {
+    public static final class Data extends TestResultAction.Data implements Saveable {
 
-        private Map<String,ClaimTestAction> claims = new HashMap<>();
+        private Map<String, ClaimTestAction> claims = new HashMap<>();
 
-        private final Run<?,?> build;
+        private final Run<?, ?> build;
 
-        public Data(Run<?,?> build) {
+        public Data(Run<?, ?> build) {
             this.build = build;
         }
-        
+
         public String getUrl() {
             return build.getUrl();
         }
@@ -65,13 +71,14 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
 
         @Override
         public List<TestAction> getTestAction(@SuppressWarnings("deprecation") TestObject testObject) {
+            final String prefix = "junit";
             String id = testObject.getId();
             ClaimTestAction result = claims.get(id);
 
             // In Hudson 1.347 or so, IDs changed, and a junit/ prefix was added.
             // Attempt to fix this backward-incompatibility
-            if (result == null && id.startsWith("junit")) {
-                result = claims.get(id.substring(5));
+            if (result == null && id.startsWith(prefix)) {
+                result = claims.get(id.substring(prefix.length()));
             }
 
             if (result != null) {

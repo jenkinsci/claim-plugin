@@ -51,9 +51,39 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
 					<version>${checkstyle.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>8.5</version>
+						</dependency>
+					</dependencies>
 					<configuration>
+						<configLocation>checkstyle.xml</configLocation>
+						<suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+						<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
 						<includeTestSourceDirectory>true</includeTestSourceDirectory>
+						<consoleOutput>true</consoleOutput>
 					</configuration>
+					<executions>
+						<execution>
+							<id>compile-checkstyle</id>
+							<goals>
+								<goal>checkstyle</goal>
+							</goals>
+							<phase>compile</phase>
+						</execution>
+						<execution>
+							<id>test-check</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<phase>test</phase>
+							<configuration>
+								<violationSeverity>warning</violationSeverity>
+							</configuration>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>

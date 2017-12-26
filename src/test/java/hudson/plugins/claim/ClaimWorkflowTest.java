@@ -41,20 +41,20 @@ public class ClaimWorkflowTest {
 
     private WorkflowJob createFailingJobWithName(String jobName) throws IOException,
             InterruptedException, ExecutionException {
-        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, jobName);
-        job.setDefinition(new CpsFlowDefinition(""
+        WorkflowJob workflowJob = j.jenkins.createProject(WorkflowJob.class, jobName);
+        workflowJob.setDefinition(new CpsFlowDefinition(""
                 + "node {\n"
                 + "  catchError {\n"
                 + "    error('Error')\n"
                 + "  }\n"
                 + "  step([$class: 'ClaimPublisher'])\n"
                 + "}"));
-        job.scheduleBuild2(0).get();
-        return job;
+        workflowJob.scheduleBuild2(0).get();
+        return workflowJob;
     }
 
     @Test
-    public void job_is_visible_in_claim_report() throws Exception {
+    public void jobIsVisibleInClaimReport() throws Exception {
         // Given:
         view.add(job);
         //j.interactiveBreak();
@@ -66,7 +66,7 @@ public class ClaimWorkflowTest {
     }
 
     @Test
-    public void job_not_present_in_default_view_is_visible_in_claim_report() throws Exception {
+    public void jobNotPresentInDefaultViewIsVisibleInClaimReport() throws Exception {
         // When:
         HtmlPage page = j.createWebClient().goTo("claims/");
         // Then:

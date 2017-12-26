@@ -3,8 +3,6 @@ package hudson.plugins.claim;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -20,14 +18,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
 
-public class ClaimPublisher extends Notifier implements SimpleBuildStep {
+public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
     @DataBoundConstructor
     public ClaimPublisher() {
     }
 
     @Extension
-    public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+    public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         @Override
         public String getHelpFile() {
             return "/plugin/claim/help.html";
@@ -47,7 +45,7 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
     @Override
     public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl)super.getDescriptor();
+        return (DescriptorImpl) super.getDescriptor();
     }
 
     @Override
@@ -61,7 +59,7 @@ public class ClaimPublisher extends Notifier implements SimpleBuildStep {
             build.save();
 
             // check if previous build was claimed
-            Run<?,?> previousBuild = build.getPreviousBuild();
+            Run<?, ?> previousBuild = build.getPreviousBuild();
             if (previousBuild != null) {
                 ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
                 if (c != null && c.isClaimed() && c.isSticky()) {

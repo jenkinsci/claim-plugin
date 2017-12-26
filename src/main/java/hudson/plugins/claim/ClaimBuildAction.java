@@ -3,7 +3,7 @@ package hudson.plugins.claim;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 
-public class ClaimBuildAction extends AbstractClaimBuildAction<Run> implements RunAction2 {
+public final class ClaimBuildAction extends AbstractClaimBuildAction<Run> implements RunAction2 {
 
     private static final long serialVersionUID = 1L;
 

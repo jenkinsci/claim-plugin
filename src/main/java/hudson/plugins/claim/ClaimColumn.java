@@ -20,7 +20,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.Nonnull;
 
-public class ClaimColumn extends ListViewColumn {
+public final class ClaimColumn extends ListViewColumn {
 
     @DataBoundConstructor
     public ClaimColumn() {
@@ -31,9 +31,9 @@ public class ClaimColumn extends ListViewColumn {
         return Messages.ClaimColumn_ColumnCaption();
     }
 
-    public List<ClaimColumnInformation> getAction(Job<?,?> job) {
+    public List<ClaimColumnInformation> getAction(Job<?, ?> job) {
         List<ClaimColumnInformation> result = new ArrayList<>();
-        Run<?,?> run = job.getLastCompletedBuild();
+        Run<?, ?> run = job.getLastCompletedBuild();
         if (run != null) {
             if (run instanceof hudson.matrix.MatrixBuild) {
                 MatrixBuild matrixBuild = (hudson.matrix.MatrixBuild) run;

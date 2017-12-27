@@ -17,6 +17,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Field;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -39,12 +40,19 @@ public class ClaimGroovyTest {
         j.jenkins.setSecurityRealm(realm);
 
         MockAuthorizationStrategy strategy = new MockAuthorizationStrategy();
-        strategy.grantWithoutImplication(Jenkins.ADMINISTER, Jenkins.READ, Item.CREATE)
-                .everywhere()
-                .to(j.jenkins.getUser(adminWithNoRunScriptRights));
-        strategy.grant(Jenkins.ADMINISTER, Jenkins.READ)
-                .everywhere()
-                .to(j.jenkins.getUser(adminWithAllRights));
+        try {
+            setUserCreationViaUrl(true);
+            strategy.grantWithoutImplication(Jenkins.ADMINISTER, Jenkins.READ, Item.CREATE)
+                    .everywhere()
+                    .to(j.jenkins.getUser(adminWithNoRunScriptRights));
+            strategy.grant(Jenkins.ADMINISTER, Jenkins.READ)
+                    .everywhere()
+                    .to(j.jenkins.getUser(adminWithAllRights));
+        }
+        finally {
+            setUserCreationViaUrl(false);
+        }
+
         j.jenkins.setAuthorizationStrategy(strategy);
 
         ACL.impersonate(User.get(adminWithNoRunScriptRights).impersonate(), new Runnable() {
@@ -54,6 +62,22 @@ public class ClaimGroovyTest {
                 assertFalse(j.jenkins.hasPermission(Jenkins.RUN_SCRIPTS));
             }
         });
+    }
+
+    /**
+     * Allows setting the ALLOW_USER_CREATION_VIA_URL value on User object if the version of Jenkins requires it
+     * To remove once base version for the plugin will have this property in favor of classic code.
+     * @param value the value to set
+     */
+    private void setUserCreationViaUrl(boolean value) {
+        try {
+            Field field = User.class.getDeclaredField("ALLOW_USER_CREATION_VIA_URL");
+            field.setBoolean(null, value);
+        } catch (NoSuchFieldException e) {
+            // do nothing
+        } catch (IllegalAccessException e) {
+            // do nothing
+        }
     }
 
     @Issue("JENKINS-43811")

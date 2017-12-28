@@ -1,9 +1,11 @@
 package hudson.plugins.claim;
 
 import hudson.model.User;
+import hudson.security.ACL;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DescribableTestActionTest {
   @Rule
@@ -63,22 +67,28 @@ public class DescribableTestActionTest {
 
   @Test
   public void assignee_list_is_sorted_by_id_by_default() {
-    DescribableTestActionImpl.DescriptorImpl descriptor = new DescribableTestActionImpl.DescriptorImpl();
-    ListBoxModel items = descriptor.doFillAssigneeItems();
-    Object[] users = getUsers(items);
-    assertArrayEquals(new String[] {"SYSTEM", user0.getId(), user1.getId(), user2.getId(), user3.getId(), user4.getId()}, users);
+      ACL.impersonate(user1.impersonate(), () -> {
+          DescribableTestActionImpl.DescriptorImpl descriptor = new DescribableTestActionImpl.DescriptorImpl();
+          ListBoxModel items = descriptor.doFillAssigneeItems();
+          Object[] users = getUsers(items);
+          assertArrayEquals(new String[] { user1.getId(), user0.getId(), user2.getId(), user3.getId(),
+                  user4.getId()}, users);
+      });
   }
 
   @Test
   public void assignee_list_full_name_sorts_by_fullName_then_id() {
-    DescribableTestActionImpl.DescriptorImpl descriptor = new DescribableTestActionImpl.DescriptorImpl();
-    ((ClaimConfig)j.jenkins.getDescriptor(ClaimConfig.class)).setSortUsersByFullName(true);
-    ListBoxModel items = descriptor.doFillAssigneeItems();
-    Object[] users = getUsers(items);
-    assertArrayEquals(new String[] {"SYSTEM", user2.getId(), user3.getId(), user1.getId(), user0.getId(), user4.getId()}, users);
+      ACL.impersonate(user1.impersonate(), () -> {
+          DescribableTestActionImpl.DescriptorImpl descriptor = new DescribableTestActionImpl.DescriptorImpl();
+          ((ClaimConfig)j.jenkins.getDescriptor(ClaimConfig.class)).setSortUsersByFullName(true);
+          ListBoxModel items = descriptor.doFillAssigneeItems();
+          Object[] users = getUsers(items);
+          assertArrayEquals(new String[] { user1.getId(), user2.getId(), user3.getId(), user0.getId(),
+                  user4.getId()}, users);
+      });
   }
 
   private String[] getUsers(ListBoxModel items) {
-    return items.stream().map(o -> o.value).toArray(String[]::new);
+    return items.stream().map(o -> o.value).filter(o -> !ACL.SYSTEM_USERNAME.equals(o)).toArray(String[]::new);
   }
 }

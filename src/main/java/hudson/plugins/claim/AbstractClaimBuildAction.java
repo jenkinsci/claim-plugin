@@ -30,8 +30,9 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility = 2)
-public abstract class AbstractClaimBuildAction<T extends Saveable> extends DescribableTestAction implements BuildBadgeAction,
-        ProminentProjectAction {
+public abstract class AbstractClaimBuildAction<T extends Saveable>
+        extends DescribableTestAction
+        implements BuildBadgeAction, ProminentProjectAction {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
@@ -42,7 +43,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     private Date claimDate;
     private boolean transientClaim = !ClaimConfig.get().isStickyByDefault();
     private boolean reclaim;
-    private ClaimBuildFailureAnalyzer BFAClaimer = null;
+    private ClaimBuildFailureAnalyzer bfaClaimer = null;
     private String reason;
 
     protected abstract T getOwner();
@@ -51,25 +52,25 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         reclaim = false;
     }
 
-    public boolean isReclaim() {
+    public final boolean isReclaim() {
         return reclaim;
     }
 
-    public ClaimBuildFailureAnalyzer getBFAClaimer() {
-        return BFAClaimer;
+    public final ClaimBuildFailureAnalyzer getBfaClaimer() {
+        return bfaClaimer;
     }
 
-    public String getIconFileName() {
+    public final String getIconFileName() {
         return null;
     }
 
-    public String getUrlName() {
+    public final String getUrlName() {
         return "claim";
     }
-    
+
     abstract String getUrl();
 
-    public void doClaim(StaplerRequest req, StaplerResponse resp)
+    public final void doClaim(StaplerRequest req, StaplerResponse resp)
             throws Exception {
         Authentication authentication = Hudson.getAuthentication();
         String currentUser = authentication.getName();
@@ -85,38 +86,43 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             }
             name = assignee;
         }
-        String reason = req.getSubmittedForm().getString("reason");
+        String reasonProvided = req.getSubmittedForm().getString("reason");
 
-        if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
+        if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {
             String error = req.getSubmittedForm().getString("errors");
-            BFAClaimer = new ClaimBuildFailureAnalyzer(error);
-            if (getOwner() instanceof Run)
-            {
+            bfaClaimer = new ClaimBuildFailureAnalyzer(error);
+            if (getOwner() instanceof Run) {
                 Run run = (Run) getOwner();
-                if(!BFAClaimer.isDefaultError()){
-                    try{
-                        BFAClaimer.createFailAction(run);
-                    } catch (IndexOutOfBoundsException e){
+                if (!bfaClaimer.isDefaultError()) {
+                    try {
+                        bfaClaimer.createFailAction(run);
+                    } catch (IndexOutOfBoundsException e) {
                         LOGGER.log(Level.WARNING, "No FailureCauseBuildAction detected for this build");
                         resp.forwardToPreviousPage(req);
                         return;
                     }
-                }
-                else{
-                    BFAClaimer.removeFailAction(run);
+                } else {
+                    bfaClaimer.removeFailAction(run);
                 }
             }
         }
 
         boolean sticky = req.getSubmittedForm().getBoolean("sticky");
-        if (StringUtils.isEmpty(reason)) reason = null;
-        claim(name, reason, currentUser, sticky);
+        if (StringUtils.isEmpty(reasonProvided)) {
+            reasonProvided = null;
+        }
+        claim(name, reasonProvided, currentUser, sticky);
         try {
-            ClaimEmailer.sendEmailIfConfigured(User.get(name, false, Collections.EMPTY_MAP), currentUser, getOwner().toString(), reason, getUrl());
+            ClaimEmailer.sendEmailIfConfigured(
+                    User.get(name, false, Collections.EMPTY_MAP),
+                    currentUser,
+                    getOwner().toString(),
+                    reasonProvided,
+                    getUrl());
         } catch (MessagingException e) {
             LOGGER.log(Level.WARNING, "Exception encountered sending assignment email: " + e.getMessage());
         } catch (InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Interrupted when sending assignment email",e);
+            LOGGER.log(Level.WARNING, "Interrupted when sending assignment email", e);
         }
         reclaim = true;
         this.getOwner().save();
@@ -124,12 +130,13 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         resp.forwardToPreviousPage(req);
     }
 
-    public void doUnclaim(StaplerRequest req, StaplerResponse resp)
+    public final void doUnclaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
         unclaim();
 
-        if(ClaimBuildFailureAnalyzer.isBFAEnabled() && BFAClaimer!=null)
-            BFAClaimer.removeFailAction((Run) getOwner());
+        if (ClaimBuildFailureAnalyzer.isBFAEnabled() && bfaClaimer != null) {
+            bfaClaimer.removeFailAction((Run) getOwner());
+        }
         reclaim = false;
         getOwner().save();
         evalGroovyScript();
@@ -137,26 +144,26 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     }
 
     @Exported
-    public String getClaimedBy() {
+    public final String getClaimedBy() {
         return claimedBy;
     }
-    
+
     @Exported
-    public String getAssignedBy() {
-    	return assignedBy;
+    public final String getAssignedBy() {
+        return assignedBy;
     }
 
-    public String getClaimedByName() {
-        User user = User.get(claimedBy, false,Collections.EMPTY_MAP);
+    public final String getClaimedByName() {
+        User user = User.get(claimedBy, false, Collections.EMPTY_MAP);
         if (user != null) {
             return user.getDisplayName();
         } else {
             return claimedBy;
         }
     }
-    
-    public String getAssignedByName() {
-        User user = User.get(assignedBy, false,Collections.EMPTY_MAP);
+
+    public final String getAssignedByName() {
+        User user = User.get(assignedBy, false, Collections.EMPTY_MAP);
         if (user != null) {
             return user.getDisplayName();
         } else {
@@ -164,37 +171,44 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         }
     }
 
-    public void setClaimedBy(String claimedBy) {
+    public final void setClaimedBy(String claimedBy) {
         this.claimedBy = claimedBy;
     }
 
-    public void setAssignedBy (String assignedBy) {
-    	this.assignedBy = assignedBy;
-    }
-
-    @Exported
-    public boolean isClaimed() {
-        return claimed;
-    }
-
-    public void claim(String claimedBy, String reason, String assignedBy, boolean sticky) {
-        this.claimed = true;
-        this.claimedBy = claimedBy;
-        this.reason = reason;
-        this.transientClaim = !sticky;
-        this.claimDate = new Date();
+    public final void setAssignedBy(String assignedBy) {
         this.assignedBy = assignedBy;
     }
 
+    @Exported
+    public final boolean isClaimed() {
+        return claimed;
+    }
+
     /**
-     * Claim a new Run with the same settings as this one.
+     * Claims a {@link Saveable}.
+     * @param claimUser name of the claiming user
+     * @param providedReason reason for the claim
+     * @param assignedUser name of the assigned user
+     * @param isSticky true if the claim has to be kept until resolution
+     */
+    public void claim(String claimUser, String providedReason, String assignedUser, boolean isSticky) {
+        this.claimed = true;
+        this.claimedBy = claimUser;
+        this.reason = providedReason;
+        this.transientClaim = !isSticky;
+        this.claimDate = new Date();
+        this.assignedBy = assignedUser;
+    }
+
+    /**
+     * Claim a new {@link Saveable} with the same settings as this one.
      * @param other the source data
      */
     public void copyTo(AbstractClaimBuildAction<T> other) {
         other.claim(getClaimedBy(), getReason(), getAssignedBy(), isSticky());
     }
 
-    public void unclaim() {
+    public final void unclaim() {
         this.claimed = false;
         this.claimedBy = null;
         this.transientClaim = false;
@@ -203,31 +217,31 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         // we remember the reason to show it if someone reclaims this build.
     }
 
-    public boolean isClaimedByMe() {
+    public final boolean isClaimedByMe() {
         return !isUserAnonymous()
                 && Hudson.getAuthentication().getName().equals(claimedBy);
     }
 
-    public boolean canClaim() {
+    public final boolean canClaim() {
         return !isUserAnonymous() && !isClaimedByMe();
     }
 
-    public boolean canRelease() {
+    public final boolean canRelease() {
         return !isUserAnonymous() && isClaimedByMe();
     }
 
-    public boolean isUserAnonymous() {
+    public final boolean isUserAnonymous() {
         return Hudson.getAuthentication().getName().equals("anonymous");
     }
 
     @Exported
-    public String getReason() {
+    public final String getReason() {
         return reason;
     }
 
-    public String fillReason() throws Exception {
+    public final String fillReason() throws Exception {
         JSONObject json = new JSONObject();
-        if(ClaimBuildFailureAnalyzer.isBFAEnabled()) {
+        if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {
             HashMap<String, String> map = ClaimBuildFailureAnalyzer.getFillReasonMap();
             json.accumulateAll(map);
         }
@@ -235,9 +249,9 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
     }
 
     @JavaScriptMethod
-    public String getReason(String error) throws Exception {
+    public final String getReason(String error) throws Exception {
         final String defaultValue = "";
-        if(!ClaimBuildFailureAnalyzer.isBFAEnabled()) {
+        if (!ClaimBuildFailureAnalyzer.isBFAEnabled()) {
             return defaultValue;
         }
         if (error == null || ClaimBuildFailureAnalyzer.DEFAULT_ERROR.equals(error)) {
@@ -246,65 +260,66 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
         return ClaimBuildFailureAnalyzer.getFillReasonMap().getOrDefault(error, defaultValue);
     }
 
-    public void setReason(String reason) {
+    public final void setReason(String reason) {
         this.reason = reason;
     }
 
-    public boolean hasReason() {
+    public final boolean hasReason() {
         return !StringUtils.isEmpty(reason);
     }
 
-    public boolean isTransient() {
+    public final boolean isTransientClaim() {
         return transientClaim;
     }
 
-    public void setTransient(boolean transientClaim) {
+    public final void setTransientClaim(boolean transientClaim) {
         this.transientClaim = transientClaim;
     }
 
-    public boolean isSticky() {
+    public final boolean isSticky() {
         return !transientClaim;
     }
 
-    public void setSticky(boolean sticky) {
+    public final void setSticky(boolean sticky) {
         this.transientClaim = !sticky;
     }
 
-    public String getError(){
-        return BFAClaimer.getError();
+    public final String getError() {
+        return bfaClaimer.getError();
     }
 
-    public boolean isBFAEnabled(){
+    public final boolean isBFAEnabled() {
         return ClaimBuildFailureAnalyzer.isBFAEnabled();
     }
 
     @Exported
-    public Date getClaimDate() {
+    public final Date getClaimDate() {
         return (Date) this.claimDate.clone();
     }
 
-    public boolean hasClaimDate() {
+    public final  boolean hasClaimDate() {
         return this.claimDate != null;
     }
+
     /**
-     * was the action claimed by someone to themselves?
-     * @return true if the item was claimed by the user to themselves, false otherwise 
+     * Was the action claimed by someone to themselves?
+     * @return true if the item was claimed by the user to themselves, false otherwise
      */
     public boolean isSelfAssigned() {
-    	boolean ret = true;
-    	if (! isClaimed()) {
-    		ret = false;
-    	} else if (getClaimedBy() == null) {
-    		ret = false;
-    	} else if (! getClaimedBy().equals(getAssignedBy())) {
-    		ret = false;
-    	}
-    	return ret;
+        boolean ret = true;
+        if (!isClaimed()) {
+            ret = false;
+        } else if (getClaimedBy() == null) {
+            ret = false;
+        } else if (!getClaimedBy().equals(getAssignedBy())) {
+            ret = false;
+        }
+        return ret;
     }
 
     public abstract String getNoun();
-    
-    protected void evalGroovyScript() {
+
+    protected final void evalGroovyScript() {
         ClaimConfig config = ClaimConfig.get();
         if (config.hasGroovyTrigger()) {
             SecureGroovyScript groovyScript = config.getGroovyTrigger();
@@ -313,7 +328,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable> extends Descr
             try {
                 groovyScript.evaluate(Jenkins.getInstance().getPluginManager().uberClassLoader, binding);
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Error evaluating Groovy script",e);
+                LOGGER.log(Level.WARNING, "Error evaluating Groovy script", e);
             }
         }
     }

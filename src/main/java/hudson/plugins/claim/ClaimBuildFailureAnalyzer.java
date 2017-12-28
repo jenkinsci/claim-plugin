@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ClaimBuildFailureAnalyzer {
+public final class ClaimBuildFailureAnalyzer {
 
     public static final String DEFAULT_ERROR = "Default";
     private static final String MATCHING_FILE = "Claim";
@@ -26,7 +26,7 @@ public class ClaimBuildFailureAnalyzer {
     private final String error;
 
     public ClaimBuildFailureAnalyzer(@Nonnull String error) {
-        this.error=error;
+        this.error = error;
     }
 
     public String getError() {
@@ -41,8 +41,9 @@ public class ClaimBuildFailureAnalyzer {
         return Jenkins.getInstance().getPlugin(PluginImpl.class).getKnowledgeBase().getCauses();
     }
 
-    public static boolean isBFAEnabled(){
-        return (Jenkins.getInstance().getPlugin("build-failure-analyzer")!=null && Jenkins.getInstance().getPlugin(PluginImpl.class).isGlobalEnabled());
+    public static boolean isBFAEnabled() {
+        return (Jenkins.getInstance().getPlugin("build-failure-analyzer") != null
+                && Jenkins.getInstance().getPlugin(PluginImpl.class).isGlobalEnabled());
     }
 
     public static HashMap<String, String> getFillReasonMap() throws Exception {
@@ -64,8 +65,8 @@ public class ClaimBuildFailureAnalyzer {
     public void createFailAction(Run run) throws Exception {
         FoundFailureCause newClaimedFailureCause = null;
         List<FoundIndication> indications = new LinkedList<>();
-        for(FailureCause cause : getFailureCauses()){
-            if(cause.getName().equals(error)) {
+        for (FailureCause cause : getFailureCauses()) {
+            if (cause.getName().equals(error)) {
                 indications.add(new ClaimIndication(run, "Null", MATCHING_FILE, "Null"));
                 newClaimedFailureCause = new FoundFailureCause(cause, indications);
                 break;
@@ -83,7 +84,8 @@ public class ClaimBuildFailureAnalyzer {
         boolean hasFailureCauseFromBFA = false;
         for (FoundFailureCause cause : foundFailureCauses) {
             // check if it's an indication created by claim
-            if(cause.getName().equals(newClaimedFailureCause.getName()) && cause.getIndications().get(0).getMatchingFile().equals("log")){
+            if (cause.getName().equals(newClaimedFailureCause.getName())
+                    && cause.getIndications().get(0).getMatchingFile().equals("log")) {
                 hasFailureCauseFromBFA = true;
             }
             if (cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
@@ -94,7 +96,7 @@ public class ClaimBuildFailureAnalyzer {
         if (existingClaimedFoundFailureCause != null) {
             foundFailureCauses.remove(existingClaimedFoundFailureCause);
         }
-        if(!hasFailureCauseFromBFA) {
+        if (!hasFailureCauseFromBFA) {
             foundFailureCauses.add(newClaimedFailureCause);
         }
         try {
@@ -105,14 +107,15 @@ public class ClaimBuildFailureAnalyzer {
         }
     }
 
-    public void removeFailAction(Run run){
+    public void removeFailAction(Run run) {
         List<FailureCauseBuildAction> bfaActionList = run.getActions(FailureCauseBuildAction.class);
-        if(!bfaActionList.isEmpty()) {
+        if (!bfaActionList.isEmpty()) {
             FailureCauseBuildAction bfaAction = bfaActionList.get(0);
             List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
             List<FoundFailureCause> toRemove = Lists.newArrayList();
             for (FoundFailureCause cause : foundFailureCauses) {
-                if (cause.getIndications().size() > 0 && cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
+                if (cause.getIndications().size() > 0
+                        && cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
                     toRemove.add(cause);
                 }
             }

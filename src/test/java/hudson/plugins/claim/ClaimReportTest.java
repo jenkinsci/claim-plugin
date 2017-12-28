@@ -49,7 +49,7 @@ public class ClaimReportTest {
     }
 
     @Test
-    public void job_is_visible_in_claim_report() throws Exception {
+    public void jobIsVisibleInClaimReport() throws Exception {
         // Given:
         view.add(job);
         //j.interactiveBreak();
@@ -61,7 +61,7 @@ public class ClaimReportTest {
     }
 
     @Test
-    public void job_not_present_in_default_view_is_visible_in_claim_report() throws Exception {
+    public void jobNotPresentInDefaultViewIsVisibleInClaimReport() throws Exception {
         // When:
         HtmlPage page = j.createWebClient().goTo("claims/");
         // Then:

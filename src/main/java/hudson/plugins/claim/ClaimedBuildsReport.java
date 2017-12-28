@@ -18,7 +18,7 @@ import org.jenkins.ui.icon.IconSpec;
 import org.kohsuke.stapler.Stapler;
 
 @Extension
-public class ClaimedBuildsReport implements RootAction, IconSpec {
+public final class ClaimedBuildsReport implements RootAction, IconSpec {
 
     public ClaimedBuildsReport() {
     }
@@ -45,7 +45,7 @@ public class ClaimedBuildsReport implements RootAction, IconSpec {
         return "/claims";
     }
 
-    public Run getFirstFail(Run r) {
+    public Run getFirstFail(final Run r) {
         Run lastGood = r.getPreviousNotFailedBuild();
         Run firstFail;
         if (lastGood == null) {
@@ -56,7 +56,7 @@ public class ClaimedBuildsReport implements RootAction, IconSpec {
         return firstFail;
     }
 
-    public String getClaimantText(Run r) {
+    public String getClaimantText(final Run r) {
         ClaimBuildAction claim = r.getAction(ClaimBuildAction.class);
         if (claim == null || !claim.isClaimed()) {
             return Messages.ClaimedBuildsReport_ClaimantText_unclaimed();
@@ -84,9 +84,9 @@ public class ClaimedBuildsReport implements RootAction, IconSpec {
         List<Run> lastBuilds = new ArrayList<>();
         for (Job job : Jenkins.getInstance().getAllItems(Job.class)) {
             Run lb = job.getLastBuild();
-            while (lb != null && (lb.hasntStartedYet() || lb.isBuilding()))
+            while (lb != null && (lb.hasntStartedYet() || lb.isBuilding())) {
                 lb = lb.getPreviousBuild();
-
+            }
             if (lb != null && lb.getAction(ClaimBuildAction.class) != null) {
                 lastBuilds.add(lb);
             }

@@ -7,5 +7,5 @@ buildPlugin(
   checkstyle: [
     run: true,
 	archive: true,
-	unstableNewAll: '0']
+	unstableTotalAll: '0']
 ) 

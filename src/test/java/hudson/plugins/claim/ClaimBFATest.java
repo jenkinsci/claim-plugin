@@ -58,7 +58,8 @@ public class ClaimBFATest {
 
     @Test
     public void canClaimFailureCause() throws Exception {
-        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim",CAUSE_NAME_2, REASON, CAUSE_DESCRIPTION_2);
+        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_2, REASON,
+                CAUSE_DESCRIPTION_2);
 
         assertThat(action.getClaimedBy(), is("user1"));
         assertThat(action.getReason(), is(REASON));
@@ -71,9 +72,10 @@ public class ClaimBFATest {
     }
 
     @Test
-    public void canReclaimFailureCause() throws Exception{
+    public void canReclaimFailureCause() throws Exception {
         applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_2, REASON, CAUSE_DESCRIPTION_2);
-        ClaimBuildAction action = applyClaimWithFailureCauseSelected("reassign", CAUSE_NAME_1, REASON, CAUSE_DESCRIPTION_1);
+        ClaimBuildAction action = applyClaimWithFailureCauseSelected("reassign", CAUSE_NAME_1, REASON,
+                CAUSE_DESCRIPTION_1);
 
         assertThat(action.getClaimedBy(), is("user1"));
         assertThat(action.getReason(), is(REASON));
@@ -89,13 +91,15 @@ public class ClaimBFATest {
     public void canClaimFailureWithSingleQuoteInDescription() throws Exception {
         FailureCause cause3 = new FailureCause(CAUSE_NAME_3, CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
         PluginImpl.getInstance().getKnowledgeBase().addCause(cause3);
-        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_3, REASON, CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
+        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_3, REASON,
+                CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
         assertThat(action.isClaimed(), is(true));
     }
 
     @Test
-    public void canDropFailureCause() throws Exception{
-        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_2, REASON, CAUSE_DESCRIPTION_2);
+    public void canDropFailureCause() throws Exception {
+        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_2, REASON,
+                CAUSE_DESCRIPTION_2);
 
         HtmlPage page = whenNavigatingtoClaimPage();
         page.getElementById("dropClaim").click();
@@ -120,7 +124,7 @@ public class ClaimBFATest {
         HtmlForm form = page.getFormByName("claim");
         HtmlSelect select = form.getSelectByName("_.errors");
         HashSet<String> set = new HashSet<>();
-        for(HtmlOption option:select.getOptions()){
+        for (HtmlOption option:select.getOptions()) {
             set.add(option.getValueAttribute());
         }
         assertTrue(set.contains("Default"));
@@ -135,7 +139,9 @@ public class ClaimBFATest {
         PluginImpl.getInstance().getKnowledgeBase().addCause(cause2);
     }
 
-    private ClaimBuildAction applyClaimWithFailureCauseSelected(String element, String error, String reason, String description) throws Exception {
+    private ClaimBuildAction applyClaimWithFailureCauseSelected(String element, String error, String reason,
+                                                                String description) throws Exception {
+        final int timeout = 1000;
         HtmlPage page = whenNavigatingtoClaimPage();
         page.getElementById(element).click();
         HtmlForm form = page.getFormByName("claim");
@@ -145,7 +151,7 @@ public class ClaimBFATest {
         select.setSelectedAttribute(option, true);
         // wait for async javascript callback to execute
         synchronized (page) {
-            page.wait(1000);
+            page.wait(timeout);
         }
         assertEquals(description, form.getTextAreaByName("errordesc").getTextContent());
 
@@ -154,10 +160,9 @@ public class ClaimBFATest {
         return build.getAction(ClaimBuildAction.class);
     }
 
-    private HtmlPage whenNavigatingtoClaimPage() throws Exception{
+    private HtmlPage whenNavigatingtoClaimPage() throws Exception {
         JenkinsRule.WebClient wc = j.createWebClient();
         wc.login("user1", "user1");
         return wc.goTo("job/x/" + build.getNumber());
     }
-
 }

@@ -1,6 +1,6 @@
 package hudson.plugins.claim;
 
-public class ClaimColumnInformation {
+public final class ClaimColumnInformation {
 
     private boolean matrix;
     private String combinationName;

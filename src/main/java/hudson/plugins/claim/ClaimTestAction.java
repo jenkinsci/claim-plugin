@@ -3,7 +3,7 @@ package hudson.plugins.claim;
 import hudson.model.Run;
 import hudson.plugins.claim.ClaimTestDataPublisher.Data;
 
-public class ClaimTestAction extends AbstractClaimBuildAction<Run> {
+public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
 
     private String testObjectId;
     private Data data;

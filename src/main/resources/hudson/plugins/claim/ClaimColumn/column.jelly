@@ -47,7 +47,7 @@ THE SOFTWARE.
                     </j:when>
                     <j:otherwise>
                         <l:icon class="icon-claim-claim ${subIconSizeClass}"
-                                title="$${%claimed(action.claim.claimedBy,action.claim.assignedBy)}"/>
+                                title="${%claimed(action.claim.claimedBy,action.claim.assignedBy)}"/>
                     </j:otherwise>
                 </j:choose>
              </j:otherwise>

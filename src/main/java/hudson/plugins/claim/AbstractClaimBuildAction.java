@@ -11,7 +11,6 @@ import hudson.model.User;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +18,6 @@ import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 
 import jenkins.model.Jenkins;
-import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
@@ -246,15 +244,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     @Exported
     public final String getReason() {
         return reason;
-    }
-
-    public final String fillReason() throws Exception {
-        JSONObject json = new JSONObject();
-        if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {
-            HashMap<String, String> map = ClaimBuildFailureAnalyzer.getFillReasonMap();
-            json.accumulateAll(map);
-        }
-        return json.toString();
     }
 
     @JavaScriptMethod

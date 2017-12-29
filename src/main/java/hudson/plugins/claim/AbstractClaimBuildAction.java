@@ -133,6 +133,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         resp.forwardToPreviousPage(req);
     }
 
+    // jelly
     public final void doUnclaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
         unclaim();
@@ -156,6 +157,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         return assignedBy;
     }
 
+    // used by groovy scripts ?
     public final String getClaimedByName() {
         User user = User.get(claimedBy, false, Collections.EMPTY_MAP);
         if (user != null) {
@@ -165,6 +167,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         }
     }
 
+    // used by groovy scripts ?
     public final String getAssignedByName() {
         User user = User.get(assignedBy, false, Collections.EMPTY_MAP);
         if (user != null) {
@@ -174,10 +177,12 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         }
     }
 
+    // used by groovy scripts ?
     public final void setClaimedBy(String claimedBy) {
         this.claimedBy = claimedBy;
     }
 
+    // used by groovy scripts ?
     public final void setAssignedBy(String assignedBy) {
         this.assignedBy = assignedBy;
     }
@@ -225,14 +230,17 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
                 && Hudson.getAuthentication().getName().equals(claimedBy);
     }
 
+    // jelly
     public final boolean canReassign() {
         return !isUserAnonymous() && isClaimed();
     }
 
+    // jelly
     public final boolean canClaim() {
         return !isUserAnonymous() && !isClaimedByMe();
     }
 
+    // jelly
     public final boolean canRelease() {
         return !isUserAnonymous() && isClaimedByMe();
     }
@@ -258,34 +266,42 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         return ClaimBuildFailureAnalyzer.getFillReasonMap().getOrDefault(error, defaultValue);
     }
 
+    // used by groovy scripts ?
     public final void setReason(String reason) {
         this.reason = reason;
     }
 
+    // jelly
     public final boolean hasReason() {
         return !StringUtils.isEmpty(reason);
     }
 
+    // used by groovy scripts ?
     public final boolean isTransientClaim() {
         return transientClaim;
     }
 
+    // used by groovy scripts ?
     public final void setTransientClaim(boolean transientClaim) {
         this.transientClaim = transientClaim;
     }
 
+    // used by groovy scripts ?
     public final boolean isSticky() {
         return !transientClaim;
     }
 
+    // used by groovy scripts ?
     public final void setSticky(boolean sticky) {
         this.transientClaim = !sticky;
     }
 
+    // used by groovy scripts ?
     public final String getError() {
         return bfaClaimer.getError();
     }
 
+    // used by groovy scripts ?
     public final boolean isBFAEnabled() {
         return ClaimBuildFailureAnalyzer.isBFAEnabled();
     }
@@ -298,6 +314,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         return (Date) this.claimDate.clone();
     }
 
+    // used by groovy scripts ?
     public final  boolean hasClaimDate() {
         return this.claimDate != null;
     }
@@ -306,6 +323,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * Was the action claimed by someone to themselves?
      * @return true if the item was claimed by the user to themselves, false otherwise
      */
+    // used by groovy scripts ?
     public boolean isSelfAssigned() {
         boolean ret = true;
         if (!isClaimed()) {
@@ -318,6 +336,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         return ret;
     }
 
+    // jelly
     public abstract String getNoun();
 
     protected final void evalGroovyScript() {

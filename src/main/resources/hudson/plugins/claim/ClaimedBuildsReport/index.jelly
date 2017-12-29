@@ -1,7 +1,6 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-	<l:layout title="${h.ifThenElse(app==it,'%Dashboard',it.viewName)}">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout" xmlns:t="/lib/hudson">
+	<l:layout title="${app==it?'%Dashboard':it.viewName}">
 		<st:include page="sidepanel.jelly" it="${it.owner}" />
 		<l:main-panel>
 			<div id="view-message">

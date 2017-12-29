@@ -12,7 +12,7 @@
       <th><st:nbsp/></th>
       <th>${%Build}</th>
       <th initialSortDir="up">${%Date}</th>
-      <th>${%Failure Duration}</th>
+      <th>${%FailureDuration}</th>
       <th>${%Status}</th>
       <th>${%Description}</th>
     </tr>
@@ -38,7 +38,8 @@
           ${firstBad.timestampString}
         </td>
         <td id="claim.claimant.${b.parent.name}">
-          ${it.getClaimantText(b)}
+          <j:set var="messageProvider" value="${it.getMessageProvider(b)}"/>
+          ${messageProvider.shortClaimDescription}
         </td>
         <td id="claim.desc.${b.parent.name}">
           ${b.description}

@@ -52,6 +52,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         reclaim = false;
     }
 
+    // jelly
+    public final CommonMessagesProvider getMessageProvider() {
+        return CommonMessagesProvider.build(this);
+    }
+
     public final boolean isReclaim() {
         return reclaim;
     }
@@ -222,6 +227,10 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
                 && Hudson.getAuthentication().getName().equals(claimedBy);
     }
 
+    public final boolean canReassign() {
+        return !isUserAnonymous() && isClaimed();
+    }
+
     public final boolean canClaim() {
         return !isUserAnonymous() && !isClaimedByMe();
     }
@@ -294,6 +303,9 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     @Exported
     public final Date getClaimDate() {
+        if (this.claimDate == null) {
+            return null;
+        }
         return (Date) this.claimDate.clone();
     }
 

@@ -26,32 +26,13 @@ THE SOFTWARE.
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:s="/lib/form">
   <td>
     <j:forEach var="action" items="${it.getAction(job)}">
-        <j:choose>
-            <j:when test="${action.claim.reason != null}">
-                <j:choose>
-                    <j:when test="${action.claim.claimedBy.equals(action.claim.assignedBy)}">
-                        <l:icon class="icon-claim-claim ${subIconSizeClass}"
-                                title="${%claimed.reason(action.combinationName,action.claim.claimedBy,action.claim.reason)}"/>
-                    </j:when>
-                    <j:otherwise>
-                        <l:icon class="icon-claim-claim ${subIconSizeClass}"
-                                title="${%assigned.reason(action.claim.claimedBy,action.claim.assignedBy,action.claim.reason)}"/>
-                    </j:otherwise>
-                  </j:choose>
-             </j:when>
-             <j:otherwise>
-                <j:choose>
-                    <j:when test="${action.claim.claimedBy.equals(action.claim.assignedBy)}">
-                        <l:icon class="icon-claim-claim ${subIconSizeClass}"
-                                title="${%claimed(action.combinationName,action.claim.claimedBy)}"/>
-                    </j:when>
-                    <j:otherwise>
-                        <l:icon class="icon-claim-claim ${subIconSizeClass}"
-                                title="${%claimed(action.claim.claimedBy,action.claim.assignedBy)}"/>
-                    </j:otherwise>
-                </j:choose>
-             </j:otherwise>
-        </j:choose>
+        <j:set var="reasonPart" value=""/>
+        <j:if test="${action.claim.hasReason()}">
+            <j:set var="reasonPart" encode="true"
+                   value="&#10;&#10;${action.claim.messageProvider.reasonTitle}&#10;${action.claim.reason}"/>
+        </j:if>
+        <l:icon class="icon-claim-claim ${subIconSizeClass}"
+                title="${action.claim.messageProvider.shortClaimDescription}${reasonPart}"/>
     </j:forEach>  
   </td>
 </j:jelly>

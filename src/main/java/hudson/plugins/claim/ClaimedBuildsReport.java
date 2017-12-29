@@ -15,6 +15,8 @@ import org.apache.commons.jelly.JellyContext;
 import org.jenkins.ui.icon.Icon;
 import org.jenkins.ui.icon.IconSet;
 import org.jenkins.ui.icon.IconSpec;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.stapler.Stapler;
 
 @Extension
@@ -45,6 +47,7 @@ public final class ClaimedBuildsReport implements RootAction, IconSpec {
         return "/claims";
     }
 
+    @Restricted(DoNotUse.class) // jelly only
     public Run getFirstFail(final Run r) {
         Run lastGood = r.getPreviousNotFailedBuild();
         Run firstFail;
@@ -56,19 +59,9 @@ public final class ClaimedBuildsReport implements RootAction, IconSpec {
         return firstFail;
     }
 
-    public String getClaimantText(final Run r) {
-        ClaimBuildAction claim = r.getAction(ClaimBuildAction.class);
-        if (claim == null || !claim.isClaimed()) {
-            return Messages.ClaimedBuildsReport_ClaimantText_unclaimed();
-        }
-        String reason = claim.getReason();
-        if (reason != null) {
-            return Messages.ClaimedBuildsReport_ClaimantText_claimedWithReason(
-                    claim.getClaimedBy(), claim.getReason(), claim.getAssignedBy());
-        } else {
-            return Messages.ClaimedBuildsReport_ClaimantText_claimed(claim
-                    .getClaimedBy(), claim.getAssignedBy());
-        }
+    @Restricted(DoNotUse.class) // jelly only
+    public CommonMessagesProvider getMessageProvider(final Run r) {
+        return CommonMessagesProvider.build(getAction(r));
     }
 
     public View getOwner() {
@@ -80,13 +73,14 @@ public final class ClaimedBuildsReport implements RootAction, IconSpec {
         }
     }
 
+    private ClaimBuildAction getAction(final Run r) {
+        return ClaimUtils.getBuildAction(r, false);
+    }
+
     public RunList getBuilds() {
         List<Run> lastBuilds = new ArrayList<>();
         for (Job job : Jenkins.getInstance().getAllItems(Job.class)) {
-            Run lb = job.getLastBuild();
-            while (lb != null && (lb.hasntStartedYet() || lb.isBuilding())) {
-                lb = lb.getPreviousBuild();
-            }
+            Run lb = job.getLastCompletedBuild();
             if (lb != null && lb.getAction(ClaimBuildAction.class) != null) {
                 lastBuilds.add(lb);
             }

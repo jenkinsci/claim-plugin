@@ -26,72 +26,32 @@
    </script>
 
     <t:summary icon="icon-claim-claim">
-        <j:choose>
-            <j:when test="${it.isClaimedByMe()}">
-                <p>
-                    <j:choose>
-                        <j:when test="${it.hasClaimDate()}">
-                            <j:choose>
-                                <j:when test="${it.isSelfAssigned()}">
-                                    ${%you.claimed.on(it.noun)}
-                                     <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
-                                </j:when>
-                                <j:otherwise>
-                                       ${%you.assigned.on(it.noun, it.assignedByName)}
-                                     <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
-                                </j:otherwise>
-                            </j:choose>
-                        </j:when>
-                        <j:otherwise>
-                            ${%you.claimed(it.noun)}
-                        </j:otherwise>
-                     </j:choose>
-                    <j:if test="${it.canRelease()}">
-                        <a id="dropClaim" href="claim/unclaim">${%Drop the claim.}</a>
-                        <st:nbsp/><a id="reassign" href="#" onClick="ShowPopup(this); return false;">${%Reassign the claim.}</a>
-                    </j:if>
-                </p>
-                <j:if test="${it.hasReason()}">
-                    <p>${%Reason:} ${it.reason}</p>
-                </j:if>
-            </j:when>
-            <j:when test="${it.claimed}">
-                <p>
-                    <j:choose>
-                        <j:when test="${it.hasClaimDate()}">
-                            <j:choose>
-                                <j:when test="${it.isSelfAssigned()}">
-                                    ${%one.claimed.on(it.noun,it.claimedByName)}
-                                    <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
-                                </j:when>
-                                <j:otherwise>
-                                       ${%one.assigned.on(it.noun, it.claimedByName,it.assignedByName)}
-                                     <i:formatDate value="${it.claimDate}" type="both" dateStyle="medium" timeStyle="medium"/>${%.}
-                                </j:otherwise>
-                            </j:choose>                                    
-                        </j:when>
-                        <j:otherwise>
-                            ${%one.claimed(it.noun,it.claimedByName)}
-                        </j:otherwise>
-                     </j:choose>
-                    <j:if test="${it.canRelease()}">
-                        <a id="dropClaim" href="claim/unclaim">${%Drop the claim.}</a>
-                    </j:if>
-                    <j:if test="${it.canClaim()}">
-                        <a id="reassign" href="#" onClick="ShowPopup(this); return false;">${%Reassign the claim.}</a>
-                    </j:if>
-                </p>
-                <j:if test="${it.hasReason()}">
-                    <p>${%Reason:} ${it.reason}</p>
-                </j:if>
-            </j:when>
-            <j:otherwise>
-                ${%not.claimed(it.noun)}
-                <j:if test="${it.canClaim()}">
-                    <a id="claim" href="#" onClick="ShowPopup(this); return false;">${%Claim it.}</a>
-                </j:if>
-            </j:otherwise>
-        </j:choose>
+        <p>
+            <j:out value="${it.messageProvider.getFullClaimDescription(it.noun)}"/>
+        </p>
+        <p>
+            <j:set var="linkWritten" value="false"/>
+            <j:if test="${it.canClaim()}">
+                <j:if test="${linkWritten}"><st:nbsp/></j:if>
+                <a id="claim" href="#" onClick="ShowPopup(this); return false;">${%Action.Claim}</a>
+                <j:set var="linkWritten" value="true"/>
+            </j:if>
+            <j:if test="${it.canRelease()}">
+                <j:if test="${linkWritten}"><st:nbsp/></j:if>
+                <a id="dropClaim" href="claim/unclaim">${%Action.Release}</a>
+                <j:set var="linkWritten" value="true"/>
+            </j:if>
+            <j:if test="${it.canReassign()}">
+                <j:if test="${linkWritten}"><st:nbsp/></j:if>
+                <a id="reassign" href="#" onClick="ShowPopup(this); return false;">${%Action.Reassign}</a>
+                <j:set var="linkWritten" value="true"/>
+            </j:if>
+        </p>
+        <p>
+            <b>${it.messageProvider.reasonTitle}</b>
+            <br/>
+            <j:out value="${h.escape(it.reason)}"/>
+        </p>
         <div id="claimHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb;">
             <j:set var="descriptor" value="${it.descriptor}"/>
             <f:form method="post" action="claim/claim" name="claim">

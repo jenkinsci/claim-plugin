@@ -1,13 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
     <j:if test="${it.claimed}">
-        <j:choose>
-            <j:when test="${it.reason != null}">
-                <l:icon class="icon-claim-claim icon-sm" title="${%claimed.reason(it.claimedByName,it.reason)}"/>
-             </j:when>
-             <j:otherwise>
-                 <l:icon class="icon-claim-claim icon-sm" title="${%claimed(it.claimedBy)}"/>
-             </j:otherwise>
-        </j:choose>
+        <l:icon class="icon-claim-claim icon-sm" title="${it.messageProvider.shortClaimDescription}"/>
     </j:if>
 </j:jelly>
+

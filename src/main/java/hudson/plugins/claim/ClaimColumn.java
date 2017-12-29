@@ -39,8 +39,8 @@ public final class ClaimColumn extends ListViewColumn {
                 MatrixBuild matrixBuild = (hudson.matrix.MatrixBuild) run;
 
                 for (MatrixRun combination : matrixBuild.getRuns()) {
-                    ClaimBuildAction action = combination.getAction(ClaimBuildAction.class);
-                    if (action != null && action.isClaimed()) {
+                    ClaimBuildAction action = ClaimUtils.getBuildAction(combination, true);
+                    if (action != null) {
                         Result runResult = combination.getResult();
                         if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {
                             ClaimColumnInformation holder = new ClaimColumnInformation();
@@ -52,8 +52,8 @@ public final class ClaimColumn extends ListViewColumn {
                     }
                 }
             } else {
-                ClaimBuildAction action = run.getAction(ClaimBuildAction.class);
-                if (action != null && action.isClaimed()) {
+                ClaimBuildAction action = ClaimUtils.getBuildAction(run, true);
+                if (action != null) {
                     ClaimColumnInformation holder = new ClaimColumnInformation();
                     holder.setClaim(action);
                     result.add(holder);

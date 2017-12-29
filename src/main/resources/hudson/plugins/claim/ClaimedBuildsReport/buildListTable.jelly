@@ -47,5 +47,8 @@
       </tr>
     </j:forEach>
   </table>
-  <t:rssBar-with-iconSize/>
+
+  <!--
+  Not working since View inheritance was removed
+  <t:rssBar-with-iconSize/>-->
 </j:jelly>

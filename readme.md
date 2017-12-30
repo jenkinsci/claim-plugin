@@ -6,6 +6,14 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.12 (30 Dec 2017)
+- Fixed a Null Reference Exception when migrating old data [JENKINS-18809]
+- Use a dedicated claim icon eveywhere [JENKINS-6936]
+- Made Build-Failure-Analyzer description text appear on form display, and be readonly [JENKINS-44066]
+- Render run description using the configured formatter in Claim Report screen [JENKINS-42579]
+- Made claim colum icon-size aware
+- Standardized claim messages & improved them (user link, use of display name)
+- Removed Claim Report broken rss links
 
 ### v2.11 (24 Dec 2017)
 - Fixed a regression introduced in 2.10 preventing the plugin to start [JENKINS-47972]
@@ -71,9 +79,11 @@ Change Log
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
 [JENKINS-47972]: https://issues.jenkins-ci.org/browse/JENKINS-47972
-[JENKINS-44024]: https://issues.jenkins-ci.org/browse/JENKINS-44024
 [JENKINS-47437]: https://issues.jenkins-ci.org/browse/JENKINS-47437
+[JENKINS-44066]: https://issues.jenkins-ci.org/browse/JENKINS-44066
+[JENKINS-44024]: https://issues.jenkins-ci.org/browse/JENKINS-44024
 [JENKINS-43811]: https://issues.jenkins-ci.org/browse/JENKINS-43811
+[JENKINS-42579]: https://issues.jenkins-ci.org/browse/JENKINS-42579
 [JENKINS-39538]: https://issues.jenkins-ci.org/browse/JENKINS-39538
 [JENKINS-39537]: https://issues.jenkins-ci.org/browse/JENKINS-39537
 [JENKINS-33715]: https://issues.jenkins-ci.org/browse/JENKINS-33715
@@ -82,8 +92,10 @@ Change Log
 [JENKINS-27206]: https://issues.jenkins-ci.org/browse/JENKINS-27206
 [JENKINS-27091]: https://issues.jenkins-ci.org/browse/JENKINS-27091
 [JENKINS-27002]: https://issues.jenkins-ci.org/browse/JENKINS-27002
+[JENKINS-18809]: https://issues.jenkins-ci.org/browse/JENKINS-18809
 [JENKINS-17734]: https://issues.jenkins-ci.org/browse/JENKINS-17734
 [JENKINS-16801]: https://issues.jenkins-ci.org/browse/JENKINS-16801
 [JENKINS-16766]: https://issues.jenkins-ci.org/browse/JENKINS-16766
 [JENKINS-7824]: https://issues.jenkins-ci.org/browse/JENKINS-7824
+[JENKINS-6936]: https://issues.jenkins-ci.org/browse/JENKINS-6936
 [wiki]: https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin

@@ -47,11 +47,13 @@
                 <j:set var="linkWritten" value="true"/>
             </j:if>
         </p>
-        <p>
-            <b>${it.messageProvider.reasonTitle}</b>
-            <br/>
-            <j:out value="${h.escape(it.reason)}"/>
-        </p>
+        <j:if test="${it.hasReason()}">
+            <p>
+                <b>${it.messageProvider.reasonTitle}</b>
+                <br/>
+                <j:out value="${h.escape(it.reason)}"/>
+            </p>
+        </j:if>
         <div id="claimHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb;">
             <j:set var="descriptor" value="${it.descriptor}"/>
             <f:form method="post" action="claim/claim" name="claim">

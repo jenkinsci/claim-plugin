@@ -32,13 +32,13 @@
         }
 
         function ShowPopup(hoveritem) {
-            hp = document.getElementById("claimHoverPopup");
+            var hp = document.getElementById("claimHoverPopup");
             hp.style.display = "block";
             setAutoRefresh(false);
         }
 
         function HidePopup() {
-            hp = document.getElementById("claimHoverPopup");
+            var hp = document.getElementById("claimHoverPopup");
             hp.style.display = "none";
             var action = <st:bind value="${it}" />;
             setAutoRefresh(true);

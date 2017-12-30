@@ -63,12 +63,9 @@ public class ClaimGroovyTest {
 
         j.jenkins.setAuthorizationStrategy(strategy);
 
-        ACL.impersonate(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS).impersonate(), new Runnable() {
-            @Override
-            public void run() {
-                assertTrue(j.jenkins.hasPermission(Jenkins.ADMINISTER));
-                assertFalse(j.jenkins.hasPermission(Jenkins.RUN_SCRIPTS));
-            }
+        ACL.impersonate(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS).impersonate(), () -> {
+            assertTrue(j.jenkins.hasPermission(Jenkins.ADMINISTER));
+            assertFalse(j.jenkins.hasPermission(Jenkins.RUN_SCRIPTS));
         });
     }
 
@@ -81,9 +78,7 @@ public class ClaimGroovyTest {
         try {
             Field field = User.class.getDeclaredField("ALLOW_USER_CREATION_VIA_URL");
             field.setBoolean(null, value);
-        } catch (NoSuchFieldException e) {
-            // do nothing
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             // do nothing
         }
     }
@@ -104,16 +99,13 @@ public class ClaimGroovyTest {
 
     private void doConfigureScriptWithUser(String userName)
             throws InterruptedException, java.util.concurrent.ExecutionException {
-        ACL.impersonate(User.get(userName).impersonate(), new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
-                    config.setGroovyTrigger(new SecureGroovyScript(
-                            "jenkins.model.Jenkins.instance.systemMessage = 'pwned'", false, null));
-                } catch (Exception e) {
-                    fail(e.getMessage());
-                }
+        ACL.impersonate(User.get(userName).impersonate(), () -> {
+            try {
+                ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
+                config.setGroovyTrigger(new SecureGroovyScript(
+                        "jenkins.model.Jenkins.instance.systemMessage = 'pwned'", false, null));
+            } catch (Exception e) {
+                fail(e.getMessage());
             }
         });
 
@@ -136,24 +128,21 @@ public class ClaimGroovyTest {
                 .scheduleBuild2(0).get();
         assertEquals(Result.FAILURE, build.getResult());
 
-        ACL.impersonate(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS).impersonate(), new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    StaplerRequest req = mock(StaplerRequest.class);
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.accumulate("assignee", ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS);
-                    jsonObject.accumulate("reason", "none");
-                    jsonObject.accumulate("errors", "");
-                    jsonObject.accumulate("sticky", true);
-                    when(req.getSubmittedForm()).thenReturn(jsonObject);
+        ACL.impersonate(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS).impersonate(), () -> {
+            try {
+                StaplerRequest req = mock(StaplerRequest.class);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.accumulate("assignee", ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS);
+                jsonObject.accumulate("reason", "none");
+                jsonObject.accumulate("errors", "");
+                jsonObject.accumulate("sticky", true);
+                when(req.getSubmittedForm()).thenReturn(jsonObject);
 
-                    StaplerResponse res = mock(StaplerResponse.class);
-                    ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-                    action.doClaim(req, res);
-                } catch (Exception e) {
-                    fail(e.getMessage());
-                }
+                StaplerResponse res = mock(StaplerResponse.class);
+                ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
+                action.doClaim(req, res);
+            } catch (Exception e) {
+                fail(e.getMessage());
             }
         });
     }

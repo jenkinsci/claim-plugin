@@ -52,6 +52,11 @@ public final class ClaimConfig extends GlobalConfiguration {
     private SecureGroovyScript groovyTrigger;
 
     /**
+     * Block Auto - refresh while claiming.
+     */
+    private boolean blockAutoRefreshWhileClaiming;
+
+    /**
      * This human readable name is used in the configuration screen.
      */
     @Nonnull
@@ -67,6 +72,7 @@ public final class ClaimConfig extends GlobalConfiguration {
         sendEmails = formData.getBoolean("sendEmails");
         stickyByDefault = formData.getBoolean("stickyByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
+        blockAutoRefreshWhileClaiming = formData.getBoolean("blockAutoRefreshWhileClaiming");
         setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
         save();
         return super.configure(req, formData);
@@ -125,6 +131,22 @@ public final class ClaimConfig extends GlobalConfiguration {
      */
     public void setSortUsersByFullName(boolean sortUsersByFullName) {
         this.sortUsersByFullName = sortUsersByFullName;
+    }
+
+    /**
+     * Indicates if auto refresh is blocked while claiming.
+     * @return true if auto refresh is blocked, else false;
+     */
+    public boolean isBlockAutoRefreshWhileClaiming() {
+        return blockAutoRefreshWhileClaiming;
+    }
+
+    /**
+     * Sets if auto refresh is blocked while claiming.
+     * @param blockAutoRefreshWhileClaiming true if auto refresh is blocked, else false;
+     */
+    public void setBlockAutoRefreshWhileClaiming(boolean blockAutoRefreshWhileClaiming) {
+        this.blockAutoRefreshWhileClaiming = blockAutoRefreshWhileClaiming;
     }
 
     @Nonnull

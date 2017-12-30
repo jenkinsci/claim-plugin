@@ -2,27 +2,57 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
+    <!-- deactivate auto refresh while keeping the initial value-->
+    <j:set var="isAutoRefresh" value="${h.isAutoRefresh(request)}"/>
+
+    <j:if test="${isAutoRefresh}">
+        <j:set var="_" value="${it.preventRefresh(response)}"/>
+        <j:invokeStatic var="autoRefreshTimeout" className="jenkins.util.SystemProperties"
+                        method="getString">
+            <j:arg value="hudson.Functions.autoRefreshSeconds" type="java.lang.String"/>
+            <j:arg value="10" type="java.lang.String"/>
+        </j:invokeStatic>
+        <j:set var="javascriptAutoRefresh">
+            if (active) {
+                autoRefreshTimer = setTimeout(function() {
+                        window.location.reload(true);
+                    }, ${autoRefreshTimeout} * 1000);
+                console.log("Setting autorefresh timer");
+            } else {
+                clearTimeout(autoRefreshTimer);
+                console.log("Removing autorefresh timer");
+            }
+        </j:set>
+    </j:if>
     <script type="text/javascript">
-        function ShowPopup(hoveritem)
-        {
+        var autoRefreshTimer;
+
+        function setAutoRefresh(active) {
+            ${javascriptAutoRefresh}
+        }
+
+        function ShowPopup(hoveritem) {
             hp = document.getElementById("claimHoverPopup");
             hp.style.display = "block";
+            setAutoRefresh(false);
         }
 
-        function HidePopup()
-        {
+        function HidePopup() {
             hp = document.getElementById("claimHoverPopup");
             hp.style.display = "none";
+            var action = <st:bind value="${it}" />;
+            setAutoRefresh(true);
         }
 
-        function Display(error)
-        {
-            reasonText = document.getElementById("errordesc");
-            var action = <st:bind value="${it}" />
+        function Display(error) {
+            var reasonText = document.getElementById("errordesc");
+            var action = <st:bind value="${it}" />;
             action.getReason(error, function(content) {
                 reasonText.textContent = content.responseObject();
             });
         }
+
+        setAutoRefresh(true);
    </script>
 
     <t:summary icon="icon-claim-claim">

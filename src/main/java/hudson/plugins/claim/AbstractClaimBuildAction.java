@@ -17,10 +17,13 @@ import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 
+import hudson.plugins.claim.http.PreventRefreshFilter;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
@@ -264,6 +267,12 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
             return defaultValue;
         }
         return ClaimBuildFailureAnalyzer.getFillReasonMap().getOrDefault(error, defaultValue);
+    }
+
+    @Restricted(DoNotUse.class) // jelly
+    @SuppressWarnings("unused")
+    public final void preventRefresh(StaplerResponse response) {
+        PreventRefreshFilter.preventRefresh(response);
     }
 
     // used by groovy scripts ?

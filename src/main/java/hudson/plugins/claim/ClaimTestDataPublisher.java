@@ -10,7 +10,6 @@ import hudson.model.TaskListener;
 import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestAction;
 import hudson.tasks.junit.TestDataPublisher;
-import hudson.tasks.junit.TestObject;
 import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.TestResultAction;
 
@@ -70,7 +69,8 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
         }
 
         @Override
-        public List<TestAction> getTestAction(@SuppressWarnings("deprecation") TestObject testObject) {
+        public List<? extends TestAction> getTestAction(
+                @SuppressWarnings("deprecation") hudson.tasks.junit.TestObject testObject) {
             final String prefix = "junit";
             String id = testObject.getId();
             ClaimTestAction result = claims.get(id);
@@ -107,6 +107,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
     }
 
     @Extension
+    @SuppressWarnings("unused")
     public static class DescriptorImpl extends Descriptor<TestDataPublisher> {
 
         @Nonnull

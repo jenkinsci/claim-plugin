@@ -42,7 +42,7 @@
           ${messageProvider.shortClaimDescription}
         </td>
         <td id="claim.desc.${b.parent.name}">
-          ${b.description}
+          <j:out value="${b.description!=null ? app.markupFormatter.translate(b.description) : ''}" />
         </td>
       </tr>
     </j:forEach>

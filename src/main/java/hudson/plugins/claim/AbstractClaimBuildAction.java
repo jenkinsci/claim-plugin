@@ -43,14 +43,12 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     private String assignedBy;
     private Date claimDate;
     private boolean transientClaim = !ClaimConfig.get().isStickyByDefault();
-    private boolean reclaim;
     private ClaimBuildFailureAnalyzer bfaClaimer = null;
     private String reason;
 
     protected abstract T getOwner();
 
     AbstractClaimBuildAction() {
-        reclaim = false;
     }
 
     // jelly
@@ -58,8 +56,15 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         return CommonMessagesProvider.build(this);
     }
 
+    /**
+     * Indicates if the {@link Saveable} is claimed.
+     *
+     * @deprecated use {@link #isClaimed()} instead
+     * @return true if the {@link Saveable} is claimed, else false
+     */
+    @Deprecated
     public final boolean isReclaim() {
-        return reclaim;
+        return isClaimed();
     }
 
     public final ClaimBuildFailureAnalyzer getBfaClaimer() {
@@ -130,7 +135,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Interrupted when sending assignment email", e);
         }
-        reclaim = true;
         this.getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
@@ -144,7 +148,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         if (ClaimBuildFailureAnalyzer.isBFAEnabled() && bfaClaimer != null) {
             bfaClaimer.removeFailAction((Run) getOwner());
         }
-        reclaim = false;
         getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);

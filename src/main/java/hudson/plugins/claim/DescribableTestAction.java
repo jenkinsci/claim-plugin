@@ -72,7 +72,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
             if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {
                 LinkedList<String> list = ClaimBuildFailureAnalyzer.getDropdownList();
                 AbstractClaimBuildAction action = run.getAction(AbstractClaimBuildAction.class);
-                if (action == null || action.getBfaClaimer() == null || !action.isReclaim()) {
+                if (action == null || action.getBfaClaimer() == null || !action.isClaimed()) {
                     items.add("---None---", ClaimBuildFailureAnalyzer.DEFAULT_ERROR);
                     for (String cause : list) {
                         items.add(cause, cause);

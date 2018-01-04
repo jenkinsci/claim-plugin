@@ -307,6 +307,9 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     // used by groovy scripts ?
     public final String getError() {
+        if (bfaClaimer == null) {
+            return null;
+        }
         return bfaClaimer.getError();
     }
 

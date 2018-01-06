@@ -85,9 +85,9 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
             throws Exception {
         Authentication authentication = Hudson.getAuthentication();
         String currentUser = authentication.getName();
-        String name = currentUser; // Default to self-assignment
+        String claimedUser = currentUser; // Default to self-assignment
         String assignee = req.getSubmittedForm().getString("assignee");
-        if (!StringUtils.isEmpty(assignee) && !name.equals(assignee)) {
+        if (!StringUtils.isEmpty(assignee) && !claimedUser.equals(assignee)) {
             // Validate the specified assignee.
             User resolvedAssignee = User.get(assignee, false, Collections.EMPTY_MAP);
             if (resolvedAssignee == null) {
@@ -95,7 +95,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
                 resp.forwardToPreviousPage(req);
                 return;
             }
-            name = assignee;
+            claimedUser = assignee;
         }
         String reasonProvided = req.getSubmittedForm().getString("reason");
 
@@ -122,22 +122,66 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         if (StringUtils.isEmpty(reasonProvided)) {
             reasonProvided = null;
         }
-        claim(name, reasonProvided, currentUser, sticky);
-        try {
-            ClaimEmailer.sendEmailIfConfigured(
-                    User.get(name, false, Collections.EMPTY_MAP),
-                    currentUser,
-                    getOwner().toString(),
-                    reasonProvided,
-                    getUrl());
-        } catch (MessagingException e) {
-            LOGGER.log(Level.WARNING, "Exception encountered sending assignment email: " + e.getMessage());
-        } catch (InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Interrupted when sending assignment email", e);
-        }
+        claim(claimedUser, reasonProvided, currentUser, sticky, true);
         this.getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
+    }
+
+    /**
+     * Claims a {@link Saveable}.
+     * @param claimedByUser name of the claiming user
+     * @param providedReason reason for the claim
+     * @param assignedByUser name of the assigned user
+     * @param isSticky true if the claim has to be kept until resolution
+     * @deprecated use {@link #claim(String, String, String, boolean, boolean)}
+     */
+    @Deprecated
+    public final void claim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky) {
+        claim(claimedByUser, providedReason, assignedByUser, isSticky, false);
+    }
+
+    /**
+     * Claims a {@link Saveable}, and optionally notifies of the claim.
+     * @param claimedByUser name of the claiming user
+     * @param providedReason reason for the claim
+     * @param assignedByUser name of the assigner user
+     * @param isSticky true if the claim has to be kept until resolution
+     * @param notify true if notifications have to be sent
+     */
+    public final void claim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky,
+                            boolean notify) {
+        applyClaim(claimedByUser, providedReason, assignedByUser, isSticky);
+        if (notify) {
+            try {
+                ClaimEmailer.sendEmailIfConfigured(
+                        User.get(claimedByUser, false, Collections.EMPTY_MAP),
+                        assignedByUser,
+                        getOwner().toString(),
+                        providedReason,
+                        getUrl());
+            } catch (IOException | MessagingException e) {
+                LOGGER.log(Level.WARNING, "Exception encountered sending assignment email: " + e.getMessage());
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, "Interrupted when sending assignment email", e);
+            }
+        }
+    }
+
+    /**
+     * Applies the claim data to the {@link AbstractClaimBuildAction}.
+     * @param claimedByUser name of the claiming user
+     * @param providedReason reason for the claim
+     * @param assignedByUser name of the assigner user
+     * @param isSticky true if the claim has to be kept until resolution
+     */
+    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky) {
+        this.claimed = true;
+        this.claimedBy = claimedByUser;
+        this.reason = providedReason;
+        this.transientClaim = !isSticky;
+        this.claimDate = new Date();
+        this.assignedBy = assignedByUser;
     }
 
     // jelly
@@ -151,6 +195,35 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
+    }
+
+    /**
+     * Unclaims a {@link Saveable}.
+     * @deprecated use {@link #unclaim(boolean)}
+     */
+    @Deprecated
+    public final void unclaim() {
+        unclaim(false);
+    }
+
+    /**
+     * Unclaims a {@link Saveable}, and optionally notifies of the unclaim.
+     * @deprecated use {@link #unclaim(boolean)}
+     */
+    public final void unclaim(boolean notify) {
+        applyUnclaim();
+    }
+
+    /**
+     * Removes the claim data to the {@link AbstractClaimBuildAction}.
+     */
+    protected void applyUnclaim() {
+        this.claimed = false;
+        this.claimedBy = null;
+        this.transientClaim = false;
+        this.claimDate = null;
+        this.assignedBy = null;
+        // we remember the reason to show it if someone reclaims this build.
     }
 
     @Exported
@@ -199,36 +272,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     }
 
     /**
-     * Claims a {@link Saveable}.
-     * @param claimUser name of the claiming user
-     * @param providedReason reason for the claim
-     * @param assignedUser name of the assigned user
-     * @param isSticky true if the claim has to be kept until resolution
-     */
-    public void claim(String claimUser, String providedReason, String assignedUser, boolean isSticky) {
-        this.claimed = true;
-        this.claimedBy = claimUser;
-        this.reason = providedReason;
-        this.transientClaim = !isSticky;
-        this.claimDate = new Date();
-        this.assignedBy = assignedUser;
-    }
-
-    /**
      * Claim a new {@link Saveable} with the same settings as this one.
      * @param other the source data
      */
     public void copyTo(AbstractClaimBuildAction<T> other) {
-        other.claim(getClaimedBy(), getReason(), getAssignedBy(), isSticky());
-    }
-
-    public final void unclaim() {
-        this.claimed = false;
-        this.claimedBy = null;
-        this.transientClaim = false;
-        this.claimDate = null;
-        this.assignedBy = null;
-        // we remember the reason to show it if someone reclaims this build.
+        other.applyClaim(getClaimedBy(), getReason(), getAssignedBy(), isSticky());
     }
 
     public final boolean isClaimedByMe() {

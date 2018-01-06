@@ -3,6 +3,8 @@ package hudson.plugins.claim;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 
+import java.util.Optional;
+
 public final class ClaimBuildAction extends AbstractClaimBuildAction<Run> implements RunAction2 {
 
     private static final long serialVersionUID = 1L;
@@ -36,5 +38,15 @@ public final class ClaimBuildAction extends AbstractClaimBuildAction<Run> implem
     @Override
     public void onLoad(Run<?, ?> run) {
         owner = run;
+    }
+
+    @Override
+    protected Optional<AbstractClaimBuildAction> getNextAction() {
+        Run nextRun = owner.getNextBuild();
+        if (nextRun != null) {
+            ClaimBuildAction action = nextRun.getAction(ClaimBuildAction.class);
+            return Optional.ofNullable(action);
+        }
+        return Optional.empty();
     }
 }

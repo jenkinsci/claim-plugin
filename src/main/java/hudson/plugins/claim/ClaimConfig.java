@@ -38,6 +38,11 @@ public final class ClaimConfig extends GlobalConfiguration {
     private boolean stickyByDefault = true;
 
     /**
+     * Default global value for the propagation to following builds of the claims.
+     */
+    private boolean propagateToFollowingBuildsByDefault = false;
+
+    /**
      * Sort users by full name.
      */
     private boolean sortUsersByFullName;
@@ -71,6 +76,7 @@ public final class ClaimConfig extends GlobalConfiguration {
         // set that to properties and call save().
         sendEmails = formData.getBoolean("sendEmails");
         stickyByDefault = formData.getBoolean("stickyByDefault");
+        propagateToFollowingBuildsByDefault = formData.getBoolean("propagateToFollowingBuildsByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
         blockAutoRefreshWhileClaiming = formData.getBoolean("blockAutoRefreshWhileClaiming");
         setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
@@ -111,6 +117,24 @@ public final class ClaimConfig extends GlobalConfiguration {
      */
     public void setStickyByDefault(boolean stickyByDefault) {
         this.stickyByDefault = stickyByDefault;
+    }
+
+    /**
+     * Returns true if the claims should be propagated to following builds by default, false otherwise.
+     *
+     * @return true to make claims propagated to following builds by default, else false.
+     */
+    public boolean isPropagateToFollowingBuildsByDefault() {
+        return propagateToFollowingBuildsByDefault;
+    }
+
+    /**
+     * Sets the default following builds propagation behaviour for claims.
+     *
+     * @param propagateToFollowingBuildsByDefault the default following build propagation value.
+     */
+    public void setPropagateToFollowingBuildsByDefault(boolean propagateToFollowingBuildsByDefault) {
+        this.propagateToFollowingBuildsByDefault = propagateToFollowingBuildsByDefault;
     }
 
 

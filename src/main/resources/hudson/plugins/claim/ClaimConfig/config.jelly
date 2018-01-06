@@ -8,6 +8,11 @@
     <f:entry title="${%StickyByDefault}" field="stickyByDefault" help="/plugin/claim/help-stickyByDefault.html">
         <f:checkbox/>
     </f:entry>
+    <f:entry title="${%PropagateToFollowingBuildsByDefault}" field="propagateToFollowingBuildsByDefault"
+             help="/plugin/claim/help-propagateToFollowingBuildsByDefault.html">
+        <f:checkbox/>
+    </f:entry>
+
     <f:entry title="${%SortUsersByFullName}" field="sortUsersByFullName"
              help="/plugin/claim/help-sortUsersByFullName.html">
         <f:checkbox/>

@@ -11,6 +11,7 @@ import hudson.model.User;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -119,10 +120,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         }
 
         boolean sticky = req.getSubmittedForm().getBoolean("sticky");
+        boolean propagated = req.getSubmittedForm().getBoolean("propagateToFollowingBuilds");
         if (StringUtils.isEmpty(reasonProvided)) {
             reasonProvided = null;
         }
-        claim(claimedUser, reasonProvided, currentUser, sticky, true);
+        claim(claimedUser, reasonProvided, currentUser, sticky, propagated, true);
         this.getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
@@ -134,11 +136,12 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param providedReason reason for the claim
      * @param assignedByUser name of the assigned user
      * @param isSticky true if the claim has to be kept until resolution
-     * @deprecated use {@link #claim(String, String, String, boolean, boolean)}
+     * @deprecated use {@link #claim(String, String, String, boolean, boolean, boolean)}
      */
     @Deprecated
     public final void claim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky) {
-        claim(claimedByUser, providedReason, assignedByUser, isSticky, false);
+        claim(claimedByUser, providedReason, assignedByUser, isSticky,
+                ClaimConfig.get().isPropagateToFollowingBuildsByDefault(), false);
     }
 
     /**
@@ -147,11 +150,12 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param providedReason reason for the claim
      * @param assignedByUser name of the assigner user
      * @param isSticky true if the claim has to be kept until resolution
+     * @param isPropagated true if the claim has to be propagated to following builds
      * @param notify true if notifications have to be sent
      */
     public final void claim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky,
-                            boolean notify) {
-        applyClaim(claimedByUser, providedReason, assignedByUser, isSticky);
+                            boolean isPropagated, boolean notify) {
+        applyClaim(claimedByUser, providedReason, assignedByUser, isSticky, isPropagated);
         if (notify) {
             try {
                 ClaimEmailer.sendEmailIfConfigured(
@@ -174,15 +178,31 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param providedReason reason for the claim
      * @param assignedByUser name of the assigner user
      * @param isSticky true if the claim has to be kept until resolution
+     * @param isPropagated true if the claim has to be propagated to following builds
      */
-    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky) {
+    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky,
+                              boolean isPropagated) {
         this.claimed = true;
         this.claimedBy = claimedByUser;
         this.reason = providedReason;
         this.transientClaim = !isSticky;
         this.claimDate = new Date();
         this.assignedBy = assignedByUser;
+        if (isPropagated) {
+            getNextAction().ifPresent(action -> {
+                if (!action.isClaimed()) {
+                    action.applyClaim(claimedByUser, providedReason, assignedByUser, isSticky, true);
+                    try {
+                        action.getOwner().save();
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                }
+            });
+        }
     }
+
+    protected abstract Optional<AbstractClaimBuildAction> getNextAction();
 
     // jelly
     public final void doUnclaim(StaplerRequest req, StaplerResponse resp)
@@ -208,9 +228,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     /**
      * Unclaims a {@link Saveable}, and optionally notifies of the unclaim.
+     * @param notify true if notifications have to be sent
      * @deprecated use {@link #unclaim(boolean)}
      */
     public final void unclaim(boolean notify) {
+        //TODO actually notify
         applyUnclaim();
     }
 
@@ -275,8 +297,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * Claim a new {@link Saveable} with the same settings as this one.
      * @param other the source data
      */
-    public void copyTo(AbstractClaimBuildAction<T> other) {
-        other.applyClaim(getClaimedBy(), getReason(), getAssignedBy(), isSticky());
+    protected void copyTo(AbstractClaimBuildAction<T> other) {
+        other.applyClaim(getClaimedBy(), getReason(), getAssignedBy(), isSticky(), false);
     }
 
     public final boolean isClaimedByMe() {
@@ -354,6 +376,13 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     // used by groovy scripts ?
     public final void setSticky(boolean sticky) {
         this.transientClaim = !sticky;
+    }
+
+    @Restricted(DoNotUse.class)
+    @SuppressWarnings("unused")
+    // groovy
+    public final boolean isPropagateToFollowingBuildsByDefault() {
+        return ClaimConfig.get().isPropagateToFollowingBuildsByDefault();
     }
 
     // used by groovy scripts ?

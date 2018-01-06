@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>claim</artifactId>
-	<version>2.13-SNAPSHOT</version>
+	<version>2.14-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>Jenkins Claim Plugin</name>
 	<url>https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin</url>

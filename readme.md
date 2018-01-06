@@ -6,6 +6,11 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.13 (06 Jan 2017)
+- Added an option to prevent autorefresh when claiming (Experimental)
+- Allow propagating claims to following failed builds [JENKINS-12437]
+- Use initial claim date for sticky/propagated claims [JENKINS-48037]
+
 ### v2.12 (30 Dec 2017)
 - Fixed a Null Reference Exception when migrating old data [JENKINS-18809]
 - Use a dedicated claim icon eveywhere [JENKINS-6936]
@@ -78,6 +83,7 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-48037]: https://issues.jenkins-ci.org/browse/JENKINS-48037
 [JENKINS-47972]: https://issues.jenkins-ci.org/browse/JENKINS-47972
 [JENKINS-47437]: https://issues.jenkins-ci.org/browse/JENKINS-47437
 [JENKINS-44066]: https://issues.jenkins-ci.org/browse/JENKINS-44066
@@ -96,6 +102,7 @@ Change Log
 [JENKINS-17734]: https://issues.jenkins-ci.org/browse/JENKINS-17734
 [JENKINS-16801]: https://issues.jenkins-ci.org/browse/JENKINS-16801
 [JENKINS-16766]: https://issues.jenkins-ci.org/browse/JENKINS-16766
+[JENKINS-12437]: https://issues.jenkins-ci.org/browse/JENKINS-12437
 [JENKINS-7824]: https://issues.jenkins-ci.org/browse/JENKINS-7824
 [JENKINS-6936]: https://issues.jenkins-ci.org/browse/JENKINS-6936
 [wiki]: https://wiki.jenkins-ci.org/display/JENKINS/Claim+plugin

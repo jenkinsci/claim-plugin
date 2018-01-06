@@ -124,7 +124,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         if (StringUtils.isEmpty(reasonProvided)) {
             reasonProvided = null;
         }
-        claim(claimedUser, reasonProvided, currentUser, sticky, propagated, true);
+        claim(claimedUser, reasonProvided, currentUser, new Date(), sticky, propagated, true);
         this.getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
@@ -136,11 +136,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param providedReason reason for the claim
      * @param assignedByUser name of the assigned user
      * @param isSticky true if the claim has to be kept until resolution
-     * @deprecated use {@link #claim(String, String, String, boolean, boolean, boolean)}
+     * @deprecated use {@link #claim(String, String, String, Date, boolean, boolean, boolean)}
      */
     @Deprecated
     public final void claim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky) {
-        claim(claimedByUser, providedReason, assignedByUser, isSticky,
+        claim(claimedByUser, providedReason, assignedByUser, new Date(), isSticky,
                 ClaimConfig.get().isPropagateToFollowingBuildsByDefault(), false);
     }
 
@@ -149,13 +149,14 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param claimedByUser name of the claiming user
      * @param providedReason reason for the claim
      * @param assignedByUser name of the assigner user
+     * @param date date of the claim
      * @param isSticky true if the claim has to be kept until resolution
      * @param isPropagated true if the claim has to be propagated to following builds
      * @param notify true if notifications have to be sent
      */
-    public final void claim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky,
-                            boolean isPropagated, boolean notify) {
-        applyClaim(claimedByUser, providedReason, assignedByUser, isSticky, isPropagated);
+    public final void claim(String claimedByUser, String providedReason, String assignedByUser, Date date,
+                            boolean isSticky, boolean isPropagated, boolean notify) {
+        applyClaim(claimedByUser, providedReason, assignedByUser, date, isSticky, isPropagated);
         if (notify) {
             try {
                 ClaimEmailer.sendEmailIfConfigured(
@@ -177,21 +178,22 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param claimedByUser name of the claiming user
      * @param providedReason reason for the claim
      * @param assignedByUser name of the assigner user
+     * @param date date of the claim
      * @param isSticky true if the claim has to be kept until resolution
      * @param isPropagated true if the claim has to be propagated to following builds
      */
-    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky,
-                              boolean isPropagated) {
+    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, Date date,
+                              boolean isSticky, boolean isPropagated) {
         this.claimed = true;
         this.claimedBy = claimedByUser;
         this.reason = providedReason;
         this.transientClaim = !isSticky;
-        this.claimDate = new Date();
+        this.claimDate = date;
         this.assignedBy = assignedByUser;
         if (isPropagated) {
             getNextAction().ifPresent(action -> {
                 if (!action.isClaimed()) {
-                    action.applyClaim(claimedByUser, providedReason, assignedByUser, isSticky, true);
+                    action.applyClaim(claimedByUser, providedReason, assignedByUser, date, isSticky, true);
                     try {
                         action.getOwner().save();
                     } catch (IOException e) {
@@ -298,7 +300,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param other the source data
      */
     protected void copyTo(AbstractClaimBuildAction<T> other) {
-        other.applyClaim(getClaimedBy(), getReason(), getAssignedBy(), isSticky(), false);
+        other.applyClaim(getClaimedBy(), getReason(), getAssignedBy(), getClaimDate(), isSticky(), false);
     }
 
     public final boolean isClaimedByMe() {

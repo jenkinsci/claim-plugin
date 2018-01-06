@@ -46,6 +46,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlOption;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
+import java.util.Date;
+
 public class ClaimTest {
 
     @Rule
@@ -141,17 +143,21 @@ public class ClaimTest {
 
     @Test
     public void stickyClaimPropagatesToNextBuild() throws Exception {
+        final int waitTime = 2_000;
         // Given:
         givenBuildClaimedByCurrentUser(firstBuild);
         // When:
+        Thread.sleep(waitTime);
         Build<?, ?> nextBuild = project.scheduleBuild2(0).get();
         // Then:
+        ClaimBuildAction action = firstBuild.getAction(ClaimBuildAction.class);
         ClaimBuildAction action2 = nextBuild.getAction(ClaimBuildAction.class);
         assertThat(action2.isClaimed(), is(true));
         assertThat(action2.getClaimedBy(), is("user1"));
         assertThat(action2.getReason(), is("reason"));
         assertThat(action2.isSticky(), is(true));
         assertThat(action2.getAssignedBy(), is("user1"));
+        assertThat(action2.getClaimDate(), is(action.getClaimDate()));
     }
 
     @Test
@@ -161,7 +167,7 @@ public class ClaimTest {
         Build<?, ?> thirdBuild = project.scheduleBuild2(0).get();
         Build<?, ?> fourthBuild = project.scheduleBuild2(0).get();
         // When:
-        whenAssigningBuildByClicking(firstBuild, "claim", true);
+        ClaimBuildAction firstAction = whenAssigningBuildByClicking(firstBuild, "claim", true);
         // Then:
         ClaimBuildAction[] actions = new ClaimBuildAction[] {
                 secondBuild.getAction(ClaimBuildAction.class),
@@ -174,6 +180,7 @@ public class ClaimTest {
             assertThat(action.getReason(), is(claimText));
             assertThat(action.isSticky(), is(true));
             assertThat(action.getAssignedBy(), is("user1"));
+            assertThat(action.getClaimDate(), is(firstAction.getClaimDate()));
         }
     }
 
@@ -186,7 +193,7 @@ public class ClaimTest {
         givenProjectIsFailing();
         Build<?, ?> fourthBuild = project.scheduleBuild2(0).get();
         // When:
-        whenAssigningBuildByClicking(firstBuild, "claim", true);
+        ClaimBuildAction action1 = whenAssigningBuildByClicking(firstBuild, "claim", true);
         // Then:
         ClaimBuildAction action2 = secondBuild.getAction(ClaimBuildAction.class);
         ClaimBuildAction action3 = thirdBuild.getAction(ClaimBuildAction.class);
@@ -196,26 +203,31 @@ public class ClaimTest {
         assertThat(action2.getReason(), is(claimText));
         assertThat(action2.isSticky(), is(true));
         assertThat(action2.getAssignedBy(), is("user1"));
+        assertThat(action2.getClaimDate(), is(action1.getClaimDate()));
         assertThat(action3, nullValue());
         assertThat(action4.isClaimed(), is(false));
     }
 
     @Test
     public void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuildsUntilBuildIsClaimed()  throws Exception {
+        final int waitTime = 2_000;
         // Given:
         Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
         Build<?, ?> thirdBuild = project.scheduleBuild2(0).get();
+        Thread.sleep(waitTime);
         whenClaimingBuildByClicking(thirdBuild, "claim");
         // When:
-        whenAssigningBuildByClicking(firstBuild, "claim", true);
+        Thread.sleep(waitTime);
+        ClaimBuildAction action1 = whenAssigningBuildByClicking(firstBuild, "claim", true);
         // Then:
         ClaimBuildAction action2 = secondBuild.getAction(ClaimBuildAction.class);
         ClaimBuildAction action3 = thirdBuild.getAction(ClaimBuildAction.class);
-         assertThat(action2.isClaimed(), is(true));
+        assertThat(action2.isClaimed(), is(true));
         assertThat(action2.getClaimedBy(), is("user2"));
         assertThat(action2.getReason(), is(claimText));
         assertThat(action2.isSticky(), is(true));
         assertThat(action2.getAssignedBy(), is("user1"));
+        assertThat(action2.getClaimDate(), is(action1.getClaimDate()));
         assertThat(action3.isClaimed(), is(true));
         assertThat(action3.getClaimedBy(), is("user1"));
         assertThat(action3.getReason(), is(claimText));
@@ -246,13 +258,15 @@ public class ClaimTest {
 
     private ClaimBuildAction givenBuildClaimedByOtherUser(Build<?, ?> build) {
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        action.claim("user2", "reason", "user1", true);
+        action.claim("user2", "reason", "user1", new Date(), true,
+                false, false);
         return action;
     }
 
     private ClaimBuildAction givenBuildClaimedByCurrentUser(Build<?, ?> build) {
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        action.claim("user1", "reason", "user1", true);
+        action.claim("user1", "reason", "user1", new Date(), true,
+                false, false);
         return action;
     }
 

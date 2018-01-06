@@ -5,6 +5,7 @@ import hudson.plugins.claim.ClaimTestDataPublisher.Data;
 import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.TestResult;
 
+import java.util.Date;
 import java.util.Optional;
 
 public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
@@ -22,10 +23,10 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
     }
 
     @Override
-    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky,
-                              boolean isPropagated) {
+    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, Date date,
+                              boolean isSticky, boolean isPropagated) {
         data.addClaim(testObjectId, this);
-        super.applyClaim(claimedByUser, providedReason, assignedByUser, isSticky, isPropagated);
+        super.applyClaim(claimedByUser, providedReason, assignedByUser, date, isSticky, isPropagated);
     }
 
     @Override

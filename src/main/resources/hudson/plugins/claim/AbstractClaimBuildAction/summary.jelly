@@ -104,6 +104,9 @@
                 <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html"> 
                     <f:checkbox name="sticky" checked="${it.sticky}"/>
                 </f:entry>
+                <f:entry title="${%PropagateToFollowingBuilds}" help="/plugin/claim/help-propagateToFollowingBuilds.html">
+                    <f:checkbox name="propagateToFollowingBuilds" checked="${it.propagateToFollowingBuildsByDefault}"/>
+                </f:entry>
                 <f:block>
                     <div align="right">
                         <f:submit value="${%Claim}"/>

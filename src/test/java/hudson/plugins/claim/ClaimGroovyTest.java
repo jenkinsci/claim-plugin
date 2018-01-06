@@ -136,6 +136,7 @@ public class ClaimGroovyTest {
                 jsonObject.accumulate("reason", "none");
                 jsonObject.accumulate("errors", "");
                 jsonObject.accumulate("sticky", true);
+                jsonObject.accumulate("propagateToFollowingBuilds", false);
                 when(req.getSubmittedForm()).thenReturn(jsonObject);
 
                 StaplerResponse res = mock(StaplerResponse.class);

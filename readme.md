@@ -6,6 +6,9 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.13.1 (07 Jan 2018)
+- Fixed claim message inversion between assignee and claimer
+
 ### v2.13 (06 Jan 2018)
 - Added an option to prevent autorefresh when claiming (Experimental)
 - Allow propagating claims to following failed builds [JENKINS-12437]

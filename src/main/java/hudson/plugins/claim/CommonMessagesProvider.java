@@ -34,27 +34,27 @@ public final class CommonMessagesProvider {
      * Provides an instance of {@link CommonMessagesProvider} ready to provide messages based on provided data.
      *
      * @param claimed true if the object was claimed
-     * @param claimer name of the claiming user
-     * @param assignee name of the assignee user
+     * @param claimedBy of the claiming user
+     * @param assignedBy of the assigned user
      * @param date date of the claim
      * @return an instance of {@link CommonMessagesProvider}
      */
     @Nonnull
-    private static CommonMessagesProvider build(boolean claimed, String claimer, String assignee, Date date) {
-        return new CommonMessagesProvider(claimed, claimer, assignee, date);
+    private static CommonMessagesProvider build(boolean claimed, String claimedBy, String assignedBy, Date date) {
+        return new CommonMessagesProvider(claimed, claimedBy, assignedBy, date);
     }
 
     private final boolean claimed;
-    private final String claimer;
-    private final String assignee;
+    private final String claimedBy;
+    private final String assignedBy;
     private final Date date;
     private final Supplier<Formatter> objectFormatSupplier;
     private final Supplier<Formatter> formatSupplier;
 
-    private CommonMessagesProvider(boolean claimed, String claimer, String assignee, Date date) {
+    private CommonMessagesProvider(boolean claimed, String claimedBy, String assignedBy, Date date) {
         this.claimed = claimed;
-        this.claimer = claimer;
-        this.assignee = assignee;
+        this.claimedBy = claimedBy;
+        this.assignedBy = assignedBy;
         this.date = date;
         this.formatSupplier = () -> getFormat(new MessagesProvider() {
             @Override
@@ -116,16 +116,16 @@ public final class CommonMessagesProvider {
         }
         Authentication auth = Jenkins.getAuthentication();
         String currentUser = auth.getName();
-        boolean isAutoAssigned = claimer.equals(assignee);
+        boolean isAutoAssigned = claimedBy.equals(assignedBy);
         if (!currentUser.equals(ANONYMOUS_USERNAME)) {
-            if (currentUser.equals(claimer)) {
+            if (currentUser.equals(assignedBy)) {
                 if (isAutoAssigned) {
                     return messagesProvider.claimedBySelf();
                 } else {
                     return messagesProvider.assignedBySelf();
                 }
             } else {
-                if (currentUser.equals(assignee)) {
+                if (currentUser.equals(claimedBy)) {
                     return messagesProvider.assignedToSelf();
                 }
             }
@@ -139,8 +139,8 @@ public final class CommonMessagesProvider {
     public String getFullClaimDescription(String objectName) {
         return formatClaimDescription(objectFormatSupplier.get(),
                 objectName,
-                claimer,
-                assignee,
+                assignedBy,
+                claimedBy,
                 isDataPresent(date),
                 date,
                 true);
@@ -149,8 +149,8 @@ public final class CommonMessagesProvider {
     public String getFullClaimDescription() {
         return formatClaimDescription(formatSupplier.get(),
                 NO_DATA,
-                claimer,
-                assignee,
+                assignedBy,
+                claimedBy,
                 isDataPresent(date),
                 date,
                 true);
@@ -159,8 +159,8 @@ public final class CommonMessagesProvider {
     public String getShortClaimDescription(String objectName) {
         return formatClaimDescription(objectFormatSupplier.get(),
                 objectName,
-                claimer,
-                assignee,
+                assignedBy,
+                claimedBy,
                 DATA_ABSENT,
                 date,
                 false);
@@ -169,8 +169,9 @@ public final class CommonMessagesProvider {
     public String getShortClaimDescription() {
         return formatClaimDescription(formatSupplier.get(),
                 NO_DATA,
-                claimer,
-                assignee, DATA_ABSENT,
+                assignedBy,
+                claimedBy,
+                DATA_ABSENT,
                 date,
                 false);
     }
@@ -179,12 +180,12 @@ public final class CommonMessagesProvider {
         return Messages.CommonMessages_Reason();
     }
 
-    private static String formatClaimDescription(Formatter formatter, String objectName, String claimer,
-                                                 String assignee, int hasDate, Date date, boolean enhanceUserLinks) {
+    private static String formatClaimDescription(Formatter formatter, String objectName, String assignedBy,
+                                                 String claimedBy, int hasDate, Date date, boolean enhanceUserLinks) {
         return formatter.format(
                 objectName,
-                getUserInfo(claimer, enhanceUserLinks),
-                getUserInfo(assignee, enhanceUserLinks),
+                getUserInfo(assignedBy, enhanceUserLinks),
+                getUserInfo(claimedBy, enhanceUserLinks),
                 hasDate,
                 date,
                 TERMINATOR);
@@ -223,6 +224,7 @@ public final class CommonMessagesProvider {
 
     @FunctionalInterface
     private interface Formatter {
-        String format(Object objectName, Object claimer, Object assignee, Object hasDate, Object date, Object notUsed);
+        String format(Object objectName, Object assignedBy, Object claimedBy, Object hasDate, Object date, Object
+                notUsed);
     }
 }

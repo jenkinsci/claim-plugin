@@ -6,7 +6,7 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
-### v2.13 (06 Jan 2017)
+### v2.13 (06 Jan 2018)
 - Added an option to prevent autorefresh when claiming (Experimental)
 - Allow propagating claims to following failed builds [JENKINS-12437]
 - Use initial claim date for sticky/propagated claims [JENKINS-48037]

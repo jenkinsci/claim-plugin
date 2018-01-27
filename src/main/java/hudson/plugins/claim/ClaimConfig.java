@@ -203,15 +203,20 @@ public final class ClaimConfig extends GlobalConfiguration {
     }
 
     @SuppressWarnings("deprecation")
+    @SuppressFBWarnings(
+            value = {"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"},
+            justification = "during migration, field can be null")
     private Object readResolve() {
         // JENKINS-43811 migration logic
         String script;
-        if (groovyScript != null) {
-            script = groovyScript;
-        } else {
-            script = "";
+        if (groovyTrigger == null) {
+            if (groovyScript != null) {
+                script = groovyScript;
+            } else {
+                script = "";
+            }
+            setGroovyTrigger(new SecureGroovyScript(script, true, null), false);
         }
-        setGroovyTrigger(new SecureGroovyScript(script, true, null), false);
         return this;
     }
 }

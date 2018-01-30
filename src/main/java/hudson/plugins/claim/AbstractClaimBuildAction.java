@@ -44,6 +44,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     private String assignedBy;
     private Date claimDate;
     private boolean transientClaim = !ClaimConfig.get().isStickyByDefault();
+    @Deprecated
+    private transient boolean reclaim;
     private ClaimBuildFailureAnalyzer bfaClaimer = null;
     private String reason;
 

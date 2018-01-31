@@ -6,6 +6,10 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.14 (30 Jan 2018)
+- Groovy script is lost when upgrading the plugin [JENKINS-49015]
+- Fixed obsolete data message following field removal
+
 ### v2.13.1 (07 Jan 2018)
 - Fixed claim message inversion between assignee and claimer
 
@@ -86,6 +90,7 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-49015]: https://issues.jenkins-ci.org/browse/JENKINS-49015
 [JENKINS-48037]: https://issues.jenkins-ci.org/browse/JENKINS-48037
 [JENKINS-47972]: https://issues.jenkins-ci.org/browse/JENKINS-47972
 [JENKINS-47437]: https://issues.jenkins-ci.org/browse/JENKINS-47437

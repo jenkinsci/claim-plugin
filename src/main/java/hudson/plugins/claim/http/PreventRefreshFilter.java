@@ -39,7 +39,11 @@ public class PreventRefreshFilter extends SaveableListener implements Filter  {
 
     @Initializer(after = InitMilestone.PLUGINS_STARTED)
     @SuppressWarnings("WeakerAccess")
-    public static synchronized  void initAutoRefreshFilter(ClaimConfig config) throws ServletException {
+    public static void initAutoRefreshFilter() throws ServletException {
+        initAutoRefreshFilter(ClaimConfig.get());
+    }
+
+    private static synchronized void initAutoRefreshFilter(ClaimConfig config) throws ServletException {
         boolean newInstalled = config.isBlockAutoRefreshWhileClaiming();
         boolean installed = installedFilter != null;
         if (newInstalled != installed) {

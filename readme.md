@@ -6,6 +6,9 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.14.1 (14 Feb 2018)
+- Fixed a Jenkins deadlock on startup in specific configurations [JENKINS-49038]
+
 ### v2.14 (30 Jan 2018)
 - Groovy script is lost when upgrading the plugin [JENKINS-49015]
 - Fixed obsolete data message following field removal
@@ -90,6 +93,7 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-49038]: https://issues.jenkins-ci.org/browse/JENKINS-49038
 [JENKINS-49015]: https://issues.jenkins-ci.org/browse/JENKINS-49015
 [JENKINS-48037]: https://issues.jenkins-ci.org/browse/JENKINS-48037
 [JENKINS-47972]: https://issues.jenkins-ci.org/browse/JENKINS-47972

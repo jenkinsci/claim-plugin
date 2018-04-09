@@ -234,16 +234,13 @@ public class ClaimTest {
         assertThat(action3.getAssignedBy(), is("user1"));
     }
 	
-	    
-	@Test
-    public void ClaimTestShouldGiveProperURL() {
-
+    @Test
+    public void claimTestShouldGiveProperURL() {
         ClaimTestDataPublisher.Data data = new ClaimTestDataPublisher.Data(firstBuild);
         //testObjectId now contains junit/ since hudson 1.347
         ClaimTestAction acti = new ClaimTestAction(data, "junit/assembly/classTest/unitTest");
-        assertEquals("wrong url who would not link to test","job/x/1/testReport/junit/assembly/classTest/unitTest", acti.getUrl());
-
-
+        assertEquals("wrong url who would not link to test",
+                "job/x/1/testReport/junit/assembly/classTest/unitTest", acti.getUrl());
     }
 
     private void givenProjectIsSucceeding() {

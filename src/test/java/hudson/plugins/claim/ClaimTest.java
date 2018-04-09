@@ -31,7 +31,10 @@ import static org.junit.Assert.assertEquals;
 
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
-import hudson.model.*;
+import hudson.model.Build;
+import hudson.model.Project;
+import hudson.model.Result;
+import hudson.model.Action;
 import hudson.plugins.claim.utils.TestBuilder;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 
@@ -233,7 +236,6 @@ public class ClaimTest {
         assertThat(action3.isSticky(), is(true));
         assertThat(action3.getAssignedBy(), is("user1"));
     }
-	
     @Test
     public void claimTestShouldGiveProperURL() {
         ClaimTestDataPublisher.Data data = new ClaimTestDataPublisher.Data(firstBuild);

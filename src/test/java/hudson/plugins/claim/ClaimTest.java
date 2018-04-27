@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
@@ -233,6 +234,14 @@ public class ClaimTest {
         assertThat(action3.getReason(), is(claimText));
         assertThat(action3.isSticky(), is(true));
         assertThat(action3.getAssignedBy(), is("user1"));
+    }
+    @Test
+    public void claimTestShouldGiveProperURL() {
+        ClaimTestDataPublisher.Data data = new ClaimTestDataPublisher.Data(firstBuild);
+        //testObjectId now contains junit/ since hudson 1.347
+        ClaimTestAction acti = new ClaimTestAction(data, "junit/assembly/classTest/unitTest");
+        assertEquals("wrong url who would not link to test",
+                "job/x/1/testReport/junit/assembly/classTest/unitTest", acti.getUrl());
     }
 
     private void givenProjectIsSucceeding() {

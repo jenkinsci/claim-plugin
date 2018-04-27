@@ -52,7 +52,7 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
 
     @Override
     String getUrl() {
-        return data.getUrl();
+        return data.getUrl() + "testReport/" + this.testObjectId;
     }
 
     @Override

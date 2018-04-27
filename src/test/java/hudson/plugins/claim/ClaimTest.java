@@ -34,7 +34,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlFormUtil;
 import hudson.model.Build;
 import hudson.model.Project;
 import hudson.model.Result;
-import hudson.model.Action;
 import hudson.plugins.claim.utils.TestBuilder;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 

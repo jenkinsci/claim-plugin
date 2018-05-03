@@ -6,6 +6,9 @@ Look at [wiki] for detailed instructions.
 
 Change Log
 ----------
+### v2.15 (03 May 2018)
+- Added a link to the claimed test case in the claim mail when claiming a test [JENKINS-42090]
+
 ### v2.14.1 (14 Feb 2018)
 - Fixed a Jenkins deadlock on startup in specific configurations [JENKINS-49038]
 
@@ -93,6 +96,7 @@ Change Log
 
 - Make sure that the claim plugin runs after all the other extensions that can change the build status run.
 
+[JENKINS-42090]: https://issues.jenkins-ci.org/browse/JENKINS-42090
 [JENKINS-49038]: https://issues.jenkins-ci.org/browse/JENKINS-49038
 [JENKINS-49015]: https://issues.jenkins-ci.org/browse/JENKINS-49015
 [JENKINS-48037]: https://issues.jenkins-ci.org/browse/JENKINS-48037

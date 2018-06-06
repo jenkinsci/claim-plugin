@@ -81,5 +81,61 @@ public class ClaimEmailerTest {
                 content.toString().contains(Messages.ClaimEmailer_Text("Test build", "assignedBy")));
     }
 
+    @Test
+    public void testDontSendEmailIfClaimingForOneself() throws Exception {
+
+        JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
+        JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
+
+        ClaimConfig config = ClaimConfig.get();
+        config.setSendEmails(true);
+
+        String recipient = "assignee <assignee@test.com>";
+        Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
+        yourInbox.clear();
+
+        User assignee = User.get("assignee", true, Collections.emptyMap());
+        UserProperty p = new Mailer.UserProperty("assignee@test.com");
+        assignee.addProperty(p);
+        ClaimEmailer.sendEmailIfConfigured(assignee, "assignee", "Test build", "test reason", "jobs/TestBuild/");
+
+        assertEquals("we should not send mail if claiming for ourself",0, yourInbox.size());
+
+    }
+
+
+
+
+    @Test
+    public void testSendEmailContainsTestUrlWhenClaimingTest() throws Exception {
+
+        JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
+        JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
+        ClaimConfig config = ClaimConfig.get();
+        config.setSendEmails(true);
+
+
+        String recipient = "assignee <assignee@test.com>";
+        Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
+        yourInbox.clear();
+
+        User assignee = User.get("assignee", true, Collections.emptyMap());
+        UserProperty p = new Mailer.UserProperty("assignee@test.com");
+        assignee.addProperty(p);
+        ClaimEmailer.sendEmailIfConfigured(assignee, "assignedBy", "Test build", "test reason", "jobs/TestBuild/");
+
+        assertEquals(1,yourInbox.size());
+        Address[] senders = yourInbox.get(0).getFrom();
+        assertEquals(1,senders.length);
+        assertEquals("test <test@test.com>",senders[0].toString());
+
+        //assertEquals(true, false);
+        Object content = yourInbox.get(0).getContent();
+        assertTrue("Mail content should contain the reason",content.toString().contains(Messages.ClaimEmailer_Reason("test reason")));
+        assertTrue("Mail content should contain the details",content.toString().contains(Messages.ClaimEmailer_Details("localhost:8080/jenkins/jobs/TestBuild/")));
+        assertTrue("Mail content should assignment text",content.toString().contains(Messages.ClaimEmailer_Text("Test build", "assignedBy")));
+
+    }
+
 
 }

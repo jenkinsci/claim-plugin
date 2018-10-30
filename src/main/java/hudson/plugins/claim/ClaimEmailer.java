@@ -61,7 +61,9 @@ public final class ClaimEmailer {
         ClaimConfig config = ClaimConfig.get();
         if (config.getSendEmails() && MAILER_LOADED) {
             MimeMessage msg = createMessage(assignee, assignedBy, build, reason, url);
-            Transport.send(msg);
+            if (msg != null) {
+                Transport.send(msg);
+            }
         }
     }
 
@@ -81,7 +83,11 @@ public final class ClaimEmailer {
                 + Messages.ClaimEmailer_Details(getJenkinsLocationConfiguration().getUrl() + url);
 
         msg.setText(text, mailDescriptor.getCharset());
-        msg.setRecipient(RecipientType.TO, getUserEmail(assignee, mailDescriptor));
+        Address userEmail = getUserEmail(assignee, mailDescriptor);
+        if (userEmail == null) {
+            return null;
+        }
+        msg.setRecipient(RecipientType.TO, userEmail);
 
         return msg;
     }

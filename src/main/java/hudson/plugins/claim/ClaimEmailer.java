@@ -61,7 +61,8 @@ public final class ClaimEmailer {
         ClaimConfig config = ClaimConfig.get();
         if (config.getSendEmails() && MAILER_LOADED) {
             MimeMessage msg = createMessage(assignee, assignedBy, build, reason, url);
-            if (msg != null) {
+            Address[] recipients = msg.getAllRecipients();
+            if (recipients != null && recipients.length > 0) {
                 Transport.send(msg);
             }
         }
@@ -84,10 +85,9 @@ public final class ClaimEmailer {
 
         msg.setText(text, mailDescriptor.getCharset());
         Address userEmail = getUserEmail(assignee, mailDescriptor);
-        if (userEmail == null) {
-            return null;
+        if (userEmail != null) {
+            msg.setRecipient(RecipientType.TO, userEmail);
         }
-        msg.setRecipient(RecipientType.TO, userEmail);
 
         return msg;
     }

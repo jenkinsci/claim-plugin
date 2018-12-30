@@ -155,7 +155,7 @@ public class ClaimBFATest {
         }
         assertEquals(description, form.getTextAreaByName("errordesc").getTextContent());
 
-        HtmlFormUtil.submit(form, j.last(form.getHtmlElementsByTagName("button")));
+        HtmlFormUtil.submit(form, j.last(form.getElementsByTagName("button")));
 
         return build.getAction(ClaimBuildAction.class);
     }

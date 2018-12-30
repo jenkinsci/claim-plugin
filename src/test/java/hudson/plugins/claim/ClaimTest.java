@@ -313,7 +313,7 @@ public class ClaimTest {
         }
         HtmlCheckBoxInput propagateInput = form.getInputByName("propagateToFollowingBuilds");
         propagateInput.setChecked(propagate);
-        HtmlFormUtil.submit(form, j.last(form.getHtmlElementsByTagName("button")));
+        HtmlFormUtil.submit(form, j.last(form.getElementsByTagName("button")));
 
         return build.getAction(ClaimBuildAction.class);
     }

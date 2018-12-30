@@ -81,5 +81,27 @@ public class ClaimEmailerTest {
                 content.toString().contains(Messages.ClaimEmailer_Text("Test build", "assignedBy")));
     }
 
+    /*
+     * Test that method does not throw runtime exception if mail is null (can happen when user id contains spaces)
+     */
+    @Test
+    public void shouldNotFailWhenRecipientEmailAddressIsNull() throws Exception {
+        // given
+        JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
+        JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
+
+        ClaimConfig config = ClaimConfig.get();
+        config.setSendEmails(true);
+
+        // will generate invalid default mail address with a space
+        User assignee = User.get("sarah connor", true, Collections.emptyMap());
+
+        // when
+        ClaimEmailer.sendEmailIfConfigured(assignee, "assignedBy", "Test build", "test reason", "jobs/TestBuild/");
+
+        // then
+        // no exceptions
+    }
+
 
 }

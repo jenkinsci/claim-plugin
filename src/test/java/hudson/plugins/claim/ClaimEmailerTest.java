@@ -82,6 +82,32 @@ public class ClaimEmailerTest {
     }
 
     /*
+     * Test that mail is not sent when self claiming
+     */
+    @Test
+    public void shouldNotSendEmailWhenSelfClaiming() throws Exception {
+
+        final String ASSIGNEE = "assignee";
+
+        JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
+        JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
+
+        ClaimConfig config = ClaimConfig.get();
+        config.setSendEmails(true);
+
+        String recipient = "assignee <assignee@test.com>";
+        Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
+        yourInbox.clear();
+
+        User assignee = User.get(ASSIGNEE, true, Collections.emptyMap());
+        UserProperty p = new Mailer.UserProperty("assignee@test.com");
+        assignee.addProperty(p);
+        ClaimEmailer.sendEmailIfConfigured(assignee, ASSIGNEE, "Test build", "test reason", "jobs/TestBuild/");
+
+        assertEquals(0, yourInbox.size());
+    }
+
+    /*
      * Test that method does not throw runtime exception if mail is null (can happen when user id contains spaces)
      */
     @Test

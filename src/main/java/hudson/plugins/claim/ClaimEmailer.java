@@ -59,7 +59,7 @@ public final class ClaimEmailer {
             throws MessagingException, IOException, InterruptedException {
 
         ClaimConfig config = ClaimConfig.get();
-        if (config.getSendEmails() && MAILER_LOADED) {
+        if (config.getSendEmails() && MAILER_LOADED && assignee.getId() != assignedBy) {
             MimeMessage msg = createMessage(assignee, assignedBy, build, reason, url);
             Address[] recipients = msg.getAllRecipients();
             if (recipients != null && recipients.length > 0) {

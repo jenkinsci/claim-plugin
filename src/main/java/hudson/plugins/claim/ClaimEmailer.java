@@ -5,6 +5,7 @@ import hudson.tasks.Mailer;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import jenkins.model.JenkinsLocationConfiguration;
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Email utility class to allow sending of emails using the setup of the mailer plug-in to do so.
  * If the mailer plug-in is not installed, then no emails are sent
@@ -46,8 +49,8 @@ public final class ClaimEmailer {
     }
     /**
      * Sends an email to the assignee indicating that the given build has been assigned.
-     * @param assignee the user assigned the failed build
-     * @param assignedBy the user assigning the build
+     * @param claimedByUser name of the claiming user
+     * @param assignedByUser name of the assigner user
      * @param build the build/action which has been assigned
      * @param reason the reason given for the assignment
      * @param url the URL the user can view for the assigned build
@@ -55,12 +58,13 @@ public final class ClaimEmailer {
      * @throws IOException if there is an IO problem when sending the mail
      * @throws InterruptedException if the send operation is interrupted
      */
-    public static void sendEmailIfConfigured(User assignee, String assignedBy, String build, String reason, String url)
+    public static void sendEmailIfConfigured(String claimedByUser, String assignedByUser, String build, String reason,
+                                             String url)
             throws MessagingException, IOException, InterruptedException {
 
         ClaimConfig config = ClaimConfig.get();
-        if (config.getSendEmails() && MAILER_LOADED && assignee.getId() != assignedBy) {
-            MimeMessage msg = createMessage(assignee, assignedBy, build, reason, url);
+        if (config.getSendEmails() && MAILER_LOADED && !StringUtils.equals(claimedByUser, assignedByUser)) {
+            MimeMessage msg = createMessage(claimedByUser, assignedByUser, build, reason, url);
             Address[] recipients = msg.getAllRecipients();
             if (recipients != null && recipients.length > 0) {
                 Transport.send(msg);
@@ -68,7 +72,8 @@ public final class ClaimEmailer {
         }
     }
 
-    private static MimeMessage createMessage(User assignee, String assignedBy, String build, String reason, String url)
+    private static MimeMessage createMessage(String claimedByUser, String assignedByUser, String build, String reason,
+                                             String url)
             throws MessagingException, IOException, InterruptedException {
 
         // create Session
@@ -78,13 +83,13 @@ public final class ClaimEmailer {
         msg.setSentDate(new Date());
         msg.setSubject(Messages.ClaimEmailer_Subject(build), mailDescriptor.getCharset());
         //TODO configurable formatting, through email-ext plugin
-        final String text = Messages.ClaimEmailer_Text(build, assignedBy)
+        final String text = Messages.ClaimEmailer_Text(build, assignedByUser)
                 + System.getProperty("line.separator") + Messages.ClaimEmailer_Reason(reason)
                 + System.getProperty("line.separator") + System.getProperty("line.separator")
                 + Messages.ClaimEmailer_Details(getJenkinsLocationConfiguration().getUrl() + url);
 
         msg.setText(text, mailDescriptor.getCharset());
-        Address userEmail = getUserEmail(assignee, mailDescriptor);
+        Address userEmail = getUserEmail(claimedByUser, mailDescriptor);
         if (userEmail != null) {
             msg.setRecipient(RecipientType.TO, userEmail);
         }
@@ -111,15 +116,15 @@ public final class ClaimEmailer {
     /**
      * Returns the email address of a given user.
      *
-     * @param user the user
+     * @param claimedByUser name of the claiming user
      * @param mailDescriptor the descriptor allowing us to access mail config
      * @return email address for this user, null if none can be derived
      */
-    private static Address getUserEmail(User user, Mailer.DescriptorImpl mailDescriptor) {
+    private static Address getUserEmail(String claimedByUser, Mailer.DescriptorImpl mailDescriptor) {
+        User user = User.get(claimedByUser, false, Collections.EMPTY_MAP);
         if (user != null) {
             try {
-                final Mailer.UserProperty mailProperty = user
-                        .getProperty(Mailer.UserProperty.class);
+                final Mailer.UserProperty mailProperty = user.getProperty(Mailer.UserProperty.class);
                 if (mailProperty != null && mailProperty.getAddress() != null) {
                     return new InternetAddress(mailProperty.getAddress());
                 }

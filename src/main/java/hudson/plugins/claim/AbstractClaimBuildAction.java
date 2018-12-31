@@ -162,7 +162,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         if (notify) {
             try {
                 ClaimEmailer.sendEmailIfConfigured(
-                        User.get(claimedByUser, false, Collections.EMPTY_MAP),
+                        claimedByUser,
                         assignedByUser,
                         getOwner().toString(),
                         providedReason,

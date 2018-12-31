@@ -30,6 +30,8 @@ public class ClaimEmailerTest {
     @Test
     public void testSendEmailNotConfigured() throws Exception {
 
+        final String assigneeId = "assignee";
+
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         ClaimConfig config = ClaimConfig.get();
         config.setSendEmails(false);
@@ -38,10 +40,12 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        User assignee = User.get("assignee", true, Collections.emptyMap());
+        // ensure the user is existing
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
+
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
-        ClaimEmailer.sendEmailIfConfigured(assignee, "assignedByMe", "Test build", "test reason", "jobs/TestBuild/");
+        ClaimEmailer.sendEmailIfConfigured(assigneeId, "assignedByMe", "Test build", "test reason", "jobs/TestBuild/");
 
         assertEquals(0, yourInbox.size());
     }
@@ -51,6 +55,8 @@ public class ClaimEmailerTest {
      */
     @Test
     public void testSendEmailConfigured() throws Exception {
+
+        final String assigneeId = "assignee";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
@@ -62,10 +68,12 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        User assignee = User.get("assignee", true, Collections.emptyMap());
+        // ensure the user is existing
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
+
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
-        ClaimEmailer.sendEmailIfConfigured(assignee, "assignedBy", "Test build", "test reason", "jobs/TestBuild/");
+        ClaimEmailer.sendEmailIfConfigured(assigneeId, "assignedBy", "Test build", "test reason", "jobs/TestBuild/");
 
         assertEquals(1, yourInbox.size());
         Address[] senders = yourInbox.get(0).getFrom();
@@ -87,7 +95,7 @@ public class ClaimEmailerTest {
     @Test
     public void shouldNotSendEmailWhenSelfClaiming() throws Exception {
 
-        final String ASSIGNEE = "assignee";
+        final String assigneeId = "assignee";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
@@ -99,10 +107,12 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        User assignee = User.get(ASSIGNEE, true, Collections.emptyMap());
+        // ensure the user is existing
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
+
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
-        ClaimEmailer.sendEmailIfConfigured(assignee, ASSIGNEE, "Test build", "test reason", "jobs/TestBuild/");
+        ClaimEmailer.sendEmailIfConfigured(assigneeId, assigneeId, "Test build", "test reason", "jobs/TestBuild/");
 
         assertEquals(0, yourInbox.size());
     }
@@ -112,6 +122,9 @@ public class ClaimEmailerTest {
      */
     @Test
     public void shouldNotFailWhenRecipientEmailAddressIsNull() throws Exception {
+
+        final String assigneeId = "sarah connor";
+
         // given
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
@@ -119,11 +132,11 @@ public class ClaimEmailerTest {
         ClaimConfig config = ClaimConfig.get();
         config.setSendEmails(true);
 
-        // will generate invalid default mail address with a space
-        User assignee = User.get("sarah connor", true, Collections.emptyMap());
+        // ensure the user is existing, will generate invalid default mail address with a space
+        User.get(assigneeId, true, Collections.emptyMap());
 
         // when
-        ClaimEmailer.sendEmailIfConfigured(assignee, "assignedBy", "Test build", "test reason", "jobs/TestBuild/");
+        ClaimEmailer.sendEmailIfConfigured(assigneeId, "assignedBy", "Test build", "test reason", "jobs/TestBuild/");
 
         // then
         // no exceptions

@@ -7,6 +7,8 @@ import com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseBuildAction;
 import com.sonyericsson.jenkins.plugins.bfa.model.FoundFailureCause;
 import com.sonyericsson.jenkins.plugins.bfa.model.indication.FoundIndication;
 import com.sonyericsson.jenkins.plugins.bfa.statistics.StatisticsLogger;
+import hudson.ExtensionList;
+import hudson.Plugin;
 import hudson.model.Run;
 import jenkins.model.Jenkins;
 
@@ -38,12 +40,16 @@ public final class ClaimBuildFailureAnalyzer {
     }
 
     public static Collection<FailureCause> getFailureCauses() throws Exception {
-        return Jenkins.getInstance().getPlugin(PluginImpl.class).getKnowledgeBase().getCauses();
+        return getPluginImpl().getKnowledgeBase().getCauses();
+    }
+
+    private static PluginImpl getPluginImpl() {
+        return ExtensionList.lookupSingleton(PluginImpl.class);
     }
 
     public static boolean isBFAEnabled() {
-        return (Jenkins.getInstance().getPlugin("build-failure-analyzer") != null
-                && Jenkins.getInstance().getPlugin(PluginImpl.class).isGlobalEnabled());
+        Plugin plugin = Jenkins.get().getPlugin("build-failure-analyzer");
+        return plugin != null && plugin.getWrapper().isActive() && getPluginImpl().isGlobalEnabled();
     }
 
     public static HashMap<String, String> getFillReasonMap() throws Exception {
@@ -72,11 +78,9 @@ public final class ClaimBuildFailureAnalyzer {
                 break;
             }
         }
-        try {
-            Jenkins.getInstance().getPlugin(PluginImpl.class).save();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        getPluginImpl().save();
+
         List<FailureCauseBuildAction> bfaActionList = run.getActions(FailureCauseBuildAction.class);
         FoundFailureCause existingClaimedFoundFailureCause = null;
         FailureCauseBuildAction bfaAction = bfaActionList.get(0);

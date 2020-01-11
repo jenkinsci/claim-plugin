@@ -6,7 +6,7 @@ Claim plugin
 
 ## About this plugin
 
-The Claim plugin is meant to allow users to claim failing builds and tests from [Jenkins](https://jenkins.io) to signal they are taking responsibility in fixing them.
+The Nuget plugin is meant to allow users to claim failing builds and tests from [Jenkins](https://jenkins.io) to signal they are taking responsibility in fixing them.
 
 Supported features
 

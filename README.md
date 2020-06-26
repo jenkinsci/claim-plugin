@@ -56,7 +56,7 @@ Upon clicking the **Claim it** link, a logged-in user can then claim the test. |
 The test will then display the claim information, along with options to **Drop the claim** or **Reassign it**. | ![The claim info for a test](./docs/images/test-claim-info.png)
 The claim information will also be displayed on the **Test Result** page, with a tooltipinformation about the claim. | ![The claim history for a test](./docs/images/test-claim-summary.png)
 
-### Integration with Build Failure Analuzer
+### Integration with Build Failure Analyzer
 This feature is supported from v2.8 forward.
 
 Given the [Build Failure Analyzer plugin] is installed and eblaed, users can use failure causes stored in the BFA plugin knowledge base to describe their claim, and this cause will be stored with the claimed build or test.

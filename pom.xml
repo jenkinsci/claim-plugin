@@ -61,13 +61,9 @@
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${checkstyle.version}</version>
           <configuration>
-            <configLocation>${basedir}/checkstyle.xml</configLocation>
-            <suppressionsLocation>${basedir}/checkstyle-suppressions.xml</suppressionsLocation>
-            <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
-            <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
-            <testSourceDirectories>${project.build.testSourceDirectory}</testSourceDirectories>
-            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            <resourceIncludes>**/*.properties,**/*.jelly</resourceIncludes>
+            <configLocation>checkstyle.xml</configLocation>
+            <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+            <failOnViolation>true</failOnViolation>
           </configuration>
           <executions>
             <execution>

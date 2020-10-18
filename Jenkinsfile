@@ -1,6 +1,6 @@
 buildPlugin(
-  jenkinsVersions: [null, '2.150.1'],
-  findbugs: [
+  jenkinsVersions: [null, '2.164.3'],
+  spotBugs: [
     run: true,
     archive: true,
 	unstableTotalAll: '0'],

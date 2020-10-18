@@ -60,38 +60,20 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${checkstyle.version}</version>
-          <dependencies>
-            <dependency>
-              <groupId>com.puppycrawl.tools</groupId>
-              <artifactId>checkstyle</artifactId>
-              <version>8.36.2</version>
-            </dependency>
-          </dependencies>
           <configuration>
-            <configLocation>${project.basedir}/checkstyle.xml</configLocation>
-            <suppressionsLocation>${project.basedir}/checkstyle-suppressions.xml</suppressionsLocation>
+            <configLocation>${basedir}/checkstyle.xml</configLocation>
+            <suppressionsLocation>${basedir}/checkstyle-suppressions.xml</suppressionsLocation>
             <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+            <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
+            <testSourceDirectories>${project.build.testSourceDirectory}</testSourceDirectories>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            <consoleOutput>true</consoleOutput>
-            <linkXRef>false</linkXRef>
+            <resourceIncludes>**/*.properties,**/*.jelly</resourceIncludes>
           </configuration>
           <executions>
             <execution>
-              <id>compile-checkstyle</id>
-              <goals>
-                <goal>checkstyle</goal>
-              </goals>
-              <phase>compile</phase>
-            </execution>
-            <execution>
-              <id>test-check</id>
               <goals>
                 <goal>check</goal>
               </goals>
-              <phase>test</phase>
-              <configuration>
-                <violationSeverity>warning</violationSeverity>
-              </configuration>
             </execution>
           </executions>
         </plugin>

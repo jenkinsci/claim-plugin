@@ -1,0 +1,23 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:s="/lib/form">
+  <j:set var="uti" value="${it.getUnclaimedTestsInfo(job)}"/>
+  <td>
+    <j:choose>
+      <j:when test="${uti == null}">
+        ${%N/A}
+      </j:when>
+      <j:when test="${uti.testResultAction.totalCount == 0}">
+        (${%no tests})
+      </j:when>
+      <j:when test="${uti.testResultAction.failCount == 0}">
+        <span tooltip="${%no_failed_test}">${%no_failures}</span>
+      </j:when>
+      <j:otherwise>
+        <a href="${rootURL}/${job.url}lastCompletedBuild/${uti.testResultAction.urlName}/" 
+        	tooltip="${%x_of_y_unclaimed(uti.nbUnclaimedFailures, uti.testResultAction.failCount)}">
+          ${uti.nbUnclaimedFailures}
+        </a>
+      </j:otherwise>  
+    </j:choose>
+  </td>
+</j:jelly>

@@ -2,12 +2,12 @@ package hudson.plugins.claim;
 
 import hudson.tasks.test.AbstractTestResultAction;
 
-public final class UnclaimedTestfailuresColumnInformation {
+public final class UnclaimedTestFailuresColumnInformation {
 
 	private int nbClaimedFailures;
 	private AbstractTestResultAction<?> testResultAction;
 
-	public UnclaimedTestfailuresColumnInformation(AbstractTestResultAction<?> testResultAction, int nbClaimedFailures) {
+    public UnclaimedTestFailuresColumnInformation(AbstractTestResultAction<?> testResultAction, int nbClaimedFailures) {
 		this.testResultAction = testResultAction;
 		this.nbClaimedFailures = nbClaimedFailures;
 	}

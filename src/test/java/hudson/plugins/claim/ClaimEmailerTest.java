@@ -59,7 +59,7 @@ public class ClaimEmailerTest {
         final String assigneeId = "assignee";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
-        JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
+        JenkinsLocationConfiguration.get().setUrl("http://localhost:8080/jenkins/");
 
         ClaimConfig config = ClaimConfig.get();
         config.setSendEmails(true);
@@ -84,7 +84,7 @@ public class ClaimEmailerTest {
         assertTrue("Mail content should contain the reason", content.toString().contains(Messages
                 .ClaimEmailer_Reason("test reason")));
         assertTrue("Mail content should contain the details", content.toString().contains(Messages
-                .ClaimEmailer_Details("localhost:8080/jenkins/jobs/TestBuild/")));
+                .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/")));
         assertTrue("Mail content should assignment text",
                 content.toString().contains(Messages.ClaimEmailer_Text("Test build", "assignedBy")));
     }

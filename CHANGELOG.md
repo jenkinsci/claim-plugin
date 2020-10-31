@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+2.17 (31 Oct 2020)
+------
+* Added a new column to display unclaimed tests
+
 2.16 (13 Nov 2019)
 ------
 * Fixed a Null Pointer Exception when used with [Build Failure Analyzer plugin] 1.23.0 and later [JENKINS-59204]

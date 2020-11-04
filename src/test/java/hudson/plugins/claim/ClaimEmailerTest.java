@@ -1,23 +1,25 @@
 package hudson.plugins.claim;
 
-import hudson.model.UserProperty;
-import hudson.model.User;
-import hudson.tasks.Mailer;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.Date;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
-import jenkins.model.JenkinsLocationConfiguration;
-
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.mock_javamail.Mailbox;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import hudson.model.FreeStyleProject;
+import hudson.model.User;
+import hudson.model.UserProperty;
+import hudson.tasks.Mailer;
+import jenkins.model.JenkinsLocationConfiguration;
 
 public class ClaimEmailerTest {
 
@@ -142,5 +144,42 @@ public class ClaimEmailerTest {
         // no exceptions
     }
 
+    /*
+     */
+    @Test
+    public void emailShouldBeSentForStickyClaimWhenReminderConfigured() throws Exception {
 
+    	FreeStyleProject job = createFailingJobWithName("test-" + System.currentTimeMillis()); 
+        final String assigneeId = "assignee";
+
+        JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
+        JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
+
+        ClaimConfig config = ClaimConfig.get();
+        config.setSendEmails(true);
+        config.setSendEmailsForStickyFailures(true);
+
+        String recipient = "assignee <assignee@test.com>";
+        Mailbox recipientInbox = Mailbox.get(new InternetAddress(recipient));
+        recipientInbox.clear();
+
+        // ensure the user is existing
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.addProperty(new Mailer.UserProperty("assignee@test.com"));
+        
+        ClaimBuildAction claimAction = job.getLastBuild().getAction(ClaimBuildAction.class);
+        claimAction.claim(assignee.getId(), "some reason", "assignedByUser", new Date(), true, true, false);
+
+        job.scheduleBuild2(0).get();
+        assertEquals(1, recipientInbox.size());
+        assertEquals("Assigned job still failing: " + job.getName() + " #2", recipientInbox.get(0).getSubject());
+    }
+
+    private FreeStyleProject createFailingJobWithName(String jobName) throws Exception {
+		FreeStyleProject project = j.createFreeStyleProject(jobName);
+		project.getBuildersList().add(new FailureBuilder());
+		project.getPublishersList().add(new ClaimPublisher());
+		project.scheduleBuild2(0).get();
+		return project;
+	}
 }

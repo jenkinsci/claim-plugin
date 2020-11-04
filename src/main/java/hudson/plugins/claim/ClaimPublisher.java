@@ -1,5 +1,16 @@
 package hudson.plugins.claim;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.annotation.Nonnull;
+import javax.mail.MessagingException;
+
+import org.jenkins.ui.icon.Icon;
+import org.jenkins.ui.icon.IconSet;
+import org.kohsuke.stapler.DataBoundConstructor;
+
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -12,17 +23,11 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
-
-import java.io.IOException;
-
 import jenkins.tasks.SimpleBuildStep;
-import org.jenkins.ui.icon.Icon;
-import org.jenkins.ui.icon.IconSet;
-import org.kohsuke.stapler.DataBoundConstructor;
-
-import javax.annotation.Nonnull;
 
 public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
+
+    private static final Logger LOGGER = Logger.getLogger("claim-plugin");
 
     @Initializer(after = InitMilestone.PLUGINS_STARTED)
     @SuppressWarnings("unused")
@@ -89,13 +94,24 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
                 ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
                 if (c != null && c.isClaimed() && c.isSticky()) {
                     c.copyTo(action);
+                    sendEmailsForStickyFailureIfConfigured(build, c.getClaimedBy());
                 }
             }
         }
 
     }
 
-    public BuildStepMonitor getRequiredMonitorService() {
+    private void sendEmailsForStickyFailureIfConfigured(Run<?, ?> build, String claimedBy) {
+        if (ClaimConfig.get().isSendEmailsForStickyFailures()) {
+        	try {
+				ClaimEmailer.sendEmailForStickyClaim(build, claimedBy);
+			} catch (MessagingException | IOException | InterruptedException e) {
+	            LOGGER.log(Level.WARNING, "Exception when sending build failure reminder email. Ignoring.", e);
+			}
+        }
+	}
+
+	public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
 

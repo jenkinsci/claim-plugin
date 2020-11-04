@@ -1,14 +1,18 @@
 package hudson.plugins.claim;
 
+import hudson.model.Run;
 import hudson.model.User;
 import hudson.tasks.Mailer;
+import hudson.tasks.junit.CaseResult;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.mail.Address;
@@ -65,39 +69,50 @@ public final class ClaimEmailer {
         ClaimConfig config = ClaimConfig.get();
         if (config.getSendEmails() && MAILER_LOADED && !StringUtils.equals(claimedByUser, assignedByUser)) {
             MimeMessage msg = createMessage(claimedByUser, assignedByUser, build, reason, url);
-            Address[] recipients = msg.getAllRecipients();
-            if (recipients != null && recipients.length > 0) {
-                Transport.send(msg);
-            }
+            sendMessage(msg);
         }
     }
 
-    private static MimeMessage createMessage(String claimedByUser, String assignedByUser, String build, String reason,
+    private static void sendMessage(MimeMessage msg) throws MessagingException {
+        Address[] recipients = msg.getAllRecipients();
+        if (recipients != null && recipients.length > 0) {
+            Transport.send(msg);
+        }
+	}
+
+	private static MimeMessage createMessage(String claimedByUser, String assignedByUser, String build, String reason,
                                              String url)
             throws MessagingException, IOException, InterruptedException {
 
-        // create Session
-        final Mailer.DescriptorImpl mailDescriptor = new Mailer.DescriptorImpl();
-        MimeMessage msg = createMimeMessage(mailDescriptor);
-
-        msg.setSentDate(new Date());
-        msg.setSubject(Messages.ClaimEmailer_Subject(build), mailDescriptor.getCharset());
+        String subject = Messages.ClaimEmailer_Subject(build);
         //TODO configurable formatting, through email-ext plugin
         final String text = Messages.ClaimEmailer_Text(build, assignedByUser)
                 + System.getProperty("line.separator") + Messages.ClaimEmailer_Reason(reason)
                 + System.getProperty("line.separator") + System.getProperty("line.separator")
                 + Messages.ClaimEmailer_Details(getJenkinsLocationConfiguration().getUrl() + url);
 
-        msg.setText(text, mailDescriptor.getCharset());
-        Address userEmail = getUserEmail(claimedByUser, mailDescriptor);
-        if (userEmail != null) {
-            msg.setRecipient(RecipientType.TO, userEmail);
-        }
-
-        return msg;
+        return createMessage(subject, text, claimedByUser);
     }
 
-    /**
+	private static MimeMessage createMessage(String subject, String message, String to)
+			throws MessagingException, IOException, InterruptedException {
+	
+		// create Session
+		final Mailer.DescriptorImpl mailDescriptor = new Mailer.DescriptorImpl();
+		MimeMessage msg = createMimeMessage(mailDescriptor);
+		
+		msg.setSentDate(new Date());
+		msg.setSubject(subject, mailDescriptor.getCharset());
+		msg.setText(message);
+		Address userEmail = getUserEmail(to, mailDescriptor);
+		if (userEmail != null) {
+			msg.setRecipient(RecipientType.TO, userEmail);
+		}
+		
+		return msg;
+	}
+
+	/**
      * Creates MimeMessage using the mailer plugin for jenkins.
      *
      * @param mailDescriptor a reference to the mailer plugin from which we can get mailing parameters
@@ -144,4 +159,47 @@ public final class ClaimEmailer {
         }
         return jlc;
     }
+
+	public static void sendEmailForStickyClaimIfPossible(Run<?, ?> run, String claimedByUser, List<CaseResult> failedTests) throws MessagingException, IOException, InterruptedException {
+		if (failedTests.isEmpty()) {
+			return;
+		}
+		
+		final int nbFailedTests = failedTests.size();
+
+		String subject = Messages.ClaimEmailer_Tests_Repeated_Subject(nbFailedTests, run);
+
+        String testsDetails = failedTests.stream() //
+	        .map(it -> Messages.ClaimEmailer_Tests_Repeated_TestDetails(it.getFullDisplayName())) //
+	        .collect(Collectors.joining("\n"));
+        
+        String detailsUrl = getJenkinsLocationConfiguration().getUrl() + run.getUrl();
+        
+        //TODO configurable formatting, through email-ext plugin
+        final String text = Messages.ClaimEmailer_Tests_Repeated_Text(nbFailedTests, run) + "\n" //
+        		+ "\n" //
+        		+ testsDetails //
+        		+ "\n" //
+        		+ "\n" //
+                + Messages.ClaimEmailer_Tests_Repeated_Details(detailsUrl);
+
+        MimeMessage msg = createMessage(subject, text, claimedByUser);
+
+        LOGGER.fine("Sending notification email to user " + claimedByUser);
+        sendMessage(msg);
+	}
+
+	public static void sendEmailForStickyClaim(Run<?, ?> run, String claimedByUser) throws MessagingException, IOException, InterruptedException {
+		String subject = Messages.ClaimEmailer_Repeated_Subject(run);
+
+        String detailsUrl = getJenkinsLocationConfiguration().getUrl() + run.getUrl();
+        
+        //TODO configurable formatting, through email-ext plugin
+        final String text = Messages.ClaimEmailer_Repeated_Text(detailsUrl);
+
+        MimeMessage msg = createMessage(subject, text, claimedByUser);
+
+        LOGGER.fine("Sending notification email to user " + claimedByUser);
+        sendMessage(msg);
+	}
 }

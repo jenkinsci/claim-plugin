@@ -5,6 +5,9 @@
     <f:entry title="${%SendEmails}" field="sendEmails" help="/plugin/claim/help-sendEmails.html">
         <f:checkbox/>
     </f:entry>
+    <f:entry title="${%SendEmailsForStickyFailures}" field="sendEmailsForStickyFailures" help="/plugin/claim/help-sendEmailsForStickyFailures.html">
+        <f:checkbox/>
+    </f:entry>
     <f:entry title="${%StickyByDefault}" field="stickyByDefault" help="/plugin/claim/help-stickyByDefault.html">
         <f:checkbox/>
     </f:entry>

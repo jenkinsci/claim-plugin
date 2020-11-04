@@ -14,16 +14,23 @@ import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.TestResultAction;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
+import javax.mail.MessagingException;
 
 public class ClaimTestDataPublisher extends TestDataPublisher {
+
+    private static final Logger LOGGER = Logger.getLogger("claim-plugin");
 
     @DataBoundConstructor
     public ClaimTestDataPublisher() {
@@ -36,6 +43,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
             throws IOException, InterruptedException {
         Data data = new Data(run);
 
+        Map<String, List<CaseResult>> claimedFailuresByUser = new HashMap<>();
         for (CaseResult result: testResult.getFailedTests()) {
             CaseResult previous = result.getPreviousResult();
             if (previous != null) {
@@ -44,13 +52,41 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
                     ClaimTestAction action = new ClaimTestAction(data, result.getId());
                     previousAction.copyTo(action);
                     data.addClaim(result.getId(), action);
+                    putAsListElement(claimedFailuresByUser, action.getClaimedBy(), result);
                 }
             }
         }
+        
+        sendEmailsForStickyFailuresIfConfigured(run, claimedFailuresByUser);
+        
         return data;
     }
 
-    public static final class Data extends TestResultAction.Data implements Saveable {
+    private <K, V> void putAsListElement(Map<K, List<V>> map, K key, V value) {
+    	List<V> list = map.get(key);
+    	if (list == null) {
+    		list = new ArrayList<>();
+    	}
+    	list.add(value);
+    	map.put(key, list);
+	}
+
+	private void sendEmailsForStickyFailuresIfConfigured(Run<?, ?> run, Map<String, List<CaseResult>> claimedFailuresByUser) {
+    	
+        if (!ClaimConfig.get().isSendEmailsForStickyFailures() || claimedFailuresByUser.isEmpty()) {
+        	return;
+        }
+        
+    	try {
+	        for (Entry<String, List<CaseResult>> entry : claimedFailuresByUser.entrySet()) {
+				ClaimEmailer.sendEmailForStickyClaimIfPossible(run, entry.getKey(), entry.getValue());
+	        }
+		} catch (MessagingException | IOException | InterruptedException e) {
+            LOGGER.log(Level.WARNING, "Exception when sending test failure reminder email. Ignoring.", e);
+		}
+	}
+
+	public static final class Data extends TestResultAction.Data implements Saveable {
 
         private Map<String, ClaimTestAction> claims = new HashMap<>();
 

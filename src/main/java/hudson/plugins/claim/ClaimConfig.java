@@ -33,6 +33,11 @@ public final class ClaimConfig extends GlobalConfiguration {
     private boolean sendEmails;
 
     /**
+     * Whether we want to send emails to the assignee of sticky items failing again.
+     */
+    private boolean sendEmailsForStickyFailures;
+
+    /**
      * Default global value for the stickiness of the build claims.
      */
     private boolean stickyByDefault = true;
@@ -75,6 +80,7 @@ public final class ClaimConfig extends GlobalConfiguration {
         // To persist global configuration information,
         // set that to properties and call save().
         sendEmails = formData.getBoolean("sendEmails");
+        sendEmailsForStickyFailures = formData.getBoolean("sendEmailsForStickyFailures");
         stickyByDefault = formData.getBoolean("stickyByDefault");
         propagateToFollowingBuildsByDefault = formData.getBoolean("propagateToFollowingBuildsByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
@@ -100,6 +106,14 @@ public final class ClaimConfig extends GlobalConfiguration {
         sendEmails = val;
     }
 
+    public boolean isSendEmailsForStickyFailures() {
+		return sendEmailsForStickyFailures;
+	}
+    
+    public void setSendEmailsForStickyFailures(boolean val) {
+		sendEmailsForStickyFailures = val;
+	}
+    
     /**
      * Returns true if the claims should be sticky by default, false otherwise.
      *

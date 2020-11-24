@@ -1,0 +1,117 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson">
+	<l:layout title="${app==it?'%Dashboard':it.viewName}">
+		<st:include page="sidepanel.jelly" it="${it.owner}" />
+		<l:main-panel>
+			<div id="view-message">
+				<t:editableDescription
+					permission="${app.ADMINISTER}" />
+			</div>
+			<j:set var="items" value="${it.builds}" />
+			<j:set var="testFailuresWithClaim"
+				value="${it.testFailuresWithClaim}" />
+
+			<t:setIconSize />
+
+			<h2>${%nbFailedProjectsClaims} <span id="claim-nb-project-claims">${items.size()}</span></h2>
+			<table class="sortable pane bigtable" id="projectStatus">
+				<tr>
+					<th>
+						<st:nbsp />
+					</th>
+					<th>${%Build}</th>
+					<th initialSortDir="up">${%Date}</th>
+					<th>${%FailureDuration}</th>
+					<th>${%Status}</th>
+					<th>${%Description}</th>
+				</tr>
+				<j:if test="${empty(it.builds)}">
+					<tr>
+						<td colspan="6">${%None}</td>
+					</tr>
+				</j:if>
+    <!-- TODO: support gradual expansion of the list -->
+				<j:forEach var="b" items="${h.subList(items, 50)}">
+					<tr>
+						<td data="${b.iconColor.ordinal()}">
+							<a href="${rootURL}/${b.url}">
+								<img src="${imagesURL}/${iconSize}/${b.buildStatusUrl}"
+									alt="${b.iconColor.description}" />
+							</a>
+						</td>
+						<td id="claim.build.${b.parent.name}">
+							<a href="${rootURL}/${b.parent.url}">${b.parent.fullName}</a>
+							<st:nbsp />
+							<a href="${rootURL}/${b.url}">#${b.number}</a>
+						</td>
+						<td id="claim.date.${b.parent.name}"
+							data="${b.timestampString2}">
+							${b.timestampString}
+						</td>
+						<j:set var="firstBad" value="${it.getFirstFail(b)}" />
+						<td id="claim.firstBad.${b.parent.name}"
+							data="${firstBad.timestampString2}">
+							${firstBad.timestampString}
+						</td>
+						<td id="claim.claimant.${b.parent.name}">
+							<j:set var="messageProvider"
+								value="${it.getMessageProvider(b)}" />
+							${messageProvider.shortClaimDescription}
+						</td>
+						<td id="claim.desc.${b.parent.name}">
+							<j:out
+								value="${b.description!=null ? app.markupFormatter.translate(b.description) : ''}" />
+						</td>
+					</tr>
+				</j:forEach>
+			</table>
+
+
+			<h2>${%nbFailedTestsClaims} <span id="claim-nb-testfailure-claims">${testFailuresWithClaim.size()}</span></h2>
+			<table class="sortable pane bigtable">
+				<tr>
+					<th>${%Build}</th>
+					<th>${%Test}</th>
+					<th initialSortDir="up">${%Date}</th>
+					<th tooltip="{%Age.tooltip}">${%Age}</th>
+					<th>${%Status}</th>
+				</tr>
+				<j:if test="${empty(testFailuresWithClaim)}">
+					<tr>
+						<td colspan="5">${%None}</td>
+					</tr>
+				</j:if>
+
+				<j:forEach var="tf"
+					items="${h.subList(testFailuresWithClaim, 50)}">
+					<tr>
+						<td>
+							<a href="${rootURL}/${tf.run.parent.url}">${tf.run.parent.fullName}</a>
+							<st:nbsp />
+							<a href="${rootURL}/${tf.run.url}">#${tf.run.number}</a>
+						</td>
+						<td>
+							<a href="${rootURL}/${tf.url}">${tf.displayName}</a>
+						</td>
+						<td data="${tf.run.timestampString2}">
+							${tf.run.timestampString}
+						</td>
+						<td data="${tf.run.number - tf.failedSince}"
+							tooltip="${%failingSinceBuild(tf.failedSince)}">
+							${tf.run.number - tf.failedSince + 1}
+						</td>
+						<td>
+							<j:set var="messageProvider"
+								value="${it.getMessageProvider(tf)}" />
+							${messageProvider.shortClaimDescription}
+						</td>
+					</tr>
+				</j:forEach>
+			</table>
+  <!--
+  Not working since View inheritance was removed
+  <t:rssBar-with-iconSize/>-->
+		</l:main-panel>
+	</l:layout>
+</j:jelly>

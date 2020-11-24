@@ -1,5 +1,0 @@
-<?jelly escape-by-default='true'?>
-<div id="no-failing-builds">
-  ${%Welcome}
-  ${%GoodJob}
-</div>

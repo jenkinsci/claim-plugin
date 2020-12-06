@@ -33,6 +33,11 @@ public final class ClaimConfig extends GlobalConfiguration {
     private boolean sendEmails;
 
     /**
+     * Whether we want to send emails to the assignee of sticky items failing again.
+     */
+    private boolean sendEmailsForStickyFailures;
+
+    /**
      * Default global value for the stickiness of the build claims.
      */
     private boolean stickyByDefault = true;
@@ -75,6 +80,7 @@ public final class ClaimConfig extends GlobalConfiguration {
         // To persist global configuration information,
         // set that to properties and call save().
         sendEmails = formData.getBoolean("sendEmails");
+        sendEmailsForStickyFailures = formData.getBoolean("sendEmailsForStickyFailures");
         stickyByDefault = formData.getBoolean("stickyByDefault");
         propagateToFollowingBuildsByDefault = formData.getBoolean("propagateToFollowingBuildsByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
@@ -85,19 +91,35 @@ public final class ClaimConfig extends GlobalConfiguration {
     }
 
     /**
-     * This method returns true if the global configuration says we should send mails on build claims.
-     * @return true if configuration is that we send emails for claims, false otherwise
+     * This method returns true if the global configuration says we should send mails on initial claims.
+     * @return true if configuration is that we send emails for initial claims, false otherwise
      */
     public boolean getSendEmails() {
         return sendEmails;
     }
 
     /**
-     * Set whether we should send emails.
+     * Set whether we should send emails for initial claims.
      * @param val the setting to use
      */
     public void setSendEmails(boolean val) {
         sendEmails = val;
+    }
+
+    /**
+     * This method returns true if the global configuration says we should send mails on build sticky failures.
+     * @return true if configuration is that we send emails for sticky failures, false otherwise
+     */
+    public boolean getSendEmailsForStickyFailures() {
+        return sendEmailsForStickyFailures;
+    }
+
+    /**
+     * Set whether we should send emails for sticky failures.
+     * @param val the setting to use
+     */
+    public void setSendEmailsForStickyFailures(boolean val) {
+        sendEmailsForStickyFailures = val;
     }
 
     /**

@@ -3,6 +3,8 @@ package hudson.plugins.claim;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.Optional;
 
 public final class ClaimBuildAction extends AbstractClaimBuildAction<Run> implements RunAction2 {
@@ -48,5 +50,16 @@ public final class ClaimBuildAction extends AbstractClaimBuildAction<Run> implem
             return Optional.ofNullable(action);
         }
         return Optional.empty();
+    }
+
+    @Override
+    protected void sendInitialClaimEmail(String claimedByUser, String providedReason, String assignedByUser)
+        throws MessagingException, IOException {
+        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(
+            claimedByUser,
+            assignedByUser,
+            getOwner().toString(),
+            providedReason,
+            getUrl());
     }
 }

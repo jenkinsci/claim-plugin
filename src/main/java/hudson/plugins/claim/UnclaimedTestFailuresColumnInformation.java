@@ -4,23 +4,23 @@ import hudson.tasks.test.AbstractTestResultAction;
 
 public final class UnclaimedTestFailuresColumnInformation {
 
-	private int nbClaimedFailures;
-	private AbstractTestResultAction<?> testResultAction;
+    private int nbClaimedFailures;
+    private AbstractTestResultAction<?> testResultAction;
 
     public UnclaimedTestFailuresColumnInformation(AbstractTestResultAction<?> testResultAction, int nbClaimedFailures) {
-		this.testResultAction = testResultAction;
-		this.nbClaimedFailures = nbClaimedFailures;
-	}
+        this.testResultAction = testResultAction;
+        this.nbClaimedFailures = nbClaimedFailures;
+    }
 
-	public int getNbClaimedFailures() {
-		return nbClaimedFailures;
-	}
+    public int getNbClaimedFailures() {
+        return nbClaimedFailures;
+    }
 
-	public int getNbUnclaimedFailures() {
-		return testResultAction.getFailCount() - nbClaimedFailures;
-	}
+    public int getNbUnclaimedFailures() {
+        return testResultAction.getFailCount() - nbClaimedFailures;
+    }
 
-	public AbstractTestResultAction<?> getTestResultAction() {
-		return testResultAction;
-	}
+    public AbstractTestResultAction<?> getTestResultAction() {
+        return testResultAction;
+    }
 }

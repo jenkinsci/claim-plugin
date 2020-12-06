@@ -91,29 +91,37 @@ public final class ClaimConfig extends GlobalConfiguration {
     }
 
     /**
-     * This method returns true if the global configuration says we should send mails on build claims.
-     * @return true if configuration is that we send emails for claims, false otherwise
+     * This method returns true if the global configuration says we should send mails on initial claims.
+     * @return true if configuration is that we send emails for initial claims, false otherwise
      */
     public boolean getSendEmails() {
         return sendEmails;
     }
 
     /**
-     * Set whether we should send emails.
+     * Set whether we should send emails for initial claims.
      * @param val the setting to use
      */
     public void setSendEmails(boolean val) {
         sendEmails = val;
     }
 
-    public boolean isSendEmailsForStickyFailures() {
-		return sendEmailsForStickyFailures;
-	}
-    
+    /**
+     * This method returns true if the global configuration says we should send mails on build sticky failures.
+     * @return true if configuration is that we send emails for sticky failures, false otherwise
+     */
+    public boolean getSendEmailsForStickyFailures() {
+        return sendEmailsForStickyFailures;
+    }
+
+    /**
+     * Set whether we should send emails for sticky failures.
+     * @param val the setting to use
+     */
     public void setSendEmailsForStickyFailures(boolean val) {
-		sendEmailsForStickyFailures = val;
-	}
-    
+        sendEmailsForStickyFailures = val;
+    }
+
     /**
      * Returns true if the claims should be sticky by default, false otherwise.
      *

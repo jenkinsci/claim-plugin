@@ -2,6 +2,7 @@ package hudson.plugins.claim;
 
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.Functions;
 import hudson.Launcher;
 import hudson.model.Descriptor;
 import hudson.model.Run;
@@ -56,37 +57,36 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
                 }
             }
         }
-        
-        sendEmailsForStickyFailuresIfConfigured(run, claimedFailuresByUser);
-        
+
+        sendEmailsForStickyFailuresIfPresent(run, testResult, claimedFailuresByUser);
+
         return data;
     }
 
     private <K, V> void putAsListElement(Map<K, List<V>> map, K key, V value) {
-    	List<V> list = map.get(key);
-    	if (list == null) {
-    		list = new ArrayList<>();
-    	}
-    	list.add(value);
-    	map.put(key, list);
-	}
-
-	private void sendEmailsForStickyFailuresIfConfigured(Run<?, ?> run, Map<String, List<CaseResult>> claimedFailuresByUser) {
-    	
-        if (!ClaimConfig.get().isSendEmailsForStickyFailures() || claimedFailuresByUser.isEmpty()) {
-        	return;
+        List<V> list = map.get(key);
+        if (list == null) {
+            list = new ArrayList<>();
         }
-        
-    	try {
-	        for (Entry<String, List<CaseResult>> entry : claimedFailuresByUser.entrySet()) {
-				ClaimEmailer.sendEmailForStickyClaimIfPossible(run, entry.getKey(), entry.getValue());
-	        }
-		} catch (MessagingException | IOException | InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Exception when sending test failure reminder email. Ignoring.", e);
-		}
-	}
+        list.add(value);
+        map.put(key, list);
+    }
 
-	public static final class Data extends TestResultAction.Data implements Saveable {
+    private void sendEmailsForStickyFailuresIfPresent(Run run, TestResult testResult,
+                                                      Map<String, List<CaseResult>> claimedFailuresByUser) {
+        try {
+            for (Entry<String, List<CaseResult>> entry : claimedFailuresByUser.entrySet()) {
+                String url = Functions.joinPath(run.getUrl(), testResult.getParentAction().getUrlName());
+                ClaimEmailer.sendRepeatedTestClaimEmailIfConfigured(
+                    entry.getKey(), run.toString(), url, entry.getValue()
+                );
+            }
+        } catch (MessagingException | IOException e) {
+            LOGGER.log(Level.WARNING, "Exception when sending test failure reminder email. Ignoring.", e);
+        }
+    }
+
+    public static final class Data extends TestResultAction.Data implements Saveable {
 
         private Map<String, ClaimTestAction> claims = new HashMap<>();
 

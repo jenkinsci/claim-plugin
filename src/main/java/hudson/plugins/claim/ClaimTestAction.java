@@ -5,6 +5,8 @@ import hudson.plugins.claim.ClaimTestDataPublisher.Data;
 import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.TestResult;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 
@@ -58,5 +60,16 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
     @Override
     protected Run getOwner() {
         return data.getBuild();
+    }
+
+    @Override
+    protected void sendInitialClaimEmail(String claimedByUser, String providedReason, String assignedByUser)
+        throws MessagingException, IOException {
+    ClaimEmailer.sendInitialTestClaimEmailIfConfigured(
+        claimedByUser,
+        assignedByUser,
+        getOwner().toString(),
+        providedReason,
+        getUrl());
     }
 }

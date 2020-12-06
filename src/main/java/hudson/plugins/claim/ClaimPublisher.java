@@ -94,24 +94,21 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
                 ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
                 if (c != null && c.isClaimed() && c.isSticky()) {
                     c.copyTo(action);
-                    sendEmailsForStickyFailureIfConfigured(build, c.getClaimedBy());
+                    sendEmailsForStickyFailure(build, c.getClaimedBy());
                 }
             }
         }
-
     }
 
-    private void sendEmailsForStickyFailureIfConfigured(Run<?, ?> build, String claimedBy) {
-        if (ClaimConfig.get().isSendEmailsForStickyFailures()) {
-        	try {
-				ClaimEmailer.sendEmailForStickyClaim(build, claimedBy);
-			} catch (MessagingException | IOException | InterruptedException e) {
-	            LOGGER.log(Level.WARNING, "Exception when sending build failure reminder email. Ignoring.", e);
-			}
+    private void sendEmailsForStickyFailure(Run<?, ?> build, String claimedByUser) {
+        try {
+            ClaimEmailer.sendRepeatedBuildClaimEmailIfConfigured(claimedByUser, build.toString(), build.getUrl());
+        } catch (MessagingException | IOException e) {
+            LOGGER.log(Level.WARNING, "Exception when sending build failure reminder email. Ignoring.", e);
         }
-	}
+    }
 
-	public BuildStepMonitor getRequiredMonitorService() {
+    public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
 

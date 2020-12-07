@@ -44,7 +44,7 @@ public class ClaimReportTest {
 
     @Test
     public void claimedFailedJobShouldBeVisibleInClaimReport() throws Exception {
-    	String jobName = "failing-" + System.currentTimeMillis();
+        String jobName = "failing-" + System.currentTimeMillis();
         FreeStyleProject claimedJob = createFailingJobWithName(jobName);
         ClaimBuildAction claimAction = claimedJob.getLastBuild().getAction(ClaimBuildAction.class);
         
@@ -60,7 +60,7 @@ public class ClaimReportTest {
 
     @Test
     public void unclaimedFailedJobShouldNotBeVisibleInClaimReport() throws Exception {
-    	String jobName = "failing-" + System.currentTimeMillis();
+        String jobName = "failing-" + System.currentTimeMillis();
         FreeStyleProject unclaimedJob = createFailingJobWithName(jobName);
         
         ClaimBuildAction claimAction = unclaimedJob.getLastBuild().getAction(ClaimBuildAction.class);

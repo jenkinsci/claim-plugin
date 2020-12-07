@@ -38,11 +38,11 @@ public class UserClaimsReportTest {
 
     @Test
     public void userAssignedFailedJobsShouldBeVisibleInUserClaimReport() throws Exception {
-    	long timestamp = System.currentTimeMillis();
+        long timestamp = System.currentTimeMillis();
 
-    	FreeStyleProject job1 = createFailingJobWithName("job1-" + timestamp);
-    	FreeStyleProject job2 = createFailingJobWithName("job2-" + timestamp);
-    	FreeStyleProject job3 = createFailingJobWithName("job3-" + timestamp);
+        FreeStyleProject job1 = createFailingJobWithName("job1-" + timestamp);
+        FreeStyleProject job2 = createFailingJobWithName("job2-" + timestamp);
+        FreeStyleProject job3 = createFailingJobWithName("job3-" + timestamp);
         
         User userA = User.get("userA-" + timestamp, true, Collections.emptyMap());
         User userB = User.get("userB-" + timestamp, true, Collections.emptyMap());
@@ -79,5 +79,5 @@ public class UserClaimsReportTest {
         HtmlPage page = j.createWebClient().goTo("user/" + user.getId() + "/claims/");
         j.assertXPathValue(page, "id('claim-nb-project-claims')", String.valueOf(nbProjectClaims));
         j.assertXPathValue(page, "id('claim-nb-testfailure-claims')", String.valueOf(nbTestFailureClaims));
-	}
+    }
 }

@@ -24,60 +24,60 @@ import jenkins.model.TransientActionFactory;
 @ExportedBean
 public class JobClaimsAction extends AbstractAssignedClaimsReport {
 
-	/**
-	 * Add the {@link JobClaimsAction} to all {@link AbstractProject} instances.
-	 */
-	@Extension(ordinal = -1000)
-	public static class TransientJobClaimsActionactoryImpl extends TransientActionFactory<Job> {
+    /**
+     * Add the {@link JobClaimsAction} to all {@link AbstractProject} instances.
+     */
+    @Extension(ordinal = -1000)
+    public static class TransientJobClaimsActionactoryImpl extends TransientActionFactory<Job> {
 
-		@Override
-	    public Class<Job> type() {
-	        return Job.class; 
-	    }
+        @Override
+        public Class<Job> type() {
+            return Job.class; 
+        }
 
-	    @Nonnull
-	    @Override
-	    public Collection<? extends Action> createFor(@Nonnull Job job) {
-	    	if (job.getLastCompletedBuild() != null) {
-	            return Collections.singleton(new JobClaimsAction(job)); 
-	    	}
-	    	
-	    	return Collections.emptySet();
-	    }
-	}
-	
-	private final Job targetJob;
+        @Nonnull
+        @Override
+        public Collection<? extends Action> createFor(@Nonnull Job job) {
+            if (job.getLastCompletedBuild() != null) {
+                return Collections.singleton(new JobClaimsAction(job)); 
+            }
+            
+            return Collections.emptySet();
+        }
+    }
+    
+    private final Job targetJob;
 
-	public JobClaimsAction(Job target) {
-		targetJob = target;
-	}
-	
-	@Override
-	public ModelObject getOwner() {
-		return targetJob;
-	}
-
-
-	@Override
-	protected List<Job> getJobs() {
-		return Collections.singletonList(targetJob);
-	}
+    public JobClaimsAction(Job target) {
+        targetJob = target;
+    }
+    
+    @Override
+    public ModelObject getOwner() {
+        return targetJob;
+    }
 
 
-	@Override
-	public String getDisplayName() {
-		return "Claims";
-	}
+    @Override
+    protected List<Job> getJobs() {
+        return Collections.singletonList(targetJob);
+    }
 
-	@Override
-	public String getUrlName() {
-		return "claims";
-	}
-	
-	public Api getApi() {
-		return new Api(this);
-	}
-	
+
+    @Override
+    public String getDisplayName() {
+        return "Claims";
+    }
+
+    @Override
+    public String getUrlName() {
+        return "claims";
+    }
+    
+    public Api getApi() {
+        return new Api(this);
+    }
+    
 
     private AbstractTestResultAction<?> getTestResultAction(Job<?, ?> job) {
         Run<?, ?> run = job.getLastCompletedBuild();
@@ -93,15 +93,15 @@ public class JobClaimsAction extends AbstractAssignedClaimsReport {
 
         int nbUnclaimedTsetFailures = -1;
         if (testResultAction != null) {
-        	nbUnclaimedTsetFailures = 0;;
+            nbUnclaimedTsetFailures = 0;;
             List<? extends TestResult> failedTests = testResultAction.getFailedTests();
             for (TestResult failedTest : failedTests) {
                 ClaimTestAction x = failedTest.getTestAction(ClaimTestAction.class);
                 if (x == null || !x.isClaimed()) {
-                	nbUnclaimedTsetFailures++;
+                    nbUnclaimedTsetFailures++;
                 }
             }
         }
         return nbUnclaimedTsetFailures;
-	}
+    }
 }

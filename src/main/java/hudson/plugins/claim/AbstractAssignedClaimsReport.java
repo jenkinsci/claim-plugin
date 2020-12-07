@@ -91,25 +91,25 @@ public class AbstractAssignedClaimsReport implements Action, IconSpec {
         return RunList.fromRuns(lastBuilds).failureOnly();
     }
 
-	protected List<Job> getJobs() {
-		return Jenkins.getInstance().getAllItems(Job.class);
-	}
+    protected List<Job> getJobs() {
+        return Jenkins.getInstance().getAllItems(Job.class);
+    }
 
     public List<TestResult> getTestFailuresWithClaim() {
         List<TestResult> claimedTestFailures = new ArrayList<>();
         for (Job job : getJobs()) {
             Run lb = job.getLastCompletedBuild();
             if (lb != null) {
-				AbstractTestResultAction testResultAction = lb.getAction(AbstractTestResultAction.class);
-				if (testResultAction != null) {
-		            List<? extends TestResult> failedTests = testResultAction.getFailedTests();
-		            for (TestResult failedTest : failedTests) {
-		                ClaimTestAction claimAction = failedTest.getTestAction(ClaimTestAction.class);
-		                if (isDisplayed(claimAction)) {
-		                    claimedTestFailures.add(failedTest);
-		                }
-		            }
-				}
+                AbstractTestResultAction testResultAction = lb.getAction(AbstractTestResultAction.class);
+                if (testResultAction != null) {
+                    List<? extends TestResult> failedTests = testResultAction.getFailedTests();
+                    for (TestResult failedTest : failedTests) {
+                        ClaimTestAction claimAction = failedTest.getTestAction(ClaimTestAction.class);
+                        if (isDisplayed(claimAction)) {
+                            claimedTestFailures.add(failedTest);
+                        }
+                    }
+                }
             }
         }
 
@@ -117,7 +117,7 @@ public class AbstractAssignedClaimsReport implements Action, IconSpec {
     }
     
     protected boolean isDisplayed(AbstractClaimBuildAction<?> claimAction) {
-    	return claimAction != null && claimAction.isClaimed();
+        return claimAction != null && claimAction.isClaimed();
     }
 
     public String getDisplayName() {

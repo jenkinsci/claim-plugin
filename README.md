@@ -59,7 +59,7 @@ The claim information will also be displayed on the **Test Result** page, with a
 ### Integration with Build Failure Analyzer
 This feature is supported from v2.8 forward.
 
-Given the [Build Failure Analyzer plugin] is installed and eblaed, users can use failure causes stored in the BFA plugin knowledge base to describe their claim, and this cause will be stored with the claimed build or test.
+Given the [Build Failure Analyzer plugin] is installed and enabled, users can use failure causes stored in the BFA plugin knowledge base to describe their claim, and this cause will be stored with the claimed build or test.
 
 ![The Claim menu when BFA is installed](./docs/images/claim-bfa-enabled.png)
 
@@ -71,6 +71,31 @@ By default, selecting "None" will result in the default claim plugin behaviour.
 If there are already failure causes automatically detected by BFA, the claimed cause will be added to the list of identified problems.
 Claiming without a failure cause selected will result in no additional causes specified under "Identified Problems"
 The user may also input a claim reason, which is saved in the claim report as per default functionality.
+
+### Pipeline integration
+
+#### Allow claiming of broken builds
+
+The plugin provides the property `allowBrokenBuildClaiming()` to allow claiming of failed builds.
+
+Example:
+
+```
+properties([
+  allowBrokenBuildClaiming()
+  ...
+])
+```
+
+#### Allow claiming of failed tests
+
+A pipeline job needs to be configured with `ClaimTestDataPublisher` as JUnit testDataPlublisher to allow claiming of failed tests.
+
+Example:
+
+```
+junit testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '**/target/*-reports/TEST*.xml'
+```
 
 ### Limitations
 As the plugin uses a post build action to allow claiming, build or tests marked as failed priori to enabling the plugin will not have any claim action proposed.

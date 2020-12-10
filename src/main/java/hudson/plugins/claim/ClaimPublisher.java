@@ -84,23 +84,27 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
         Result runResult = build.getResult();
         if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {
-            ClaimBuildAction action = new ClaimBuildAction();
-            build.addAction(action);
-            build.save();
+            addClaimBuildAction(build);
+        }
+    }
 
-            // check if previous build was claimed
-            Run<?, ?> previousBuild = build.getPreviousBuild();
-            if (previousBuild != null) {
-                ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
-                if (c != null && c.isClaimed() && c.isSticky()) {
-                    c.copyTo(action);
-                    sendEmailsForStickyFailure(build, c.getClaimedBy());
-                }
+    static void addClaimBuildAction(Run<?, ?> build) throws IOException {
+        ClaimBuildAction action = new ClaimBuildAction();
+        build.addAction(action);
+        build.save();
+
+        // check if previous build was claimed
+        Run<?, ?> previousBuild = build.getPreviousBuild();
+        if (previousBuild != null) {
+            ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
+            if (c != null && c.isClaimed() && c.isSticky()) {
+                c.copyTo(action);
+                sendEmailsForStickyFailure(build, c.getClaimedBy());
             }
         }
     }
 
-    private void sendEmailsForStickyFailure(Run<?, ?> build, String claimedByUser) {
+    private static void sendEmailsForStickyFailure(Run<?, ?> build, String claimedByUser) {
         try {
             ClaimEmailer.sendRepeatedBuildClaimEmailIfConfigured(claimedByUser, build.toString(), build.getUrl());
         } catch (MessagingException | IOException e) {

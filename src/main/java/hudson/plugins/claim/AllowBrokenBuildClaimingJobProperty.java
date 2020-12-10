@@ -10,7 +10,7 @@ import hudson.model.Job;
 import jenkins.model.OptionalJobProperty;
 
 /**
- * {@link OptionalJobProperty} for to allow broken builds to be "claimable".
+ * {@link OptionalJobProperty} to allow broken builds to be "claimable".
  */
 @ExportedBean
 public class AllowBrokenBuildClaimingJobProperty extends OptionalJobProperty<WorkflowJob> {

@@ -1,5 +1,16 @@
 package hudson.plugins.claim;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.annotation.Nonnull;
+import javax.mail.MessagingException;
+
+import org.jenkins.ui.icon.Icon;
+import org.jenkins.ui.icon.IconSet;
+import org.kohsuke.stapler.DataBoundConstructor;
+
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -12,17 +23,11 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
-
-import java.io.IOException;
-
 import jenkins.tasks.SimpleBuildStep;
-import org.jenkins.ui.icon.Icon;
-import org.jenkins.ui.icon.IconSet;
-import org.kohsuke.stapler.DataBoundConstructor;
-
-import javax.annotation.Nonnull;
 
 public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
+
+    private static final Logger LOGGER = Logger.getLogger("claim-plugin");
 
     @Initializer(after = InitMilestone.PLUGINS_STARTED)
     @SuppressWarnings("unused")
@@ -79,20 +84,32 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
         Result runResult = build.getResult();
         if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {
-            ClaimBuildAction action = new ClaimBuildAction();
-            build.addAction(action);
-            build.save();
+            addClaimBuildAction(build);
+        }
+    }
 
-            // check if previous build was claimed
-            Run<?, ?> previousBuild = build.getPreviousBuild();
-            if (previousBuild != null) {
-                ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
-                if (c != null && c.isClaimed() && c.isSticky()) {
-                    c.copyTo(action);
-                }
+    static void addClaimBuildAction(Run<?, ?> build) throws IOException {
+        ClaimBuildAction action = new ClaimBuildAction();
+        build.addAction(action);
+        build.save();
+
+        // check if previous build was claimed
+        Run<?, ?> previousBuild = build.getPreviousBuild();
+        if (previousBuild != null) {
+            ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
+            if (c != null && c.isClaimed() && c.isSticky()) {
+                c.copyTo(action);
+                sendEmailsForStickyFailure(build, c.getClaimedBy());
             }
         }
+    }
 
+    private static void sendEmailsForStickyFailure(Run<?, ?> build, String claimedByUser) {
+        try {
+            ClaimEmailer.sendRepeatedBuildClaimEmailIfConfigured(claimedByUser, build.toString(), build.getUrl());
+        } catch (MessagingException | IOException e) {
+            LOGGER.log(Level.WARNING, "Exception when sending build failure reminder email. Ignoring.", e);
+        }
     }
 
     public BuildStepMonitor getRequiredMonitorService() {

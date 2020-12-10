@@ -1,26 +1,16 @@
 package hudson.plugins.claim;
 
-import hudson.model.User;
+import hudson.plugins.claim.messages.InitialBuildClaimMessage;
+import hudson.plugins.claim.messages.InitialTestClaimMessage;
+import hudson.plugins.claim.messages.RepeatedBuildClaimMessage;
+import hudson.plugins.claim.messages.RepeatedTestClaimMessage;
 import hudson.tasks.Mailer;
+import hudson.tasks.junit.CaseResult;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Nonnull;
-import javax.mail.Address;
-import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import jenkins.model.JenkinsLocationConfiguration;
-import org.apache.commons.lang.StringUtils;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Email utility class to allow sending of emails using the setup of the mailer plug-in to do so.
@@ -47,101 +37,88 @@ public final class ClaimEmailer {
     private ClaimEmailer() {
         // makes no sense
     }
+
     /**
      * Sends an email to the assignee indicating that the given build has been assigned.
      * @param claimedByUser name of the claiming user
      * @param assignedByUser name of the assigner user
-     * @param build the build/action which has been assigned
+     * @param action the build/action which has been assigned
      * @param reason the reason given for the assignment
      * @param url the URL the user can view for the assigned build
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
-     * @throws InterruptedException if the send operation is interrupted
      */
-    public static void sendEmailIfConfigured(String claimedByUser, String assignedByUser, String build, String reason,
-                                             String url)
-            throws MessagingException, IOException, InterruptedException {
+    public static void sendInitialBuildClaimEmailIfConfigured(String claimedByUser, String assignedByUser,
+                                                              String action, String reason, String url)
+            throws MessagingException, IOException {
 
         ClaimConfig config = ClaimConfig.get();
-        if (config.getSendEmails() && MAILER_LOADED && !StringUtils.equals(claimedByUser, assignedByUser)) {
-            MimeMessage msg = createMessage(claimedByUser, assignedByUser, build, reason, url);
-            Address[] recipients = msg.getAllRecipients();
-            if (recipients != null && recipients.length > 0) {
-                Transport.send(msg);
-            }
+        if (config.getSendEmails() && MAILER_LOADED) {
+            InitialBuildClaimMessage message = new InitialBuildClaimMessage(
+                    action, url, reason, claimedByUser, assignedByUser
+                );
+            message.send();
         }
     }
 
-    private static MimeMessage createMessage(String claimedByUser, String assignedByUser, String build, String reason,
-                                             String url)
-            throws MessagingException, IOException, InterruptedException {
-
-        // create Session
-        final Mailer.DescriptorImpl mailDescriptor = new Mailer.DescriptorImpl();
-        MimeMessage msg = createMimeMessage(mailDescriptor);
-
-        msg.setSentDate(new Date());
-        msg.setSubject(Messages.ClaimEmailer_Subject(build), mailDescriptor.getCharset());
-        //TODO configurable formatting, through email-ext plugin
-        final String text = Messages.ClaimEmailer_Text(build, assignedByUser)
-                + System.getProperty("line.separator") + Messages.ClaimEmailer_Reason(reason)
-                + System.getProperty("line.separator") + System.getProperty("line.separator")
-                + Messages.ClaimEmailer_Details(getJenkinsLocationConfiguration().getUrl() + url);
-
-        msg.setText(text, mailDescriptor.getCharset());
-        Address userEmail = getUserEmail(claimedByUser, mailDescriptor);
-        if (userEmail != null) {
-            msg.setRecipient(RecipientType.TO, userEmail);
-        }
-
-        return msg;
-    }
-
     /**
-     * Creates MimeMessage using the mailer plugin for jenkins.
-     *
-     * @param mailDescriptor a reference to the mailer plugin from which we can get mailing parameters
-     * @return mimemessage a message which can be emailed
-     * @throws MessagingException if there has been some problem with sending the email
-     * @throws UnsupportedEncodingException if an address provided is not in a correct format
-     */
-    private static MimeMessage createMimeMessage(final Mailer.DescriptorImpl mailDescriptor)
-            throws UnsupportedEncodingException, MessagingException {
-        MimeMessage ret = new MimeMessage(mailDescriptor.createSession());
-        ret.setFrom(Mailer.stringToAddress(getJenkinsLocationConfiguration().getAdminAddress(),
-                mailDescriptor.getCharset()));
-        return ret;
-    }
-
-    /**
-     * Returns the email address of a given user.
-     *
+     * Sends an email to the assignee indicating that the given test has been assigned.
      * @param claimedByUser name of the claiming user
-     * @param mailDescriptor the descriptor allowing us to access mail config
-     * @return email address for this user, null if none can be derived
+     * @param assignedByUser name of the assigner user
+     * @param action the build/action which has been assigned
+     * @param reason the reason given for the assignment
+     * @param url the URL the user can view for the assigned build
+     * @throws MessagingException if there has been some problem with sending the email
+     * @throws IOException if there is an IO problem when sending the mail
      */
-    private static Address getUserEmail(String claimedByUser, Mailer.DescriptorImpl mailDescriptor) {
-        User user = User.get(claimedByUser, false, Collections.EMPTY_MAP);
-        if (user != null) {
-            try {
-                final Mailer.UserProperty mailProperty = user.getProperty(Mailer.UserProperty.class);
-                if (mailProperty != null && mailProperty.getAddress() != null) {
-                    return new InternetAddress(mailProperty.getAddress());
-                }
-                return new InternetAddress(user.getId() + mailDescriptor.getDefaultSuffix());
-            } catch (AddressException e) {
-                LOGGER.log(Level.WARNING, "Cannot get email address for user " + user.getId(), e);
-            }
+    public static void sendInitialTestClaimEmailIfConfigured(String claimedByUser, String assignedByUser,
+                                                             String action, String reason, String url)
+        throws MessagingException, IOException {
+
+        ClaimConfig config = ClaimConfig.get();
+        if (config.getSendEmails() && MAILER_LOADED) {
+            InitialTestClaimMessage message = new InitialTestClaimMessage(
+                    action, url, reason, claimedByUser, assignedByUser
+                );
+            message.send();
         }
-        return null;
     }
 
-    @Nonnull
-    private static JenkinsLocationConfiguration getJenkinsLocationConfiguration() {
-        final JenkinsLocationConfiguration jlc = JenkinsLocationConfiguration.get();
-        if (jlc == null) {
-            throw new IllegalStateException("JenkinsLocationConfiguration not available");
+    /**
+     * Sends an email to the assignee indicating that the given build is still failing.
+     * @param claimedByUser name of the claiming user
+     * @param action the build/action which has been assigned
+     * @param url the URL the user can view for the assigned build
+     * @throws MessagingException if there has been some problem with sending the email
+     * @throws IOException if there is an IO problem when sending the mail
+     */
+    public static void sendRepeatedBuildClaimEmailIfConfigured(String claimedByUser, String action, String url)
+        throws MessagingException, IOException {
+
+        ClaimConfig config = ClaimConfig.get();
+        if (config.getSendEmailsForStickyFailures() && MAILER_LOADED) {
+            RepeatedBuildClaimMessage message = new RepeatedBuildClaimMessage(action, url, claimedByUser);
+            message.send();
         }
-        return jlc;
+    }
+
+    /**
+     * Sends an email to the assignee indicating that the given tests are still failing.
+     * @param claimedByUser name of the claiming user
+     * @param action the build/action which has been assigned
+     * @param url the URL the user can view for the assigned build
+     * @param failedTests the list of failed tests
+     * @throws MessagingException if there has been some problem with sending the email
+     * @throws IOException if there is an IO problem when sending the mail
+     */
+    public static void sendRepeatedTestClaimEmailIfConfigured(String claimedByUser, String action, String url,
+                                                              List<CaseResult> failedTests)
+        throws MessagingException, IOException {
+
+        ClaimConfig config = ClaimConfig.get();
+        if (config.getSendEmailsForStickyFailures() && MAILER_LOADED) {
+            RepeatedTestClaimMessage message = new RepeatedTestClaimMessage(action, url, claimedByUser, failedTests);
+            message.send();
+        }
     }
 }

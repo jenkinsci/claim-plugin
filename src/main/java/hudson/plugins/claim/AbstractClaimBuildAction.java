@@ -161,12 +161,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         applyClaim(claimedByUser, providedReason, assignedByUser, date, isSticky, isPropagated);
         if (notify) {
             try {
-                ClaimEmailer.sendEmailIfConfigured(
-                        claimedByUser,
-                        assignedByUser,
-                        getOwner().toString(),
-                        providedReason,
-                        getUrl());
+                sendInitialClaimEmail(claimedByUser, providedReason, assignedByUser);
             } catch (IOException | MessagingException e) {
                 LOGGER.log(Level.WARNING, "Exception encountered sending assignment email: " + e.getMessage());
             } catch (InterruptedException e) {
@@ -174,6 +169,18 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
             }
         }
     }
+
+    /**
+     * Sends an initial claim email.
+     * @param claimedByUser name of the claiming user
+     * @param providedReason reason for the claim
+     * @param assignedByUser name of the assigner user
+     * @throws MessagingException if there has been some problem with sending the email
+     * @throws IOException if there is an IO problem when sending the mail
+     * @throws InterruptedException if the send operation is interrupted
+     */
+    protected abstract void sendInitialClaimEmail(String claimedByUser, String providedReason, String assignedByUser)
+        throws MessagingException, IOException, InterruptedException;
 
     /**
      * Applies the claim data to the {@link AbstractClaimBuildAction}.

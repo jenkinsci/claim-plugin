@@ -87,8 +87,9 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     public final void doClaim(StaplerRequest req, StaplerResponse resp)
             throws Exception {
         Authentication authentication = Hudson.getAuthentication();
-        String currentUser = authentication.getName();
-        String claimedUser = currentUser; // Default to self-assignment
+        User currentUser = User.getById(authentication.getName(), false);
+        String currentUserId = currentUser.getId();
+        String claimedUser = currentUserId; // Default to self-assignment
         String assignee = req.getSubmittedForm().getString("assignee");
         if (!StringUtils.isEmpty(assignee) && !claimedUser.equals(assignee)) {
             // Validate the specified assignee.
@@ -126,7 +127,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         if (StringUtils.isEmpty(reasonProvided)) {
             reasonProvided = null;
         }
-        claim(claimedUser, reasonProvided, currentUser, new Date(), sticky, propagated, true);
+        claim(claimedUser, reasonProvided, currentUserId, new Date(), sticky, propagated, true);
         this.getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);

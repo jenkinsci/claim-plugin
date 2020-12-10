@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+Later versions (2.18+)
+------
+See [GitHub Releases]
+
 2.17 (31 Oct 2020)
 ------
 * Added a new column to display unclaimed tests
@@ -141,3 +145,4 @@ CHANGELOG
 [JENKINS-7824]: https://issues.jenkins-ci.org/browse/JENKINS-7824
 [JENKINS-6936]: https://issues.jenkins-ci.org/browse/JENKINS-6936
 [Build Failure Analyzer plugin]: https://plugins.jenkins.io/build-failure-analyzer
+[GitHub Releases]: https://github.com/jenkinsci/claim-plugin/releases

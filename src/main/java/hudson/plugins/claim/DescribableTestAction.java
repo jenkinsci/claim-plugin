@@ -45,7 +45,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
             String currentUserId = Hudson.getAuthentication().getName();
             User currentUser = null;
             if (currentUserId != null) {
-                currentUser = User.get(currentUserId, false, Collections.emptyMap());
+                currentUser = User.get(currentUserId, false, Collections.EMPTY_MAP);
             }
             if (currentUser != null) {
                 items.add(currentUser.getDisplayName(), currentUser.getId());

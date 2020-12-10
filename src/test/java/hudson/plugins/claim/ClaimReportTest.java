@@ -48,8 +48,8 @@ public class ClaimReportTest {
         FreeStyleProject claimedJob = createFailingJobWithName(jobName);
         ClaimBuildAction claimAction = claimedJob.getLastBuild().getAction(ClaimBuildAction.class);
         
-        User user1 = User.get("test-user1", true, Collections.emptyMap());
-        User user2 = User.get("test-user2", true, Collections.emptyMap());
+        User user1 = User.get("test-user1", true, Collections.EMPTY_MAP);
+        User user2 = User.get("test-user2", true, Collections.EMPTY_MAP);
         claimAction.applyClaim(user1.getId(), "test reason", user2.getId(), new Date(), true, true);
 
         HtmlPage page = j.createWebClient().goTo("claims/");

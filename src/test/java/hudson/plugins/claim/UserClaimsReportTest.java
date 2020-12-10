@@ -3,6 +3,7 @@ package hudson.plugins.claim;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
@@ -73,7 +74,26 @@ public class UserClaimsReportTest {
         verifyUserClaims(userA, 1, 0);
         verifyUserClaims(userB, 0, 0);
         verifyUserClaims(userC, 2, 0);
-}
+    }
+
+    @Test
+    public void userAssignedFailedJobsUnderADifferentIdForSameUserShouldBeVisibleInUserClaimReport() throws Exception {
+        long timestamp = System.currentTimeMillis();
+
+        FreeStyleProject job1 = createFailingJobWithName("job1-" + timestamp);
+
+        User userA = User.get("userA-" + timestamp, true, Collections.EMPTY_MAP);
+        assert !userA.getId().equals(userA.getId().toLowerCase()); // ensure id of user is not equal to its lowercase version
+
+        // none claimed
+        verifyUserClaims(userA, 0, 0);
+
+        // job1 claimed by A
+        ClaimBuildAction claimAction1 = job1.getLastBuild().getAction(ClaimBuildAction.class);
+        claimAction1.applyClaim(userA.getId().toLowerCase(), "test reason", userA.getId(), new Date(), true, true);
+
+        verifyUserClaims(userA, 1, 0);
+    }
 
     private void verifyUserClaims(User user, int nbProjectClaims, int nbTestFailureClaims) throws Exception {
         HtmlPage page = j.createWebClient().goTo("user/" + user.getId() + "/claims/");

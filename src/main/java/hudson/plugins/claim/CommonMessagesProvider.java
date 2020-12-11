@@ -192,7 +192,7 @@ public final class CommonMessagesProvider {
     }
 
     private static String getUserInfo(String userName, boolean enhanceUserLinks) {
-        User user = User.get(userName, false, Collections.EMPTY_MAP);
+        User user = User.get(userName, false, Collections.emptyMap());
         String displayName = ACL.ANONYMOUS_USERNAME;
         if (user != null) {
             displayName = user.getDisplayName();

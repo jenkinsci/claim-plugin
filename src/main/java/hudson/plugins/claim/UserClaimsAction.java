@@ -43,7 +43,7 @@ public class UserClaimsAction extends AbstractAssignedClaimsReport {
     @Override
     protected boolean isDisplayed(AbstractClaimBuildAction<?> claimAction) {
         return super.isDisplayed(claimAction)
-            && User.get(claimAction.getClaimedBy(), false, Collections.EMPTY_MAP).getId()
+            && User.get(claimAction.getClaimedBy(), false, Collections.emptyMap()).getId()
                 .equals(targetUser.getId());
     }
 

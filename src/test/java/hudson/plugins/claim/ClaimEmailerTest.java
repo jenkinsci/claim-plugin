@@ -50,7 +50,7 @@ public class ClaimEmailerTest {
         yourInbox.clear();
 
         // ensure the user is existing
-        User assignee = User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
@@ -76,7 +76,7 @@ public class ClaimEmailerTest {
         yourInbox.clear();
 
         // ensure the user is existing
-        User assignee = User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
@@ -118,7 +118,7 @@ public class ClaimEmailerTest {
         yourInbox.clear();
 
         // ensure the user is existing
-        User assignee = User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
@@ -163,7 +163,7 @@ public class ClaimEmailerTest {
         yourInbox.clear();
 
         // ensure the user is existing
-        User assignee = User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
@@ -189,7 +189,7 @@ public class ClaimEmailerTest {
         config.setSendEmails(true);
 
         // ensure the user is existing, will generate invalid default mail address with a space
-        User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User.get(assigneeId, true, Collections.emptyMap());
 
         // when
         ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assigneeId, "assignedBy", "Test build",
@@ -216,7 +216,7 @@ public class ClaimEmailerTest {
         yourInbox.clear();
 
         // ensure the user is existing
-        User assignee = User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
@@ -258,7 +258,7 @@ public class ClaimEmailerTest {
         yourInbox.clear();
 
         // ensure the user is existing
-        User assignee = User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
@@ -287,7 +287,7 @@ public class ClaimEmailerTest {
         yourInbox.clear();
 
         // ensure the user is existing
-        User assignee = User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
@@ -342,7 +342,7 @@ public class ClaimEmailerTest {
         recipientInbox.clear();
 
         // ensure the user is existing
-        User assignee = User.get(assigneeId, true, Collections.EMPTY_MAP);
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
         assignee.addProperty(new Mailer.UserProperty("assignee@test.com"));
 
         ClaimBuildAction claimAction = job.getLastBuild().getAction(ClaimBuildAction.class);

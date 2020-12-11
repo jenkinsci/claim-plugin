@@ -151,7 +151,7 @@ abstract class ClaimMessage {
      */
     @CheckForNull
     private static Address getUserEmail(String claimedByUser, Mailer.DescriptorImpl mailDescriptor) {
-        User user = User.get(claimedByUser, false, Collections.EMPTY_MAP);
+        User user = User.get(claimedByUser, false, Collections.emptyMap());
         if (user != null) {
             try {
                 final Mailer.UserProperty mailProperty = user.getProperty(Mailer.UserProperty.class);

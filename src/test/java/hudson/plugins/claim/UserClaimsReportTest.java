@@ -17,6 +17,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.FreeStyleProject;
 import hudson.model.User;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 public class UserClaimsReportTest {
 
     @Rule
@@ -45,9 +48,9 @@ public class UserClaimsReportTest {
         FreeStyleProject job2 = createFailingJobWithName("job2-" + timestamp);
         FreeStyleProject job3 = createFailingJobWithName("job3-" + timestamp);
         
-        User userA = User.get("userA-" + timestamp, true, Collections.EMPTY_MAP);
-        User userB = User.get("userB-" + timestamp, true, Collections.EMPTY_MAP);
-        User userC = User.get("userC-" + timestamp, true, Collections.EMPTY_MAP);
+        User userA = User.get("userA-" + timestamp, true, Collections.emptyMap());
+        User userB = User.get("userB-" + timestamp, true, Collections.emptyMap());
+        User userC = User.get("userC-" + timestamp, true, Collections.emptyMap());
 
         // none claimed
         verifyUserClaims(userA, 0, 0);
@@ -82,8 +85,8 @@ public class UserClaimsReportTest {
 
         FreeStyleProject job1 = createFailingJobWithName("job1-" + timestamp);
 
-        User userA = User.get("userA-" + timestamp, true, Collections.EMPTY_MAP);
-        assert !userA.getId().equals(userA.getId().toLowerCase()); // ensure id of user is not equal to its lowercase version
+        User userA = User.get("userA-" + timestamp, true, Collections.emptyMap());
+        assertNotEquals(userA.getId(), userA.getId().toLowerCase(), "Fix the test setup to ensure this condition");
 
         // none claimed
         verifyUserClaims(userA, 0, 0);

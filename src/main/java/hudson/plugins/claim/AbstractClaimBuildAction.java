@@ -93,7 +93,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         String assignee = req.getSubmittedForm().getString("assignee");
         if (!StringUtils.isEmpty(assignee) && !claimedUser.equals(assignee)) {
             // Validate the specified assignee.
-            User resolvedAssignee = User.get(assignee, false, Collections.EMPTY_MAP);
+            User resolvedAssignee = User.get(assignee, false, Collections.emptyMap());
             if (resolvedAssignee == null) {
                 LOGGER.log(Level.WARNING, "Invalid username specified for assignment: {0}", assignee);
                 resp.forwardToPreviousPage(req);
@@ -272,7 +272,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     // used by groovy scripts ?
     public final String getClaimedByName() {
-        User user = User.get(claimedBy, false, Collections.EMPTY_MAP);
+        User user = User.get(claimedBy, false, Collections.emptyMap());
         if (user != null) {
             return user.getDisplayName();
         } else {
@@ -282,7 +282,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     // used by groovy scripts ?
     public final String getAssignedByName() {
-        User user = User.get(assignedBy, false, Collections.EMPTY_MAP);
+        User user = User.get(assignedBy, false, Collections.emptyMap());
         if (user != null) {
             return user.getDisplayName();
         } else {

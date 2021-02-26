@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import hudson.Util;
 import hudson.model.User;
 import hudson.security.ACL;
 import jenkins.model.Jenkins;
@@ -200,6 +201,8 @@ public final class CommonMessagesProvider {
                 displayName = userName;
             }
         }
+        // ensure no harmful code can be embedded into the displayName
+        displayName = Util.xmlEscape(displayName);
         if (enhanceUserLinks && user != null) {
             return "<a href=\"" + user.getAbsoluteUrl() + "\">" + displayName + "</a>";
         }

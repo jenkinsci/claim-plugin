@@ -30,6 +30,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import org.kohsuke.stapler.verb.POST;
 
 @ExportedBean(defaultVisibility = 2)
 public abstract class AbstractClaimBuildAction<T extends Saveable>
@@ -84,6 +85,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     abstract String getUrl();
 
+    // jelly
+    @POST
     public final void doClaim(StaplerRequest req, StaplerResponse resp)
             throws Exception {
         Authentication authentication = Hudson.getAuthentication();

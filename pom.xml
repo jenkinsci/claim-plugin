@@ -34,7 +34,7 @@
   <properties>
     <revision>2.19</revision>
     <changelist>-SNAPSHOT</changelist>
-    <jenkins.version>2.204.6</jenkins.version>
+    <jenkins.version>2.277.4</jenkins.version>
     <java.level>8</java.level>
     <checkstyle.version>3.1.2</checkstyle.version>
   </properties>
@@ -43,8 +43,8 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.204.x</artifactId>
-        <version>18</version>
+        <artifactId>bom-2.277.x</artifactId>
+        <version>890.vbc071bce1cf6</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -101,6 +101,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>script-security</artifactId>
+      <version>1.78</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -110,6 +111,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
+      <version>1.53</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -126,11 +128,41 @@
       <artifactId>workflow-job</artifactId>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>plugin-util-api</artifactId>
+      <version>2.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>jackson2-api</artifactId>
+      <version>2.12.4</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>checks-api</artifactId>
+      <version>1.7.2</version>
+    </dependency>
 
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>credentials</artifactId>
       <optional>true</optional>
+      <version>2.6.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>cloudbees-folder</artifactId>
+      <optional>true</optional>
+      <version>6.16</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>scm-api</artifactId>
+      <optional>true</optional>
+      <version>2.6.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -163,6 +195,12 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-multibranch</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-step-api</artifactId>
+      <version>2.24</version>
       <scope>test</scope>
     </dependency>
     <dependency>

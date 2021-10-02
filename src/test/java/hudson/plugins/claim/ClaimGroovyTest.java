@@ -8,6 +8,7 @@ import hudson.model.Item;
 import hudson.model.Result;
 import hudson.model.User;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
@@ -51,7 +52,7 @@ public class ClaimGroovyTest {
         MockAuthorizationStrategy strategy = new MockAuthorizationStrategy();
         try {
             setUserCreationViaUrl(true);
-            strategy.grantWithoutImplication(Jenkins.ADMINISTER, Jenkins.READ, Item.CREATE)
+            strategy.grantWithoutImplication(Jenkins.MANAGE, Jenkins.READ, Item.CREATE)
                     .everywhere()
                     .to(j.jenkins.getUser(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS));
             strategy.grant(Jenkins.ADMINISTER, Jenkins.READ)
@@ -63,10 +64,10 @@ public class ClaimGroovyTest {
 
         j.jenkins.setAuthorizationStrategy(strategy);
 
-        ACL.impersonate(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS).impersonate(), () -> {
-            assertTrue(j.jenkins.hasPermission(Jenkins.ADMINISTER));
-            assertFalse(j.jenkins.hasPermission(Jenkins.RUN_SCRIPTS));
-        });
+        try (ACLContext ctx = ACL.as(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
+            assertTrue(j.jenkins.hasPermission(Jenkins.MANAGE));
+            assertFalse(j.jenkins.hasPermission(Jenkins.ADMINISTER));
+        };
     }
 
     /**
@@ -99,7 +100,7 @@ public class ClaimGroovyTest {
 
     private void doConfigureScriptWithUser(String userName)
             throws InterruptedException, java.util.concurrent.ExecutionException {
-        ACL.impersonate(User.get(userName).impersonate(), () -> {
+        try (ACLContext ctx = ACL.as(User.get(userName))) {
             try {
                 ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
                 config.setGroovyTrigger(new SecureGroovyScript(
@@ -107,7 +108,7 @@ public class ClaimGroovyTest {
             } catch (Exception e) {
                 fail(e.getMessage());
             }
-        });
+        }
 
         String configXml = "<project>  <builders>\n"
                 + "    <hudson.tasks.Shell>\n"
@@ -128,7 +129,7 @@ public class ClaimGroovyTest {
                 .scheduleBuild2(0).get();
         assertEquals(Result.FAILURE, build.getResult());
 
-        ACL.impersonate(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS).impersonate(), () -> {
+        try (ACLContext ctx = ACL.as(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
             try {
                 StaplerRequest req = mock(StaplerRequest.class);
                 JSONObject jsonObject = new JSONObject();
@@ -145,6 +146,6 @@ public class ClaimGroovyTest {
             } catch (Exception e) {
                 fail(e.getMessage());
             }
-        });
+        }
     }
 }

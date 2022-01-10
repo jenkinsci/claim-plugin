@@ -1,9 +1,6 @@
 package hudson.plugins.claim;
 
-import hudson.views.ListViewColumnDescriptor;
-import jenkins.model.Jenkins;
-import org.kohsuke.stapler.DataBoundConstructor;
-
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.matrix.MatrixBuild;
 import hudson.matrix.MatrixRun;
@@ -11,14 +8,14 @@ import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.views.ListViewColumn;
-import java.util.ArrayList;
-import java.util.List;
-
+import hudson.views.ListViewColumnDescriptor;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ClaimColumn extends ListViewColumn {
 
@@ -71,11 +68,11 @@ public final class ClaimColumn extends ListViewColumn {
     public static class DescriptorImpl extends ListViewColumnDescriptor {
         @Override
         public ListViewColumn newInstance(StaplerRequest req,
-                                          @Nonnull JSONObject formData) throws FormException {
+                                          @NonNull JSONObject formData) throws FormException {
             return new ClaimColumn();
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public String getDisplayName() {
             return Messages.ClaimColumn_DisplayName();

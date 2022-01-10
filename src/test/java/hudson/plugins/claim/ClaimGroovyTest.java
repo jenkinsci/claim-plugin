@@ -2,11 +2,7 @@ package hudson.plugins.claim;
 
 import hudson.cli.CLICommandInvoker;
 import hudson.cli.CreateJobCommand;
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
-import hudson.model.Item;
-import hudson.model.Result;
-import hudson.model.User;
+import hudson.model.*;
 import hudson.security.ACL;
 import hudson.security.ACLContext;
 import jenkins.model.Jenkins;
@@ -26,10 +22,7 @@ import java.lang.reflect.Field;
 
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

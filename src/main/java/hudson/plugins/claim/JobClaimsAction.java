@@ -1,24 +1,17 @@
 package hudson.plugins.claim;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
-
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.model.AbstractProject;
-import hudson.model.Action;
-import hudson.model.Api;
-import hudson.model.Job;
-import hudson.model.ModelObject;
-import hudson.model.Run;
+import hudson.model.*;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TestResult;
 import jenkins.model.TransientActionFactory;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("rawtypes")
 @ExportedBean
@@ -35,9 +28,9 @@ public class JobClaimsAction extends AbstractAssignedClaimsReport {
             return Job.class; 
         }
 
-        @Nonnull
+        @NonNull
         @Override
-        public Collection<? extends Action> createFor(@Nonnull Job job) {
+        public Collection<? extends Action> createFor(@NonNull Job job) {
             if (job.getLastCompletedBuild() != null) {
                 return Collections.singleton(new JobClaimsAction(job)); 
             }

@@ -7,12 +7,12 @@ import com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseBuildAction;
 import com.sonyericsson.jenkins.plugins.bfa.model.FoundFailureCause;
 import com.sonyericsson.jenkins.plugins.bfa.model.indication.FoundIndication;
 import com.sonyericsson.jenkins.plugins.bfa.statistics.StatisticsLogger;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionList;
 import hudson.Plugin;
 import hudson.model.Run;
 import jenkins.model.Jenkins;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,10 +24,10 @@ public final class ClaimBuildFailureAnalyzer {
     public static final String DEFAULT_ERROR = "Default";
     private static final String MATCHING_FILE = "Claim";
 
-    @Nonnull
+    @NonNull
     private final String error;
 
-    public ClaimBuildFailureAnalyzer(@Nonnull String error) {
+    public ClaimBuildFailureAnalyzer(@NonNull String error) {
         this.error = error;
     }
 

@@ -1,8 +1,5 @@
 package hudson.plugins.claim;
 
-import java.io.IOException;
-import java.util.logging.Logger;
-
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Result;
@@ -10,6 +7,9 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import jenkins.model.Jenkins;
+
+import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * RunListener looking at broken builds with the {@link AllowBrokenBuildClaimingJobProperty} property to add them a ClaimAction.

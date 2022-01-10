@@ -1,16 +1,14 @@
 package hudson.plugins.claim;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
 import org.kohsuke.stapler.StaplerRequest;
-
-import javax.annotation.Nonnull;
 
 @Extension
 public final class ClaimConfig extends GlobalConfiguration {
@@ -58,13 +56,13 @@ public final class ClaimConfig extends GlobalConfiguration {
     @Deprecated
     private transient String groovyScript;
 
-    @Nonnull
+    @NonNull
     private SecureGroovyScript groovyTrigger;
 
     /**
      * This human readable name is used in the configuration screen.
      */
-    @Nonnull
+    @NonNull
     public String getDisplayName() {
         return "Claim";
     }
@@ -173,16 +171,16 @@ public final class ClaimConfig extends GlobalConfiguration {
         this.sortUsersByFullName = sortUsersByFullName;
     }
 
-    @Nonnull
+    @NonNull
     public SecureGroovyScript getGroovyTrigger() {
         return groovyTrigger;
     }
 
-    void setGroovyTrigger(@Nonnull SecureGroovyScript groovyTrigger) {
+    void setGroovyTrigger(@NonNull SecureGroovyScript groovyTrigger) {
         this.setGroovyTrigger(groovyTrigger, true);
     }
 
-    private void setGroovyTrigger(@Nonnull SecureGroovyScript trigger, boolean withCurrentUser) {
+    private void setGroovyTrigger(@NonNull SecureGroovyScript trigger, boolean withCurrentUser) {
         ApprovalContext approvalContext = ApprovalContext.create().withKey(GROOVY_SCRIPT_KEY);
         if (withCurrentUser) {
             approvalContext = approvalContext.withCurrentUser();

@@ -1,16 +1,6 @@
 package hudson.plugins.claim;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Nonnull;
-import javax.mail.MessagingException;
-
-import org.jenkins.ui.icon.Icon;
-import org.jenkins.ui.icon.IconSet;
-import org.kohsuke.stapler.DataBoundConstructor;
-
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -24,6 +14,14 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
+import org.jenkins.ui.icon.Icon;
+import org.jenkins.ui.icon.IconSet;
+import org.kohsuke.stapler.DataBoundConstructor;
+
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
@@ -61,7 +59,7 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
             return "/plugin/claim/help.html";
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public String getDisplayName() {
             return Messages.ClaimPublisher_DisplayName();
@@ -79,8 +77,8 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
     }
 
     @Override
-    public void perform(@Nonnull Run<?, ?> build, @Nonnull FilePath workspace, @Nonnull Launcher launcher,
-                        @Nonnull TaskListener listener) throws InterruptedException, IOException {
+    public void perform(@NonNull Run<?, ?> build, @NonNull FilePath workspace, @NonNull Launcher launcher,
+                        @NonNull TaskListener listener) throws InterruptedException, IOException {
 
         Result runResult = build.getResult();
         if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {

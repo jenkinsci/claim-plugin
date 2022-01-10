@@ -1,21 +1,12 @@
 package hudson.plugins.claim;
 
 import hudson.Extension;
-import hudson.model.Describable;
-import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.model.Run;
-import hudson.model.User;
+import hudson.model.*;
 import hudson.tasks.junit.TestAction;
 import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.AncestorInPath;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 public abstract class DescribableTestAction extends TestAction implements Describable<DescribableTestAction> {

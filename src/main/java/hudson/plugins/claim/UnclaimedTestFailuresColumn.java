@@ -1,22 +1,18 @@
 package hudson.plugins.claim;
 
-import hudson.views.ListViewColumnDescriptor;
-import org.kohsuke.stapler.DataBoundConstructor;
-
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TestResult;
 import hudson.views.ListViewColumn;
-
-import java.util.List;
-
+import hudson.views.ListViewColumnDescriptor;
 import net.sf.json.JSONObject;
-
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 
 public final class UnclaimedTestFailuresColumn extends ListViewColumn {
 
@@ -59,11 +55,11 @@ public final class UnclaimedTestFailuresColumn extends ListViewColumn {
     @Extension
     public static class DescriptorImpl extends ListViewColumnDescriptor {
         @Override
-        public ListViewColumn newInstance(StaplerRequest req, @Nonnull JSONObject formData) {
+        public ListViewColumn newInstance(StaplerRequest req, @NonNull JSONObject formData) {
             return new UnclaimedTestFailuresColumn();
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public String getDisplayName() {
             return Messages.UnclaimedTestFailuresColumn_DisplayName();

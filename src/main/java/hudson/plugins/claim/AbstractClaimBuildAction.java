@@ -1,23 +1,7 @@
 package hudson.plugins.claim;
 
 import groovy.lang.Binding;
-import hudson.model.BuildBadgeAction;
-import hudson.model.ProminentProjectAction;
-import hudson.model.Run;
-import hudson.model.Saveable;
-import hudson.model.Hudson;
-import hudson.model.User;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.mail.MessagingException;
-import javax.servlet.ServletException;
-
+import hudson.model.*;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +14,15 @@ import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
+
+import javax.mail.MessagingException;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @ExportedBean(defaultVisibility = 2)
 public abstract class AbstractClaimBuildAction<T extends Saveable>

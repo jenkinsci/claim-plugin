@@ -1,31 +1,29 @@
 package hudson.plugins.claim;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.internet.InternetAddress;
-
+import hudson.model.FreeStyleProject;
+import hudson.model.User;
+import hudson.model.UserProperty;
+import hudson.tasks.Mailer;
 import hudson.tasks.junit.CaseResult;
+import jenkins.model.JenkinsLocationConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.mock_javamail.Mailbox;
 
-import hudson.model.FreeStyleProject;
-import hudson.model.User;
-import hudson.model.UserProperty;
-import hudson.tasks.Mailer;
-import jenkins.model.JenkinsLocationConfiguration;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("StringOperationCanBeSimplified")
 public class ClaimEmailerTest {

@@ -1,23 +1,19 @@
 package hudson.plugins.claim;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import hudson.model.FreeStyleProject;
+import hudson.model.User;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
-import hudson.model.FreeStyleProject;
-import hudson.model.User;
-
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class UserClaimsReportTest {

@@ -1,13 +1,12 @@
 package hudson.plugins.claim;
 
+import hudson.Extension;
+import hudson.model.Job;
+import jenkins.model.OptionalJobProperty;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.ExportedBean;
-
-import hudson.Extension;
-import hudson.model.Job;
-import jenkins.model.OptionalJobProperty;
 
 /**
  * {@link OptionalJobProperty} to allow broken builds to be "claimable".

@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Util;
 import hudson.model.User;
 import hudson.security.ACL;
@@ -7,7 +8,6 @@ import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Date;
 import java.util.function.Supplier;
@@ -26,8 +26,8 @@ public final class CommonMessagesProvider {
      * @param action the action to use to get claim information
      * @return an instance of {@link CommonMessagesProvider}
      */
-    @Nonnull
-    static CommonMessagesProvider build(@Nonnull AbstractClaimBuildAction action) {
+    @NonNull
+    static CommonMessagesProvider build(@NonNull AbstractClaimBuildAction action) {
         return build(action.isClaimed(), action.getClaimedBy(), action.getAssignedBy(), action.getClaimDate());
     }
 
@@ -40,7 +40,7 @@ public final class CommonMessagesProvider {
      * @param date date of the claim
      * @return an instance of {@link CommonMessagesProvider}
      */
-    @Nonnull
+    @NonNull
     private static CommonMessagesProvider build(boolean claimed, String claimedBy, String assignedBy, Date date) {
         return new CommonMessagesProvider(claimed, claimedBy, assignedBy, date);
     }

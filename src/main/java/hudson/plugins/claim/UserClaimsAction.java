@@ -1,16 +1,15 @@
 package hudson.plugins.claim;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-
-import javax.annotation.Nonnull;
-
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.ModelObject;
 import hudson.model.TransientUserActionFactory;
 import hudson.model.User;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 
 public class UserClaimsAction extends AbstractAssignedClaimsReport {
 
@@ -28,10 +27,10 @@ public class UserClaimsAction extends AbstractAssignedClaimsReport {
         }
     }
     
-    @Nonnull
+    @NonNull
     private final User targetUser;
 
-    public UserClaimsAction(@Nonnull User user) {
+    public UserClaimsAction(@NonNull User user) {
         targetUser = user;
     }
     

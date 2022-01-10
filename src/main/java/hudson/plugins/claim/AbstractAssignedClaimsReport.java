@@ -1,8 +1,10 @@
 package hudson.plugins.claim;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import hudson.model.*;
+import hudson.tasks.test.AbstractTestResultAction;
+import hudson.tasks.test.TestResult;
+import hudson.util.RunList;
+import jenkins.model.Jenkins;
 import org.apache.commons.jelly.JellyContext;
 import org.jenkins.ui.icon.Icon;
 import org.jenkins.ui.icon.IconSet;
@@ -11,15 +13,8 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.stapler.Stapler;
 
-import hudson.model.Action;
-import hudson.model.Job;
-import hudson.model.ModelObject;
-import hudson.model.Run;
-import hudson.model.View;
-import hudson.tasks.test.AbstractTestResultAction;
-import hudson.tasks.test.TestResult;
-import hudson.util.RunList;
-import jenkins.model.Jenkins;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AbstractAssignedClaimsReport implements Action, IconSpec {
     @Override

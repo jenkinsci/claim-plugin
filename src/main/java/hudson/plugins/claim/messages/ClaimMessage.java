@@ -1,11 +1,11 @@
 package hudson.plugins.claim.messages;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import jenkins.model.JenkinsLocationConfiguration;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -76,11 +76,11 @@ abstract class ClaimMessage {
      * Get the jenkins url for the item.
      * @return The jenkins url for the item
      */
-    @Nonnull
+    @NonNull
     protected String buildJenkinsUrl() {
         return getJenkinsLocationConfiguration().getUrl() + url;
     }
-    @Nonnull
+    @NonNull
     private static JenkinsLocationConfiguration getJenkinsLocationConfiguration() {
         final JenkinsLocationConfiguration jlc = JenkinsLocationConfiguration.get();
         if (jlc == null) {
@@ -95,7 +95,7 @@ abstract class ClaimMessage {
      * @throws MessagingException if there has been some problem with sending the email
      * @throws UnsupportedEncodingException if an address provided is not in a correct format
      */
-    @Nonnull
+    @NonNull
     private MimeMessage createMessage()
         throws MessagingException, UnsupportedEncodingException {
 
@@ -123,7 +123,7 @@ abstract class ClaimMessage {
      * @throws MessagingException if there has been some problem with sending the email
      * @throws UnsupportedEncodingException if an address provided is not in a correct format
      */
-    @Nonnull
+    @NonNull
     private static MimeMessage createMimeMessage(final Mailer.DescriptorImpl mailDescriptor)
         throws MessagingException, UnsupportedEncodingException {
 

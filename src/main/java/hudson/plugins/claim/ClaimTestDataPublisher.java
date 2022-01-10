@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Functions;
@@ -8,26 +9,15 @@ import hudson.model.Descriptor;
 import hudson.model.Run;
 import hudson.model.Saveable;
 import hudson.model.TaskListener;
-import hudson.tasks.junit.CaseResult;
-import hudson.tasks.junit.TestAction;
-import hudson.tasks.junit.TestDataPublisher;
-import hudson.tasks.junit.TestResult;
-import hudson.tasks.junit.TestResultAction;
+import hudson.tasks.junit.*;
+import org.kohsuke.stapler.DataBoundConstructor;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-
-import javax.annotation.Nonnull;
-import javax.mail.MessagingException;
 
 public class ClaimTestDataPublisher extends TestDataPublisher {
 
@@ -39,7 +29,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
     }
 
     @Override
-    public Data contributeTestData(Run<?, ?> run, @Nonnull FilePath workspace, Launcher launcher,
+    public Data contributeTestData(Run<?, ?> run, @NonNull FilePath workspace, Launcher launcher,
                                    TaskListener listener, TestResult testResult)
             throws IOException, InterruptedException {
         Data data = new Data(run);
@@ -146,7 +136,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
     @SuppressWarnings("unused")
     public static class DescriptorImpl extends Descriptor<TestDataPublisher> {
 
-        @Nonnull
+        @NonNull
         @Override
         public String getDisplayName() {
             return Messages.ClaimTestDataPublisher_DisplayName();

@@ -32,19 +32,19 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
     public static void initIcons() throws Exception {
         IconSet.icons.addIcon(
                 new Icon("icon-claim-claim icon-sm",
-                        "plugin/claim/images/16x16/claim.png",
+                        "plugin/claim/images/claim.svg",
                         Icon.ICON_SMALL_STYLE));
         IconSet.icons.addIcon(
                 new Icon("icon-claim-claim icon-md",
-                        "plugin/claim/images/24x24/claim.png",
+                        "plugin/claim/images/claim.svg",
                         Icon.ICON_MEDIUM_STYLE));
         IconSet.icons.addIcon(
                 new Icon("icon-claim-claim icon-lg",
-                        "plugin/claim/images/32x32/claim.png",
+                        "plugin/claim/images/claim.svg",
                         Icon.ICON_LARGE_STYLE));
         IconSet.icons.addIcon(
                 new Icon("icon-claim-claim icon-xlg",
-                        "plugin/claim/images/48x48/claim.png",
+                        "plugin/claim/images/claim.svg",
                         Icon.ICON_XLARGE_STYLE));
     }
 

@@ -22,9 +22,4 @@
         <f:checkbox/>
     </f:entry>
     <f:property field="groovyTrigger"/>
-    <f:entry title="${%BlockAutoRefreshWhileClaiming}" field="blockAutoRefreshWhileClaiming"
-             help="/plugin/claim/help-blockAutoRefreshWhileClaiming.html">
-        <f:checkbox/>
-        <span class="warning">${%BlockAutoRefreshWhileClaiming.Description}</span>
-    </f:entry>
 </j:jelly>

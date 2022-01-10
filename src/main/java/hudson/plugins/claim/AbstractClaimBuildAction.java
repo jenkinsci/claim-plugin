@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 
-import hudson.plugins.claim.http.PreventRefreshFilter;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
@@ -355,12 +354,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
             return defaultValue;
         }
         return ClaimBuildFailureAnalyzer.getFillReasonMap().getOrDefault(error, defaultValue);
-    }
-
-    @Restricted(DoNotUse.class) // jelly
-    @SuppressWarnings("unused")
-    public final void preventRefresh(StaplerResponse response) {
-        PreventRefreshFilter.preventRefresh(response);
     }
 
     // used by groovy scripts ?

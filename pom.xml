@@ -153,7 +153,7 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>credentials</artifactId>
       <optional>true</optional>
-      <version>2.6.1</version>
+      <version>1111.v35a_307992395</version>
       <scope>test</scope>
     </dependency>
     <dependency>

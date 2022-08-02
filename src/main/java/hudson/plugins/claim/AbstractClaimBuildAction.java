@@ -15,7 +15,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collections;

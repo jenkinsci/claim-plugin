@@ -12,9 +12,9 @@ import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.mock_javamail.Mailbox;
 
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.Address;
+import jakarta.mail.Message;
+import jakarta.mail.internet.InternetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;

@@ -3,7 +3,7 @@ package hudson.plugins.claim;
 import hudson.model.Run;
 import jenkins.model.RunAction2;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.Optional;
 

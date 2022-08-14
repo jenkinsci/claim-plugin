@@ -8,3 +8,7 @@ updates:
       - dependency-name: "com.sonyericsson.jenkins.plugins.bfa:build-failure-analyzer"
         # Buggy release
         versions: ["2.27.0"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>claim</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
   <name>Jenkins Claim Plugin</name>
   <url>https://github.com/jenkinsci/claim-plugin</url>
@@ -32,9 +32,8 @@
   </developers>
 
   <properties>
-    <revision>2.19</revision>
-    <changelist>-SNAPSHOT</changelist>
-    <jenkins.version>2.332.4</jenkins.version>
+    <changelist>999999-SNAPSHOT</changelist>
+    <jenkins.version>2.289.1</jenkins.version>
     <java.level>8</java.level>
     <checkstyle.version>3.1.2</checkstyle.version>
   </properties>

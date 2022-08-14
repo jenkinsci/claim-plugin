@@ -7,7 +7,7 @@ import hudson.plugins.claim.messages.RepeatedTestClaimMessage;
 import hudson.tasks.Mailer;
 import hudson.tasks.junit.CaseResult;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;

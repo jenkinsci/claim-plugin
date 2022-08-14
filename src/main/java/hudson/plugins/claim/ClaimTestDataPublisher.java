@@ -12,7 +12,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.junit.*;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;

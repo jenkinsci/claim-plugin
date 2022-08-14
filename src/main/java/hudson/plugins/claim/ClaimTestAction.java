@@ -5,7 +5,7 @@ import hudson.plugins.claim.ClaimTestDataPublisher.Data;
 import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.TestResult;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;

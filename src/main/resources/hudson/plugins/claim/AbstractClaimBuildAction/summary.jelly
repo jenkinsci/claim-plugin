@@ -23,7 +23,7 @@
         }
    </script>
 
-    <t:summary icon="icon-claim-claim">
+    <t:summary icon="icon-user">
         <p>
             <j:out value="${it.messageProvider.getFullClaimDescription(it.noun)}"/>
         </p>

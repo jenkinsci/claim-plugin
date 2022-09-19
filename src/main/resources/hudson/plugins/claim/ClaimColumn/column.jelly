@@ -31,7 +31,7 @@ THE SOFTWARE.
             <j:set var="reasonPart" encode="true"
                    value="&#10;&#10;${action.claim.messageProvider.reasonTitle}&#10;${action.claim.reason}"/>
         </j:if>
-        <l:icon class="icon-claim-claim ${subIconSizeClass}"
+        <l:icon class="icon-user ${subIconSizeClass}"
                 title="${action.claim.messageProvider.shortClaimDescription}${reasonPart}"/>
     </j:forEach>  
   </td>

@@ -19,7 +19,7 @@ import java.util.List;
 public class AbstractAssignedClaimsReport implements Action, IconSpec {
     @Override
     public String getIconClassName() {
-        return "icon-claim-claim";
+        return "icon-user";
     }
 
     public String getIconFileName() {

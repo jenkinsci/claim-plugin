@@ -15,99 +15,151 @@
 			<t:setIconSize />
 
 			<h2>${%nbFailedProjectsClaims} <span id="claim-nb-project-claims">${items.size()}</span></h2>
-			<table class="sortable pane bigtable" id="projectStatus">
-				<tr>
-					<th>
-						<st:nbsp />
-					</th>
-					<th>${%Build}</th>
-					<th initialSortDir="up">${%Date}</th>
-					<th>${%FailureDuration}</th>
-					<th>${%Status}</th>
-					<th>${%Description}</th>
-				</tr>
-				<j:if test="${empty(it.builds)}">
+			<table class="jenkins-table sortable">
+				<thead>
 					<tr>
-						<td colspan="6">${%None}</td>
-					</tr>
-				</j:if>
-    <!-- TODO: support gradual expansion of the list -->
-				<j:forEach var="b" items="${h.subList(items, 50)}">
-					<tr>
-						<td data="${b.iconColor.ordinal()}">
-							<a href="${rootURL}/${b.url}">
-								<img src="${imagesURL}/${iconSize}/${b.buildStatusUrl}"
-									alt="${b.iconColor.description}" />
-							</a>
-						</td>
-						<td id="claim.build.${b.parent.name}">
-							<a href="${rootURL}/${b.parent.url}">${b.parent.fullName}</a>
+						<th>
 							<st:nbsp />
-							<a href="${rootURL}/${b.url}">#${b.number}</a>
-						</td>
-						<td id="claim.date.${b.parent.name}"
-							data="${b.timestampString2}">
-							${b.timestampString}
-						</td>
-						<j:set var="firstBad" value="${it.getFirstFail(b)}" />
-						<td id="claim.firstBad.${b.parent.name}"
-							data="${firstBad.timestampString2}">
-							${firstBad.timestampString}
-						</td>
-						<td id="claim.claimant.${b.parent.name}">
-							<j:set var="messageProvider"
-								value="${it.getMessageProvider(b)}" />
-							${messageProvider.shortClaimDescription}
-						</td>
-						<td id="claim.desc.${b.parent.name}">
-							<j:out
-								value="${b.description!=null ? app.markupFormatter.translate(b.description) : ''}" />
-						</td>
+						</th>
+						<th>${%Build}</th>
+						<th initialSortDir="up">${%Date}</th>
+						<th>${%FailureDuration}</th>
+						<th>${%Status}</th>
+						<th>${%Description}</th>
 					</tr>
-				</j:forEach>
+				</thead>
+				<tbody>
+					<j:if test="${empty(it.builds)}">
+						<tr>
+							<td colspan="6">${%None}</td>
+						</tr>
+					</j:if>
+		<!-- TODO: support gradual expansion of the list -->
+					<j:forEach var="b" items="${h.subList(items, 50)}">
+						<tr>
+							<!-- Build health adapted from jenkinsci/jenkins:/core/src/main/resources/lib/hudson/buildHealth.jelly -->
+							<td class="jenkins-table__cell--tight jenkins-table__icon" data="${b.iconColor.ordinal()}">
+								<div class="jenkins-table__cell__button-wrapper">
+								  <j:if test="${b.iconColor!=null}">
+									<j:set var="iconClassName" value="${b.iconColor.iconClassName}"/>
+									<j:if test="${iconClassName == null}">
+									  <j:set var="iconClassName" value="${icons.toNormalizedIconNameClass(b.iconColor.image)}"/>
+									</j:if>
+									<!-- convert legacy @iconSize specification to @iconSizeClass -->
+									<j:if test="${iconSizeClass==null}">
+									  <j:choose>
+										<j:when test="${attrs.iconSize!=null}">
+										  <j:set var="iconSizeClass" value="${icons.toNormalizedIconSizeClass(attrs.iconSize)}"/>
+										</j:when>
+										<j:when test="${iconSize!=null}">
+										  <j:set var="iconSizeClass" value="${icons.toNormalizedIconSizeClass(iconSize)}" />
+										</j:when>
+									  </j:choose>
+									</j:if>
+							
+									<j:choose>
+									  <j:when test="${iconClassName != null}">
+										<l:icon class="${iconClassName} icon-lg" alt="${b.iconColor.description}" tooltip="${b.iconColor.description}" />
+									  </j:when>
+									  <j:otherwise>
+										<!-- "it" is not a hudson.model.BallColor.  Let's try figure out the icon from its URL.  -->
+										<j:set var="iconUrl" value="${b.iconColor.getImageOf(iconSize)}"/>
+										<j:if test="${iconUrl.startsWith(imagesURL)}">
+										  <!-- Normalize the icon URL  -->
+										  <j:set var="iconUrl" value="${iconUrl.substring(imagesURL.length() + 1)}"/>
+										</j:if>
+							
+										<!-- See if we can get an Icon def from the URL  -->
+										<j:set var="icon" value="${icons.getIconByUrl(iconUrl)}"/>
+										<j:choose>
+										  <j:when test="${icon != null}">
+											<!-- We found the Icon def -->
+											<l:icon class="${icon.classSpec}" alt="${b.iconColor.description}" tooltip="${b.iconColor.description}" style="${attrs.style}" />
+										  </j:when>
+										  <j:otherwise>
+											<!-- We don't seem to have this icon in the IconSet... fallback again... -->
+											<j:set var="iconUrl" value="${b.iconColor.getImageOf(iconSize)}"/>
+											<l:icon src="${iconUrl}" class="${iconSizeClass}" alt="${b.iconColor.description}" tooltip="${b.iconColor.description}" style="${attrs.style}" />
+										  </j:otherwise>
+										</j:choose>
+									  </j:otherwise>
+									</j:choose>
+								  </j:if>
+								</div>
+							  </td>
+							<td id="claim.build.${b.parent.name}">
+								<a href="${rootURL}/${b.parent.url}">${b.parent.fullName}</a>
+								<st:nbsp />
+								<a href="${rootURL}/${b.url}">#${b.number}</a>
+							</td>
+							<td id="claim.date.${b.parent.name}"
+								data="${b.timestampString2}">
+								${b.timestampString}
+							</td>
+							<j:set var="firstBad" value="${it.getFirstFail(b)}" />
+							<td id="claim.firstBad.${b.parent.name}"
+								data="${firstBad.timestampString2}">
+								${firstBad.timestampString}
+							</td>
+							<td id="claim.claimant.${b.parent.name}">
+								<j:set var="messageProvider"
+									value="${it.getMessageProvider(b)}" />
+								${messageProvider.shortClaimDescription}
+							</td>
+							<td id="claim.desc.${b.parent.name}">
+								<j:out
+									value="${b.description!=null ? app.markupFormatter.translate(b.description) : ''}" />
+							</td>
+						</tr>
+					</j:forEach>
+				</tbody>
 			</table>
 
 
 			<h2>${%nbFailedTestsClaims} <span id="claim-nb-testfailure-claims">${testFailuresWithClaim.size()}</span></h2>
-			<table class="sortable pane bigtable">
-				<tr>
-					<th>${%Build}</th>
-					<th>${%Test}</th>
-					<th initialSortDir="up">${%Date}</th>
-					<th tooltip="{%Age.tooltip}">${%Age}</th>
-					<th>${%Status}</th>
-				</tr>
-				<j:if test="${empty(testFailuresWithClaim)}">
+			<table class="jenkins-table sortable">
+				<thead>
 					<tr>
-						<td colspan="5">${%None}</td>
+						<th>${%Build}</th>
+						<th>${%Test}</th>
+						<th initialSortDir="up">${%Date}</th>
+						<th tooltip="{%Age.tooltip}">${%Age}</th>
+						<th>${%Status}</th>
 					</tr>
-				</j:if>
+				</thead>
+				<tbody>
+					<j:if test="${empty(testFailuresWithClaim)}">
+						<tr>
+							<td colspan="5">${%None}</td>
+						</tr>
+					</j:if>
 
-				<j:forEach var="tf"
-					items="${h.subList(testFailuresWithClaim, 50)}">
-					<tr>
-						<td>
-							<a href="${rootURL}/${tf.run.parent.url}">${tf.run.parent.fullName}</a>
-							<st:nbsp />
-							<a href="${rootURL}/${tf.run.url}">#${tf.run.number}</a>
-						</td>
-						<td>
-							<a href="${rootURL}/${tf.url}">${tf.displayName}</a>
-						</td>
-						<td data="${tf.run.timestampString2}">
-							${tf.run.timestampString}
-						</td>
-						<td data="${tf.run.number - tf.failedSince}"
-							tooltip="${%failingSinceBuild(tf.failedSince)}">
-							${tf.run.number - tf.failedSince + 1}
-						</td>
-						<td>
-							<j:set var="messageProvider"
-								value="${it.getMessageProvider(tf)}" />
-							${messageProvider.shortClaimDescription}
-						</td>
-					</tr>
-				</j:forEach>
+					<j:forEach var="tf"
+						items="${h.subList(testFailuresWithClaim, 50)}">
+						<tr>
+							<td>
+								<a href="${rootURL}/${tf.run.parent.url}">${tf.run.parent.fullName}</a>
+								<st:nbsp />
+								<a href="${rootURL}/${tf.run.url}">#${tf.run.number}</a>
+							</td>
+							<td>
+								<a href="${rootURL}/${tf.url}">${tf.displayName}</a>
+							</td>
+							<td data="${tf.run.timestampString2}">
+								${tf.run.timestampString}
+							</td>
+							<td data="${tf.run.number - tf.failedSince}"
+								tooltip="${%failingSinceBuild(tf.failedSince)}">
+								${tf.run.number - tf.failedSince + 1}
+							</td>
+							<td>
+								<j:set var="messageProvider"
+									value="${it.getMessageProvider(tf)}" />
+								${messageProvider.shortClaimDescription}
+							</td>
+						</tr>
+					</j:forEach>
+				</tbody>
 			</table>
   <!--
   Not working since View inheritance was removed

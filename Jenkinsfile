@@ -1,3 +1,3 @@
 buildPlugin(
-  jenkinsVersions: [null, '2.332.4']
+  jenkinsVersions: [null, '2.261.1']
 ) 

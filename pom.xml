@@ -35,7 +35,7 @@
     <changelist>999999-SNAPSHOT</changelist>
     <jenkins.version>2.332.4</jenkins.version>
     <java.level>8</java.level>
-    <checkstyle.version>3.1.2</checkstyle.version>
+    <checkstyle.version>3.2.0</checkstyle.version>
   </properties>
 
   <dependencyManagement>

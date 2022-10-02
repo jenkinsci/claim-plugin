@@ -1,7 +1,7 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
     <j:if test="${it.claimed}"> 
-            <l:icon class="icon-user icon-sm jenkins-!-margin-left-2" alt="${it.messageProvider.shortClaimDescription}" tooltip="${it.messageProvider.shortClaimDescription}"/>
+            <l:icon class="symbol-solid/user-doctor plugin-font-awesome-api icon-sm jenkins-!-margin-left-2" alt="${it.messageProvider.shortClaimDescription}" tooltip="${it.messageProvider.shortClaimDescription}"/>
     </j:if>
 </j:jelly>
 

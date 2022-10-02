@@ -19,7 +19,7 @@ import java.util.List;
 public class AbstractAssignedClaimsReport implements Action, IconSpec {
     @Override
     public String getIconClassName() {
-        return "icon-user";
+        return "symbol-solid/user-doctor plugin-font-awesome-api";
     }
 
     public String getIconFileName() {

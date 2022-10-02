@@ -161,9 +161,6 @@
 					</j:forEach>
 				</tbody>
 			</table>
-  <!--
-  Not working since View inheritance was removed
-  <t:rssBar-with-iconSize/>-->
 		</l:main-panel>
 	</l:layout>
 </j:jelly>

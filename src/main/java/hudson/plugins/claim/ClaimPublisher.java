@@ -27,27 +27,6 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
 
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
 
-    @Initializer(after = InitMilestone.PLUGINS_STARTED)
-    @SuppressWarnings("unused")
-    public static void initIcons() throws Exception {
-        IconSet.icons.addIcon(
-                new Icon("icon-claim-claim icon-sm",
-                        "plugin/claim/images/claim.svg",
-                        Icon.ICON_SMALL_STYLE));
-        IconSet.icons.addIcon(
-                new Icon("icon-claim-claim icon-md",
-                        "plugin/claim/images/claim.svg",
-                        Icon.ICON_MEDIUM_STYLE));
-        IconSet.icons.addIcon(
-                new Icon("icon-claim-claim icon-lg",
-                        "plugin/claim/images/claim.svg",
-                        Icon.ICON_LARGE_STYLE));
-        IconSet.icons.addIcon(
-                new Icon("icon-claim-claim icon-xlg",
-                        "plugin/claim/images/claim.svg",
-                        Icon.ICON_XLARGE_STYLE));
-    }
-
     @DataBoundConstructor
     public ClaimPublisher() {
     }

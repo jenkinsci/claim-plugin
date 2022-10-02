@@ -23,7 +23,7 @@
         }
    </script>
 
-    <t:summary icon="icon-claim-claim">
+    <t:summary icon="symbol-solid/user-doctor plugin-font-awesome-api">
         <p>
             <j:out value="${it.messageProvider.getFullClaimDescription(it.noun)}"/>
         </p>

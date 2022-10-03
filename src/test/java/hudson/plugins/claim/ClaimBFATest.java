@@ -16,7 +16,7 @@ import java.util.HashSet;
 
 import static junit.framework.TestCase.*;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ClaimBFATest {
 

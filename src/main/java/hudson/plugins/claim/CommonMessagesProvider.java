@@ -57,58 +57,8 @@ public final class CommonMessagesProvider {
         this.claimedBy = claimedBy;
         this.assignedBy = assignedBy;
         this.date = date;
-        this.formatSupplier = () -> getFormat(new MessagesProvider() {
-            @Override
-            public Formatter notClaimed() {
-                return Messages::CommonMessages_NoObject_Unclaim;
-            }
-            @Override
-            public Formatter claimedBySelf() {
-                return Messages::CommonMessages_NoObject_Claim_Self;
-            }
-            @Override
-            public Formatter assignedBySelf() {
-                return Messages::CommonMessages_NoObject_Assign_Self;
-            }
-            @Override
-            public Formatter assignedToSelf() {
-                return Messages::CommonMessages_NoObject_Assign_ToSelf;
-            }
-            @Override
-            public Formatter claimedByOther() {
-                return Messages::CommonMessages_NoObject_Claim_Other;
-            }
-            @Override
-            public Formatter assignedByAndToOther() {
-                return Messages::CommonMessages_NoObject_Assign_Other;
-            }
-        });
-        this.objectFormatSupplier = () -> getFormat(new MessagesProvider() {
-            @Override
-            public Formatter notClaimed() {
-                return Messages::CommonMessages_Object_Unclaim;
-            }
-            @Override
-            public Formatter claimedBySelf() {
-                return Messages::CommonMessages_Object_Claim_Self;
-            }
-            @Override
-            public Formatter assignedBySelf() {
-                return Messages::CommonMessages_Object_Assign_Self;
-            }
-            @Override
-            public Formatter assignedToSelf() {
-                return Messages::CommonMessages_Object_Assign_ToSelf;
-            }
-            @Override
-            public Formatter claimedByOther() {
-                return Messages::CommonMessages_Object_Claim_Other;
-            }
-            @Override
-            public Formatter assignedByAndToOther() {
-                return Messages::CommonMessages_Object_Assign_Other;
-            }
-        });
+        this.formatSupplier = () -> getFormat(new NoObjectMessagesProvider());
+        this.objectFormatSupplier = () -> getFormat(new ObjectMessagesProvider());
     }
 
     private Formatter getFormat(MessagesProvider messagesProvider) {
@@ -216,6 +166,12 @@ public final class CommonMessagesProvider {
         return DATA_PRESENT;
     }
 
+    @FunctionalInterface
+    private interface Formatter {
+        String format(Object objectName, Object assignedBy, Object claimedBy, Object hasDate, Object date, Object
+                notUsed);
+    }
+
     private interface MessagesProvider {
         Formatter notClaimed();
         Formatter claimedBySelf();
@@ -225,9 +181,67 @@ public final class CommonMessagesProvider {
         Formatter assignedByAndToOther();
     }
 
-    @FunctionalInterface
-    private interface Formatter {
-        String format(Object objectName, Object assignedBy, Object claimedBy, Object hasDate, Object date, Object
-                notUsed);
+    private static class NoObjectMessagesProvider implements MessagesProvider {
+        @Override
+        public Formatter notClaimed() {
+            return Messages::CommonMessages_NoObject_Unclaim;
+        }
+
+        @Override
+        public Formatter claimedBySelf() {
+            return Messages::CommonMessages_NoObject_Claim_Self;
+        }
+
+        @Override
+        public Formatter assignedBySelf() {
+            return Messages::CommonMessages_NoObject_Assign_Self;
+        }
+
+        @Override
+        public Formatter assignedToSelf() {
+            return Messages::CommonMessages_NoObject_Assign_ToSelf;
+        }
+
+        @Override
+        public Formatter claimedByOther() {
+            return Messages::CommonMessages_NoObject_Claim_Other;
+        }
+
+        @Override
+        public Formatter assignedByAndToOther() {
+            return Messages::CommonMessages_NoObject_Assign_Other;
+        }
+    }
+
+    private static class ObjectMessagesProvider implements MessagesProvider {
+        @Override
+        public Formatter notClaimed() {
+            return Messages::CommonMessages_Object_Unclaim;
+        }
+
+        @Override
+        public Formatter claimedBySelf() {
+            return Messages::CommonMessages_Object_Claim_Self;
+        }
+
+        @Override
+        public Formatter assignedBySelf() {
+            return Messages::CommonMessages_Object_Assign_Self;
+        }
+
+        @Override
+        public Formatter assignedToSelf() {
+            return Messages::CommonMessages_Object_Assign_ToSelf;
+        }
+
+        @Override
+        public Formatter claimedByOther() {
+            return Messages::CommonMessages_Object_Claim_Other;
+        }
+
+        @Override
+        public Formatter assignedByAndToOther() {
+            return Messages::CommonMessages_Object_Assign_Other;
+        }
     }
 }

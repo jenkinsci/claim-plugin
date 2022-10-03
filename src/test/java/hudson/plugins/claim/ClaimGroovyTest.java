@@ -60,7 +60,7 @@ public class ClaimGroovyTest {
 
         j.jenkins.setAuthorizationStrategy(strategy);
 
-        try (ACLContext ctx = ACL.as(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
+        try (ACLContext ctx = ACL.as(User.getOrCreateByIdOrFullName(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
             assertTrue(j.jenkins.hasPermission(Jenkins.MANAGE));
             assertFalse(j.jenkins.hasPermission(Jenkins.ADMINISTER));
         };
@@ -96,7 +96,7 @@ public class ClaimGroovyTest {
 
     private void doConfigureScriptWithUser(String userName)
             throws InterruptedException, java.util.concurrent.ExecutionException {
-        try (ACLContext ctx = ACL.as(User.get(userName))) {
+        try (ACLContext ctx = ACL.as(User.getOrCreateByIdOrFullName(userName))) {
             try {
                 ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
                 config.setGroovyTrigger(new SecureGroovyScript(
@@ -125,7 +125,7 @@ public class ClaimGroovyTest {
                 .scheduleBuild2(0).get();
         assertEquals(Result.FAILURE, build.getResult());
 
-        try (ACLContext ctx = ACL.as(User.get(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
+        try (ACLContext ctx = ACL.as(User.getOrCreateByIdOrFullName(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
             try {
                 StaplerRequest req = mock(StaplerRequest.class);
                 JSONObject jsonObject = new JSONObject();

@@ -124,6 +124,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         }
         claim(claimedUser, reasonProvided, currentUserId, new Date(), sticky, propagated, true);
         this.getOwner().save();
+
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
     }
@@ -439,7 +440,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
             Binding binding = new Binding();
             binding.setVariable("action", this);
             try {
-                groovyScript.evaluate(Jenkins.get().getPluginManager().uberClassLoader, binding);
+                groovyScript.evaluate(Jenkins.get().getPluginManager().uberClassLoader, binding, TaskListener.NULL);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error evaluating Groovy script", e);
             }

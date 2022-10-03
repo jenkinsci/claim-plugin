@@ -111,19 +111,20 @@ public class ClaimBFATest {
 
     @Test
     public void errorDropdownIsPresentAndIsNotEmpty() throws Exception {
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.login("user1", "user1");
-        HtmlPage page = wc.goTo("job/x/" + build.getNumber());
-        page.getElementById("claim").click();
-        HtmlForm form = page.getFormByName("claim");
-        HtmlSelect select = form.getSelectByName("_.errors");
-        HashSet<String> set = new HashSet<>();
-        for (HtmlOption option:select.getOptions()) {
-            set.add(option.getValueAttribute());
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            wc.login("user1", "user1");
+            HtmlPage page = wc.goTo("job/x/" + build.getNumber());
+            page.getElementById("claim").click();
+            HtmlForm form = page.getFormByName("claim");
+            HtmlSelect select = form.getSelectByName("_.errors");
+            HashSet<String> set = new HashSet<>();
+            for (HtmlOption option : select.getOptions()) {
+                set.add(option.getValueAttribute());
+            }
+            assertTrue(set.contains("Default"));
+            assertTrue(set.contains(CAUSE_NAME_2));
+            assertTrue(set.contains(CAUSE_NAME_1));
         }
-        assertTrue(set.contains("Default"));
-        assertTrue(set.contains(CAUSE_NAME_2));
-        assertTrue(set.contains(CAUSE_NAME_1));
     }
 
     private void createKnowledgeBase() throws Exception {
@@ -155,8 +156,9 @@ public class ClaimBFATest {
     }
 
     private HtmlPage whenNavigatingtoClaimPage() throws Exception {
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.login("user1", "user1");
-        return wc.goTo("job/x/" + build.getNumber());
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            wc.login("user1", "user1");
+            return wc.goTo("job/x/" + build.getNumber());
+        }
     }
 }

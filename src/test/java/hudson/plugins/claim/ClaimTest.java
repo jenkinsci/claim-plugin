@@ -310,11 +310,12 @@ public class ClaimTest {
     }
 
     private HtmlPage whenNavigatingToClaimPageAndClicking(Build<?, ?> build, String claimElement) throws Exception {
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.login("user1", "user1");
-        HtmlPage page = wc.goTo("job/x/" + build.getNumber());
-        // expand claim HTML box
-        page.getElementById(claimElement).click();
-        return page;
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            wc.login("user1", "user1");
+            HtmlPage page = wc.goTo("job/x/" + build.getNumber());
+            // expand claim HTML box
+            page.getElementById(claimElement).click();
+            return page;
+        }
     }
 }

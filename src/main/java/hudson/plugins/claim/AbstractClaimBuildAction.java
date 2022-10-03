@@ -3,7 +3,6 @@ package hudson.plugins.claim;
 import groovy.lang.Binding;
 import hudson.model.*;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.kohsuke.accmod.Restricted;
@@ -16,6 +15,8 @@ import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 
 import jakarta.mail.MessagingException;
+import org.springframework.security.core.Authentication;
+
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collections;
@@ -81,7 +82,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     @POST
     public final void doClaim(StaplerRequest req, StaplerResponse resp)
             throws Exception {
-        Authentication authentication = Hudson.getAuthentication();
+        Authentication authentication = Jenkins.getAuthentication2();
         User currentUser = User.getById(authentication.getName(), false);
         String currentUserId = currentUser.getId();
         String claimedUser = currentUserId; // Default to self-assignment
@@ -214,7 +215,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     // jelly
     public final void doUnclaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
-        unclaim();
+        unclaim(false);
 
         if (ClaimBuildFailureAnalyzer.isBFAEnabled() && bfaClaimer != null) {
             bfaClaimer.removeFailAction((Run) getOwner());
@@ -236,7 +237,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     /**
      * Unclaims a {@link Saveable}, and optionally notifies of the unclaim.
      * @param notify true if notifications have to be sent
-     * @deprecated use {@link #unclaim(boolean)}
      */
     public final void unclaim(boolean notify) {
         //TODO actually notify
@@ -310,7 +310,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     public final boolean isClaimedByMe() {
         return !isUserAnonymous()
-                && Hudson.getAuthentication().getName().equals(claimedBy);
+                && Jenkins.getAuthentication2().getName().equals(claimedBy);
     }
 
     // jelly
@@ -329,7 +329,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     }
 
     public final boolean isUserAnonymous() {
-        return Hudson.getAuthentication().getName().equals("anonymous");
+        return Jenkins.getAuthentication2().getName().equals("anonymous");
     }
 
     @Exported

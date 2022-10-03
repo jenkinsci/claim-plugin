@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.model.*;
 import hudson.tasks.junit.TestAction;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.AncestorInPath;
 
 import java.util.*;
@@ -33,7 +34,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
 
             // sort in case the users are not already in sort order
             // with the current user at the top of the list
-            String currentUserId = Hudson.getAuthentication().getName();
+            String currentUserId = Jenkins.getAuthentication2().getName();
             User currentUser = null;
             if (currentUserId != null) {
                 currentUser = User.get(currentUserId, false, Collections.emptyMap());

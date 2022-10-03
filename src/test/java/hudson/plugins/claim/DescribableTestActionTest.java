@@ -2,6 +2,7 @@ package hudson.plugins.claim;
 
 import hudson.model.User;
 import hudson.security.ACL;
+import hudson.security.ACLContext;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.util.ListBoxModel;
 import org.junit.Before;
@@ -66,19 +67,19 @@ public class DescribableTestActionTest {
 
     @Test
     public void assigneeListIsSortedByIdByDefault() {
-        ACL.impersonate(user1.impersonate(), () -> {
+        try (ACLContext ignored = ACL.as2(user1.impersonate2())) {
             DescribableTestActionImpl.DescriptorImpl descriptor = new DescribableTestActionImpl.DescriptorImpl();
             ListBoxModel items = descriptor.doFillAssigneeItems();
             Object[] users = getUsers(items);
             assertArrayEquals(
                     new String[] {user1.getId(), user0.getId(), user2.getId(), user3.getId(), user4.getId()},
                     users);
-        });
+        }
     }
 
     @Test
     public void assigneeListFullNameSortsByFullNameThenId() {
-        ACL.impersonate(user1.impersonate(), () -> {
+        try (ACLContext ignored = ACL.as2(user1.impersonate2())) {
             DescribableTestActionImpl.DescriptorImpl descriptor = new DescribableTestActionImpl.DescriptorImpl();
             ((ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class)).setSortUsersByFullName(true);
             ListBoxModel items = descriptor.doFillAssigneeItems();
@@ -86,7 +87,7 @@ public class DescribableTestActionTest {
             assertArrayEquals(
                     new String[] {user1.getId(), user2.getId(), user3.getId(), user0.getId(), user4.getId()},
                     users);
-        });
+        }
     }
 
     private String[] getUsers(ListBoxModel items) {

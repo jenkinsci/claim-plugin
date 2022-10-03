@@ -5,8 +5,8 @@ import hudson.Util;
 import hudson.model.User;
 import hudson.security.ACL;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.security.core.Authentication;
 
 import java.util.Collections;
 import java.util.Date;
@@ -65,7 +65,7 @@ public final class CommonMessagesProvider {
         if (!claimed) {
           return messagesProvider.notClaimed();
         }
-        Authentication auth = Jenkins.getAuthentication();
+        Authentication auth = Jenkins.getAuthentication2();
         String currentUser = auth.getName();
         boolean isAutoAssigned = claimedBy.equals(assignedBy);
         if (!currentUser.equals(ANONYMOUS_USERNAME)) {

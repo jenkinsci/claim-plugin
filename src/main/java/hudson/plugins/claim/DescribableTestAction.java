@@ -43,9 +43,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
             }
             Collection<User> c = User.getAll();
             if (currentUser != null) {
-                if (c.contains(currentUser)) {
-                    c.remove(currentUser);
-                }
+                c.remove(currentUser);
             }
 
             List<User> l = new ArrayList<>(c);

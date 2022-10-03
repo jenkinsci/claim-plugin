@@ -95,7 +95,7 @@ public class AbstractAssignedClaimsReport implements Action, IconSpec {
             if (lb != null) {
                 AbstractTestResultAction testResultAction = lb.getAction(AbstractTestResultAction.class);
                 if (testResultAction != null) {
-                    List<? extends TestResult> failedTests = testResultAction.getFailedTests();
+                    List<TestResult> failedTests = testResultAction.getFailedTests();
                     for (TestResult failedTest : failedTests) {
                         ClaimTestAction claimAction = failedTest.getTestAction(ClaimTestAction.class);
                         if (isDisplayed(claimAction)) {

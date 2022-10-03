@@ -24,13 +24,11 @@ public class AbstractAssignedClaimsReport implements Action, IconSpec {
 
     public String getIconFileName() {
         String iconClassName = getIconClassName();
-        if (iconClassName != null) {
-            Icon icon = IconSet.icons.getIconByClassSpec(iconClassName + " icon-md");
-            if (icon != null) {
-                JellyContext ctx = new JellyContext();
-                ctx.setVariable("resURL", Stapler.getCurrentRequest().getContextPath() + Jenkins.RESOURCE_PATH);
-                return icon.getQualifiedUrl(ctx);
-            }
+        Icon icon = IconSet.icons.getIconByClassSpec(iconClassName + " icon-md");
+        if (icon != null) {
+            JellyContext ctx = new JellyContext();
+            ctx.setVariable("resURL", Stapler.getCurrentRequest().getContextPath() + Jenkins.RESOURCE_PATH);
+            return icon.getQualifiedUrl(ctx);
         }
         return null;
     }

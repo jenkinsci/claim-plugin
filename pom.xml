@@ -35,6 +35,8 @@
     <changelist>999999-SNAPSHOT</changelist>
     <jenkins.version>2.361.1</jenkins.version>
     <checkstyle.version>3.2.0</checkstyle.version>
+    <spotbugs.effort>Max</spotbugs.effort>
+    <spotbugs.threshold>Low</spotbugs.threshold>
   </properties>
 
   <dependencyManagement>

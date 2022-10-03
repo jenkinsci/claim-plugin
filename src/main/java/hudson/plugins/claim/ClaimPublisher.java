@@ -1,11 +1,8 @@
 package hudson.plugins.claim;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.EnvVars;
 import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.init.InitMilestone;
-import hudson.init.Initializer;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -14,8 +11,6 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import jenkins.tasks.SimpleBuildStep;
-import org.jenkins.ui.icon.Icon;
-import org.jenkins.ui.icon.IconSet;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import jakarta.mail.MessagingException;
@@ -51,17 +46,20 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
     }
 
     @Override
+    public boolean requiresWorkspace() {
+        return false;
+    }
+
+    @Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl) super.getDescriptor();
     }
 
     @Override
-    public void perform(@NonNull Run<?, ?> build, @NonNull FilePath workspace, @NonNull Launcher launcher,
-                        @NonNull TaskListener listener) throws InterruptedException, IOException {
-
-        Result runResult = build.getResult();
+    public void perform(@NonNull Run<?, ?> run, @NonNull EnvVars env, @NonNull TaskListener listener) throws InterruptedException, IOException {
+        Result runResult = run.getResult();
         if (runResult != null && runResult.isWorseThan(Result.SUCCESS)) {
-            addClaimBuildAction(build);
+            addClaimBuildAction(run);
         }
     }
 

@@ -47,10 +47,12 @@ public class ClaimReportTest {
         User user2 = User.get("test-user2", true, Collections.emptyMap());
         claimAction.applyClaim(user1.getId(), "test reason", user2.getId(), new Date(), true, true);
 
-        HtmlPage page = j.createWebClient().goTo("claims/");
-        DomElement element = page.getElementById("claim.build." + jobName);
-        assertNotNull(element);
-        assertTrue(element.isDisplayed());
+        try(JenkinsRule.WebClient client = j.createWebClient()) {
+            HtmlPage page = client.goTo("claims/");
+            DomElement element = page.getElementById("claim.build." + jobName);
+            assertNotNull(element);
+            assertTrue(element.isDisplayed());
+        }
     }
 
     @Test
@@ -61,9 +63,11 @@ public class ClaimReportTest {
         ClaimBuildAction claimAction = unclaimedJob.getLastBuild().getAction(ClaimBuildAction.class);
         assertNotNull(claimAction);
         assertFalse(claimAction.isClaimed());
-        
-        HtmlPage page = j.createWebClient().goTo("claims/");
-        DomElement element = page.getElementById("claim.build." + jobName);
-        assertNull(element);
+
+        try(JenkinsRule.WebClient client = j.createWebClient()) {
+            HtmlPage page = client.goTo("claims/");
+            DomElement element = page.getElementById("claim.build." + jobName);
+            assertNull(element);
+        }
     }
 }

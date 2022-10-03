@@ -95,8 +95,10 @@ public class UserClaimsReportTest {
     }
 
     private void verifyUserClaims(User user, int nbProjectClaims, int nbTestFailureClaims) throws Exception {
-        HtmlPage page = j.createWebClient().goTo("user/" + user.getId() + "/claims/");
-        j.assertXPathValue(page, "id('claim-nb-project-claims')", String.valueOf(nbProjectClaims));
-        j.assertXPathValue(page, "id('claim-nb-testfailure-claims')", String.valueOf(nbTestFailureClaims));
+        try(JenkinsRule.WebClient client = j.createWebClient()) {
+            HtmlPage page = client.goTo("user/" + user.getId() + "/claims/");
+            j.assertXPathValue(page, "id('claim-nb-project-claims')", String.valueOf(nbProjectClaims));
+            j.assertXPathValue(page, "id('claim-nb-testfailure-claims')", String.valueOf(nbTestFailureClaims));
+        }
     }
 }

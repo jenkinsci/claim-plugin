@@ -61,7 +61,7 @@ public final class ClaimColumn extends ListViewColumn {
     }
 
     public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl) Jenkins.getInstance().getDescriptorOrDie(getClass());
+        return (DescriptorImpl) Jenkins.get().getDescriptorOrDie(getClass());
     }
 
     @Extension

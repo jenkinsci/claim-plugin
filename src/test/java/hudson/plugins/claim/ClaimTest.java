@@ -37,8 +37,8 @@ import org.jvnet.hudson.test.JenkinsRule;
 import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 public class ClaimTest {
 
@@ -310,11 +310,12 @@ public class ClaimTest {
     }
 
     private HtmlPage whenNavigatingToClaimPageAndClicking(Build<?, ?> build, String claimElement) throws Exception {
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.login("user1", "user1");
-        HtmlPage page = wc.goTo("job/x/" + build.getNumber());
-        // expand claim HTML box
-        page.getElementById(claimElement).click();
-        return page;
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            wc.login("user1", "user1");
+            HtmlPage page = wc.goTo("job/x/" + build.getNumber());
+            // expand claim HTML box
+            page.getElementById(claimElement).click();
+            return page;
+        }
     }
 }

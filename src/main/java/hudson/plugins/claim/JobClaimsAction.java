@@ -86,7 +86,7 @@ public class JobClaimsAction extends AbstractAssignedClaimsReport {
 
         int nbUnclaimedTsetFailures = -1;
         if (testResultAction != null) {
-            nbUnclaimedTsetFailures = 0;;
+            nbUnclaimedTsetFailures = 0;
             List<? extends TestResult> failedTests = testResultAction.getFailedTests();
             for (TestResult failedTest : failedTests) {
                 ClaimTestAction x = failedTest.getTestAction(ClaimTestAction.class);

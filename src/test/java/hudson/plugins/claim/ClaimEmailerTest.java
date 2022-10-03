@@ -261,7 +261,7 @@ public class ClaimEmailerTest {
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
 
-        List tests = new ArrayList<CaseResult>();
+        List<CaseResult> tests = new ArrayList<CaseResult>();
         ClaimEmailer.sendRepeatedTestClaimEmailIfConfigured(assigneeId, "Test Test",
             "jobs/TestBuild/testReport/TestTest", tests);
 

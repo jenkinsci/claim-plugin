@@ -16,7 +16,7 @@ import java.util.HashSet;
 
 import static junit.framework.TestCase.*;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ClaimBFATest {
 
@@ -52,55 +52,63 @@ public class ClaimBFATest {
 
     @Test
     public void canClaimFailureCause() throws Exception {
-        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_2, REASON,
-                CAUSE_DESCRIPTION_2);
+        try(JenkinsRule.WebClient webClient = j.createWebClient()) {
+            ClaimBuildAction action = applyClaimWithFailureCauseSelected(webClient, "claim", CAUSE_NAME_2, REASON,
+                    CAUSE_DESCRIPTION_2);
 
-        assertThat(action.getClaimedBy(), is("user1"));
-        assertThat(action.getReason(), is(REASON));
-        assertThat(action.isClaimed(), is(true));
-        assertThat(action.isBFAEnabled(), is(true));
+            assertThat(action.getClaimedBy(), is("user1"));
+            assertThat(action.getReason(), is(REASON));
+            assertThat(action.isClaimed(), is(true));
+            assertThat(action.isBFAEnabled(), is(true));
 
-        HtmlPage page = whenNavigatingtoClaimPage();
-        assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));
-        assertTrue(page.asXml().contains(CAUSE_NAME_2));
+            HtmlPage page = whenNavigatingtoClaimPage(webClient);
+            assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));
+            assertTrue(page.asXml().contains(CAUSE_NAME_2));
+        }
     }
 
     @Test
     public void canReclaimFailureCause() throws Exception {
-        applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_2, REASON, CAUSE_DESCRIPTION_2);
-        ClaimBuildAction action = applyClaimWithFailureCauseSelected("reassign", CAUSE_NAME_1, REASON,
-                CAUSE_DESCRIPTION_1);
+        try(JenkinsRule.WebClient webClient = j.createWebClient()) {
+            applyClaimWithFailureCauseSelected(webClient, "claim", CAUSE_NAME_2, REASON, CAUSE_DESCRIPTION_2);
+            ClaimBuildAction action = applyClaimWithFailureCauseSelected(webClient, "reassign", CAUSE_NAME_1, REASON,
+                    CAUSE_DESCRIPTION_1);
 
-        assertThat(action.getClaimedBy(), is("user1"));
-        assertThat(action.getReason(), is(REASON));
-        assertThat(action.isClaimed(), is(true));
-        assertThat(action.isBFAEnabled(), is(true));
+            assertThat(action.getClaimedBy(), is("user1"));
+            assertThat(action.getReason(), is(REASON));
+            assertThat(action.isClaimed(), is(true));
+            assertThat(action.isBFAEnabled(), is(true));
 
-        HtmlPage page = whenNavigatingtoClaimPage();
-        assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));
-        assertTrue(page.asXml().contains(CAUSE_NAME_1));
+            HtmlPage page = whenNavigatingtoClaimPage(webClient);
+            assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));
+            assertTrue(page.asXml().contains(CAUSE_NAME_1));
+        }
     }
 
     @Test
     public void canClaimFailureWithSingleQuoteInDescription() throws Exception {
-        FailureCause cause3 = new FailureCause(CAUSE_NAME_3, CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
-        PluginImpl.getInstance().getKnowledgeBase().addCause(cause3);
-        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_3, REASON,
-                CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
-        assertThat(action.isClaimed(), is(true));
+        try(JenkinsRule.WebClient webClient = j.createWebClient()) {
+            FailureCause cause3 = new FailureCause(CAUSE_NAME_3, CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
+            PluginImpl.getInstance().getKnowledgeBase().addCause(cause3);
+            ClaimBuildAction action = applyClaimWithFailureCauseSelected(webClient, "claim", CAUSE_NAME_3, REASON,
+                    CAUSE_DESCRIPTION_WITH_SINGLE_QUOTE);
+            assertThat(action.isClaimed(), is(true));
+        }
     }
 
     @Test
     public void canDropFailureCause() throws Exception {
-        ClaimBuildAction action = applyClaimWithFailureCauseSelected("claim", CAUSE_NAME_2, REASON,
-                CAUSE_DESCRIPTION_2);
+        try(JenkinsRule.WebClient webClient = j.createWebClient()) {
+            ClaimBuildAction action = applyClaimWithFailureCauseSelected(webClient, "claim", CAUSE_NAME_2, REASON,
+                    CAUSE_DESCRIPTION_2);
 
-        HtmlPage page = whenNavigatingtoClaimPage();
-        page.getElementById("dropClaim").click();
-        page = whenNavigatingtoClaimPage();
-        assertThat(action.isClaimed(), is(false));
-        assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));
-        assertTrue(page.asXml().contains("No identified problem"));
+            HtmlPage page = whenNavigatingtoClaimPage(webClient);
+            page.getElementById("dropClaim").click();
+            page = whenNavigatingtoClaimPage(webClient);
+            assertThat(action.isClaimed(), is(false));
+            assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));
+            assertTrue(page.asXml().contains("No identified problem"));
+        }
     }
 
     @Test
@@ -111,19 +119,20 @@ public class ClaimBFATest {
 
     @Test
     public void errorDropdownIsPresentAndIsNotEmpty() throws Exception {
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.login("user1", "user1");
-        HtmlPage page = wc.goTo("job/x/" + build.getNumber());
-        page.getElementById("claim").click();
-        HtmlForm form = page.getFormByName("claim");
-        HtmlSelect select = form.getSelectByName("_.errors");
-        HashSet<String> set = new HashSet<>();
-        for (HtmlOption option:select.getOptions()) {
-            set.add(option.getValueAttribute());
+        try(JenkinsRule.WebClient webClient = j.createWebClient()) {
+            webClient.login("user1", "user1");
+            HtmlPage page = webClient.goTo("job/x/" + build.getNumber());
+            page.getElementById("claim").click();
+            HtmlForm form = page.getFormByName("claim");
+            HtmlSelect select = form.getSelectByName("_.errors");
+            HashSet<String> set = new HashSet<>();
+            for (HtmlOption option : select.getOptions()) {
+                set.add(option.getValueAttribute());
+            }
+            assertTrue(set.contains("Default"));
+            assertTrue(set.contains(CAUSE_NAME_2));
+            assertTrue(set.contains(CAUSE_NAME_1));
         }
-        assertTrue(set.contains("Default"));
-        assertTrue(set.contains(CAUSE_NAME_2));
-        assertTrue(set.contains(CAUSE_NAME_1));
     }
 
     private void createKnowledgeBase() throws Exception {
@@ -133,10 +142,11 @@ public class ClaimBFATest {
         PluginImpl.getInstance().getKnowledgeBase().addCause(cause2);
     }
 
-    private ClaimBuildAction applyClaimWithFailureCauseSelected(String element, String error, String reason,
+    private ClaimBuildAction applyClaimWithFailureCauseSelected(JenkinsRule.WebClient webClient, String element,
+                                                                String error, String reason,
                                                                 String description) throws Exception {
         final int timeout = 1000;
-        HtmlPage page = whenNavigatingtoClaimPage();
+        HtmlPage page = whenNavigatingtoClaimPage(webClient);
         page.getElementById(element).click();
         HtmlForm form = page.getFormByName("claim");
         form.getTextAreaByName("reason").setText(reason);
@@ -154,9 +164,8 @@ public class ClaimBFATest {
         return build.getAction(ClaimBuildAction.class);
     }
 
-    private HtmlPage whenNavigatingtoClaimPage() throws Exception {
-        JenkinsRule.WebClient wc = j.createWebClient();
-        wc.login("user1", "user1");
-        return wc.goTo("job/x/" + build.getNumber());
+    private HtmlPage whenNavigatingtoClaimPage(JenkinsRule.WebClient webClient) throws Exception {
+        webClient.login("user1", "user1");
+        return webClient.goTo("job/x/" + build.getNumber());
     }
 }

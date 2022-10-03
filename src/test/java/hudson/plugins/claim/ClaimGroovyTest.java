@@ -63,7 +63,7 @@ public class ClaimGroovyTest {
         try (ACLContext ctx = ACL.as(User.getOrCreateByIdOrFullName(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
             assertTrue(j.jenkins.hasPermission(Jenkins.MANAGE));
             assertFalse(j.jenkins.hasPermission(Jenkins.ADMINISTER));
-        };
+        }
     }
 
     /**

@@ -439,7 +439,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
             Binding binding = new Binding();
             binding.setVariable("action", this);
             try {
-                groovyScript.evaluate(Jenkins.getInstance().getPluginManager().uberClassLoader, binding);
+                groovyScript.evaluate(Jenkins.get().getPluginManager().uberClassLoader, binding);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error evaluating Groovy script", e);
             }

@@ -64,7 +64,7 @@ public class AbstractAssignedClaimsReport implements Action, IconSpec {
         if (view != null) {
             return view;
         } else {
-            return Jenkins.getInstance().getStaplerFallback();
+            return Jenkins.get().getStaplerFallback();
         }
     }
 
@@ -85,7 +85,7 @@ public class AbstractAssignedClaimsReport implements Action, IconSpec {
     }
 
     protected List<Job> getJobs() {
-        return Jenkins.getInstance().getAllItems(Job.class);
+        return Jenkins.get().getAllItems(Job.class);
     }
 
     public List<TestResult> getTestFailuresWithClaim() {

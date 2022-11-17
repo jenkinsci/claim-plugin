@@ -81,10 +81,10 @@ The plugin provides the property `allowBrokenBuildClaiming()` to allow claiming 
 Example:
 
 ```
-properties([
-  allowBrokenBuildClaiming()
-  ...
-])
+pipeline {
+    options {
+        allowBrokenBuildClaiming()
+    }
 ```
 
 #### Allow claiming of failed tests

@@ -82,8 +82,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     @POST
     public final void doClaim(StaplerRequest req, StaplerResponse resp)
             throws Exception {
-        Authentication authentication = Jenkins.getAuthentication2();
-        User currentUser = User.getById(authentication.getName(), false);
+        User currentUser = getCurrentUser();
         String currentUserId = currentUser.getId();
         String claimedUser = currentUserId; // Default to self-assignment
         String assignee = req.getSubmittedForm().getString("assignee");
@@ -128,6 +127,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
+    }
+
+    private static User getCurrentUser() {
+        Authentication authentication = Jenkins.getAuthentication2();
+        return User.getById(authentication.getName(), false);
     }
 
     /**
@@ -178,7 +182,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @throws InterruptedException if the send operation is interrupted
      */
     protected abstract void sendInitialClaimEmail(String claimedByUser, String providedReason, String assignedByUser)
-        throws MessagingException, IOException, InterruptedException;
+            throws MessagingException, IOException, InterruptedException;
 
     /**
      * Applies the claim data to the {@link AbstractClaimBuildAction}.
@@ -310,8 +314,11 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     }
 
     public final boolean isClaimedByMe() {
-        return !isUserAnonymous()
-                && Jenkins.getAuthentication2().getName().equals(claimedBy);
+        User currentUser = getCurrentUser();
+        if (currentUser != null && currentUser.getId() != null) {
+            return currentUser.getId().equals(claimedBy);
+        }
+        return false;
     }
 
     // jelly

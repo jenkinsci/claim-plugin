@@ -33,7 +33,7 @@
 
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
-    <jenkins.version>2.361.1</jenkins.version>
+    <jenkins.version>2.361.4</jenkins.version>
     <checkstyle.version>3.2.0</checkstyle.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -44,7 +44,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-2.361.x</artifactId>
-        <version>1607.va_c1576527071</version>
+        <version>1766.v0b_f2a_f7d0b_1d</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>

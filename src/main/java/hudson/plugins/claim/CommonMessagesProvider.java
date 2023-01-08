@@ -12,8 +12,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Supplier;
 
-import static hudson.security.ACL.ANONYMOUS_USERNAME;
-
 public final class CommonMessagesProvider {
 
     private static final int DATA_PRESENT = 1;
@@ -68,7 +66,7 @@ public final class CommonMessagesProvider {
         Authentication auth = Jenkins.getAuthentication2();
         String currentUser = auth.getName();
         boolean isAutoAssigned = claimedBy.equals(assignedBy);
-        if (!currentUser.equals(ANONYMOUS_USERNAME)) {
+        if (!ACL.isAnonymous2(auth)) {
             if (currentUser.equals(assignedBy)) {
                 if (isAutoAssigned) {
                     return messagesProvider.claimedBySelf();

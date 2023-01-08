@@ -2,6 +2,7 @@ package hudson.plugins.claim;
 
 import groovy.lang.Binding;
 import hudson.model.*;
+import hudson.security.ACL;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
@@ -337,7 +338,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     }
 
     public final boolean isUserAnonymous() {
-        return Jenkins.getAuthentication2().getName().equals("anonymous");
+        return ACL.isAnonymous2(Jenkins.getAuthentication2());
     }
 
     @Exported

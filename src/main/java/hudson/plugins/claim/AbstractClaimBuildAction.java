@@ -41,8 +41,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     private String assignedBy;
     private Date claimDate;
     private boolean transientClaim = !ClaimConfig.get().isStickyByDefault();
-    @Deprecated
-    private transient boolean reclaim;
     private ClaimBuildFailureAnalyzer bfaClaimer = null;
     private String reason;
 
@@ -54,17 +52,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     // jelly
     public final CommonMessagesProvider getMessageProvider() {
         return CommonMessagesProvider.build(this);
-    }
-
-    /**
-     * Indicates if the {@link Saveable} is claimed.
-     *
-     * @deprecated use {@link #isClaimed()} instead
-     * @return true if the {@link Saveable} is claimed, else false
-     */
-    @Deprecated
-    public final boolean isReclaim() {
-        return isClaimed();
     }
 
     public final ClaimBuildFailureAnalyzer getBfaClaimer() {
@@ -86,8 +73,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     public final void doClaim(StaplerRequest req, StaplerResponse resp)
             throws Exception {
         User currentUser = getCurrentUser();
-        String currentUserId = currentUser.getId();
-        String claimedUser = currentUserId; // Default to self-assignment
+        User claimedUser = currentUser; // Default to self-assignment
         String assignee = req.getSubmittedForm().getString("assignee");
         if (!StringUtils.isEmpty(assignee) && !claimedUser.equals(assignee)) {
             // Validate the specified assignee.
@@ -97,7 +83,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
                 resp.forwardToPreviousPage(req);
                 return;
             }
-            claimedUser = assignee;
+            claimedUser = resolvedAssignee;
         }
         String reasonProvided = req.getSubmittedForm().getString("reason");
 
@@ -125,7 +111,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         if (StringUtils.isEmpty(reasonProvided)) {
             reasonProvided = null;
         }
-        claim(claimedUser, reasonProvided, currentUserId, new Date(), sticky, propagated, true);
+        claim(claimedUser, reasonProvided, currentUser, new Date(), sticky, propagated, true);
         this.getOwner().save();
 
         evalGroovyScript();
@@ -135,39 +121,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     private static User getCurrentUser() {
         Authentication authentication = Jenkins.getAuthentication2();
         return User.get2(authentication);
-    }
-
-    /**
-     * Claims a {@link Saveable}.
-     * @param claimedByUser name of the claiming user
-     * @param providedReason reason for the claim
-     * @param assignedByUser name of the assigned user
-     * @param isSticky true if the claim has to be kept until resolution
-     * @deprecated use {@link #claim(String, String, String, Date, boolean, boolean, boolean)}
-     */
-    @Deprecated
-    public final void claim(String claimedByUser, String providedReason, String assignedByUser, boolean isSticky) {
-        claim(claimedByUser, providedReason, assignedByUser, new Date(), isSticky,
-                ClaimConfig.get().isPropagateToFollowingBuildsByDefault(), false);
-    }
-
-    /**
-     * Claims a {@link Saveable}, and optionally notifies of the claim.
-     * @param claimedByUser name of the claiming user
-     * @param providedReason reason for the claim
-     * @param assignedByUser name of the assigner user
-     * @param date date of the claim
-     * @param isSticky true if the claim has to be kept until resolution
-     * @param isPropagated true if the claim has to be propagated to following builds
-     * @param notify true if notifications have to be sent
-     * @deprecated use {@link #claim(User, String, User, Date, boolean, boolean, boolean)}
-     */
-    @Deprecated
-    public final void claim(String claimedByUser, String providedReason, String assignedByUser, Date date,
-                            boolean isSticky, boolean isPropagated, boolean notify) {
-        User claimedBy = getUserFromId(claimedByUser);
-        User assignedBy = getUserFromId(assignedByUser);
-        claim(claimedBy, providedReason, assignedBy, date, isSticky, isPropagated, notify);
     }
 
     /**
@@ -250,15 +203,6 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         getOwner().save();
         evalGroovyScript();
         resp.forwardToPreviousPage(req);
-    }
-
-    /**
-     * Unclaims a {@link Saveable}.
-     * @deprecated use {@link #unclaim(boolean)}
-     */
-    @Deprecated
-    public final void unclaim() {
-        unclaim(false);
     }
 
     /**

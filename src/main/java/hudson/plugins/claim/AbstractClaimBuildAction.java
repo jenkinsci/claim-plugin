@@ -17,7 +17,9 @@ import org.kohsuke.stapler.verb.POST;
 
 import jakarta.mail.MessagingException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collections;
@@ -89,7 +91,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         String assignee = req.getSubmittedForm().getString("assignee");
         if (!StringUtils.isEmpty(assignee) && !claimedUser.equals(assignee)) {
             // Validate the specified assignee.
-            User resolvedAssignee = User.get(assignee, false, Collections.emptyMap());
+            User resolvedAssignee = getUserFromId(assignee, false);
             if (resolvedAssignee == null) {
                 LOGGER.log(Level.WARNING, "Invalid username specified for assignment: {0}", assignee);
                 resp.forwardToPreviousPage(req);
@@ -132,7 +134,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     private static User getCurrentUser() {
         Authentication authentication = Jenkins.getAuthentication2();
-        return User.getById(authentication.getName(), false);
+        return User.get2(authentication);
     }
 
     /**
@@ -158,8 +160,27 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param isSticky true if the claim has to be kept until resolution
      * @param isPropagated true if the claim has to be propagated to following builds
      * @param notify true if notifications have to be sent
+     * @deprecated use {@link #claim(User, String, User, Date, boolean, boolean, boolean)}
      */
+    @Deprecated
     public final void claim(String claimedByUser, String providedReason, String assignedByUser, Date date,
+                            boolean isSticky, boolean isPropagated, boolean notify) {
+        User claimedBy = getUserFromId(claimedByUser);
+        User assignedBy = getUserFromId(assignedByUser);
+        claim(claimedBy, providedReason, assignedBy, date, isSticky, isPropagated, notify);
+    }
+
+    /**
+     * Claims a {@link Saveable}, and optionally notifies of the claim.
+     * @param claimedByUser claiming user
+     * @param providedReason reason for the claim
+     * @param assignedByUser assigner user
+     * @param date date of the claim
+     * @param isSticky true if the claim has to be kept until resolution
+     * @param isPropagated true if the claim has to be propagated to following builds
+     * @param notify true if notifications have to be sent
+     */
+    public final void claim(User claimedByUser, String providedReason, User assignedByUser, Date date,
                             boolean isSticky, boolean isPropagated, boolean notify) {
         applyClaim(claimedByUser, providedReason, assignedByUser, date, isSticky, isPropagated);
         if (notify) {
@@ -175,33 +196,33 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     /**
      * Sends an initial claim email.
-     * @param claimedByUser name of the claiming user
+     * @param claimedByUser the claiming user
      * @param providedReason reason for the claim
-     * @param assignedByUser name of the assigner user
+     * @param assignedByUser the assigner user
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      * @throws InterruptedException if the send operation is interrupted
      */
-    protected abstract void sendInitialClaimEmail(String claimedByUser, String providedReason, String assignedByUser)
+    protected abstract void sendInitialClaimEmail(User claimedByUser, String providedReason, User assignedByUser)
             throws MessagingException, IOException, InterruptedException;
 
     /**
      * Applies the claim data to the {@link AbstractClaimBuildAction}.
-     * @param claimedByUser name of the claiming user
+     * @param claimedByUser the claiming user
      * @param providedReason reason for the claim
-     * @param assignedByUser name of the assigner user
+     * @param assignedByUser the assigner user
      * @param date date of the claim
      * @param isSticky true if the claim has to be kept until resolution
      * @param isPropagated true if the claim has to be propagated to following builds
      */
-    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, Date date,
+    protected void applyClaim(@Nonnull User claimedByUser, String providedReason, @Nonnull User assignedByUser, Date date,
                               boolean isSticky, boolean isPropagated) {
         this.claimed = true;
-        this.claimedBy = claimedByUser;
+        this.claimedBy = claimedByUser.getId();
         this.reason = providedReason;
         this.transientClaim = !isSticky;
         this.claimDate = date;
-        this.assignedBy = assignedByUser;
+        this.assignedBy = assignedByUser.getId();
         if (isPropagated) {
             getNextAction().ifPresent(action -> {
                 if (!action.isClaimed()) {
@@ -273,7 +294,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     // used by groovy scripts ?
     public final String getClaimedByName() {
-        User user = User.get(claimedBy, false, Collections.emptyMap());
+        User user = getUserFromId(claimedBy, false);
         if (user != null) {
             return user.getDisplayName();
         } else {
@@ -283,7 +304,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     // used by groovy scripts ?
     public final String getAssignedByName() {
-        User user = User.get(assignedBy, false, Collections.emptyMap());
+        User user = getUserFromId(assignedBy, false);
         if (user != null) {
             return user.getDisplayName();
         } else {
@@ -309,9 +330,21 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     /**
      * Claim a new {@link Saveable} with the same settings as this one.
      * @param other the source data
+     * @return true if claim has been copied, false otherwise
      */
-    protected void copyTo(AbstractClaimBuildAction<T> other) {
-        other.applyClaim(getClaimedBy(), getReason(), getAssignedBy(), getClaimDate(), isSticky(), false);
+    protected boolean copyTo(AbstractClaimBuildAction<T> other) {
+        User claimedBy = getUserFromId(getClaimedBy(), false);
+        if (claimedBy == null)
+        {
+            return false;
+        }
+        User assignedBy = getUserFromId(getAssignedBy(), false);
+        if (assignedBy == null)
+        {
+            assignedBy = User.getUnknown();
+        }
+        other.applyClaim(claimedBy, getReason(), assignedBy, getClaimDate(), isSticky(), false);
+        return true;
     }
 
     public final boolean isClaimedByMe() {
@@ -453,5 +486,17 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
                 LOGGER.log(Level.WARNING, "Error evaluating Groovy script", e);
             }
         }
+    }
+
+    protected final User getUserFromId(String userId) {
+        return getUserFromId(userId, true);
+    }
+
+    protected final User getUserFromId(String userId, boolean throwIfNotFound) {
+        User resolved = User.get(userId, false, Collections.emptyMap());
+        if (resolved == null && throwIfNotFound) {
+            throw new UsernameNotFoundException("Unknown user: " + userId);
+        }
+        return resolved;
     }
 }

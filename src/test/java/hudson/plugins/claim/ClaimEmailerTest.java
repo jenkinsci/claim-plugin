@@ -38,6 +38,7 @@ public class ClaimEmailerTest {
     public void testSendEmailNotConfigured() throws Exception {
 
         final String assigneeId = "assignee";
+        final String assignedById = "assignedByMe";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         ClaimConfig config = ClaimConfig.get();
@@ -47,12 +48,16 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        // ensure the user is existing
+        // ensure the users are existing
         User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
+        User assignedBy = User.get(assignedById, true, Collections.emptyMap());
+        assignedBy.setFullName("AssignedBy User");
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
-        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assigneeId, "assignedByMe",
+
+        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assignee, assignedBy,
             "Test build", "test reason", "jobs/TestBuild/");
 
         assertEquals(0, yourInbox.size());
@@ -62,6 +67,7 @@ public class ClaimEmailerTest {
     public void testSendEmailOnInitialBuildFailureConfigured() throws Exception {
 
         final String assigneeId = "assignee";
+        final String assignedById = "assignedByMe";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("http://localhost:8080/jenkins/");
@@ -74,11 +80,15 @@ public class ClaimEmailerTest {
         yourInbox.clear();
 
         // ensure the user is existing
+        // ensure the users are existing
         User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
+        User assignedBy = User.get(assignedById, true, Collections.emptyMap());
+        assignedBy.setFullName("AssignedBy User");
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
-        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assigneeId, "assignedBy", "Test build",
+        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assignee, assignedBy, "Test build",
             "test reason", "jobs/TestBuild/");
 
         assertEquals(1, yourInbox.size());
@@ -97,13 +107,14 @@ public class ClaimEmailerTest {
         assertTrue("Mail content should contain the details", content.contains(Messages
                 .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/")));
         assertTrue("Mail content should assignment text", content.contains(Messages
-            .ClaimEmailer_Build_Initial_Text("Test build", "assignedBy")));
+            .ClaimEmailer_Build_Initial_Text("Test build", "AssignedBy User")));
     }
 
     @Test
     public void testSendEmailOnInitialTestFailureConfigured() throws Exception {
 
         final String assigneeId = "assignee";
+        final String assignedById = "assignedByMe";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("http://localhost:8080/jenkins/");
@@ -115,12 +126,15 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        // ensure the user is existing
+        // ensure the users are existing
         User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
+        User assignedBy = User.get(assignedById, true, Collections.emptyMap());
+        assignedBy.setFullName("AssignedBy User");
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
-        ClaimEmailer.sendInitialTestClaimEmailIfConfigured(assigneeId, "assignedBy", "Test Test",
+        ClaimEmailer.sendInitialTestClaimEmailIfConfigured(assignee, assignedBy, "Test Test",
             "test reason", "jobs/TestBuild/testReport/TestTest");
 
         assertEquals(1, yourInbox.size());
@@ -139,7 +153,7 @@ public class ClaimEmailerTest {
         assertTrue("Mail content should contain the details", content.contains(Messages
             .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/testReport/TestTest")));
         assertTrue("Mail content should assignment text",
-            content.contains(Messages.ClaimEmailer_Test_Initial_Text("Test Test", "assignedBy")));
+            content.contains(Messages.ClaimEmailer_Test_Initial_Text("Test Test", "AssignedBy User")));
     }
 
     /*
@@ -160,12 +174,13 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        // ensure the user is existing
+        // ensure the users are existing
         User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
-        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assigneeId, assigneeId, "Test build",
+        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assignee, assignee, "Test build",
             "test reason", "jobs/TestBuild/");
 
         assertEquals(0, yourInbox.size());
@@ -178,6 +193,7 @@ public class ClaimEmailerTest {
     public void shouldNotFailWhenRecipientEmailAddressIsNull() throws Exception {
 
         final String assigneeId = "sarah connor";
+        final String assignedById = "assignedByMe";
 
         // given
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
@@ -186,11 +202,15 @@ public class ClaimEmailerTest {
         ClaimConfig config = ClaimConfig.get();
         config.setSendEmails(true);
 
-        // ensure the user is existing, will generate invalid default mail address with a space
-        User.get(assigneeId, true, Collections.emptyMap());
+        // ensure the users are existing
+        // will generate invalid default mail address with a space
+        User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
+        User assignedBy = User.get(assignedById, true, Collections.emptyMap());
+        assignedBy.setFullName("AssignedBy User");
 
         // when
-        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assigneeId, "assignedBy", "Test build",
+        ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(assignee, assignedBy, "Test build",
             "test reason", "jobs/TestBuild/");
 
         // then
@@ -201,6 +221,7 @@ public class ClaimEmailerTest {
     public void testSendEmailOnRepeatedBuildFailureConfigured() throws Exception {
 
         final String assigneeId = "assignee";
+        final String assignedById = "assignedByMe";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("http://localhost:8080/jenkins/");
@@ -213,12 +234,15 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        // ensure the user is existing
+        // ensure the users are existing
         User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
+        User assignedBy = User.get(assignedById, true, Collections.emptyMap());
+        assignedBy.setFullName("AssignedBy User");
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
-        ClaimEmailer.sendRepeatedBuildClaimEmailIfConfigured(assigneeId, "Test build", "jobs/TestBuild/");
+        ClaimEmailer.sendRepeatedBuildClaimEmailIfConfigured(assignee, "Test build", "jobs/TestBuild/");
 
         assertEquals(1, yourInbox.size());
         Message mailMessage = yourInbox.get(0);
@@ -243,6 +267,7 @@ public class ClaimEmailerTest {
     public void shouldNotFailOnRepeatedTestFailureWhenNoTestsAreFailing() throws Exception {
 
         final String assigneeId = "assignee";
+        final String assignedById = "assignedByMe";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("http://localhost:8080/jenkins/");
@@ -255,14 +280,17 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        // ensure the user is existing
+        // ensure the users are existing
         User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
+        User assignedBy = User.get(assignedById, true, Collections.emptyMap());
+        assignedBy.setFullName("AssignedBy User");
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
 
         List<CaseResult> tests = new ArrayList<CaseResult>();
-        ClaimEmailer.sendRepeatedTestClaimEmailIfConfigured(assigneeId, "Test Test",
+        ClaimEmailer.sendRepeatedTestClaimEmailIfConfigured(assignee, "Test Test",
             "jobs/TestBuild/testReport/TestTest", tests);
 
         assertEquals(0, yourInbox.size());
@@ -272,6 +300,7 @@ public class ClaimEmailerTest {
     public void testSendEmailOnRepeatedTestFailureConfigured() throws Exception {
 
         final String assigneeId = "assignee";
+        final String assignedById = "assignedByMe";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("http://localhost:8080/jenkins/");
@@ -284,8 +313,11 @@ public class ClaimEmailerTest {
         Mailbox yourInbox = Mailbox.get(new InternetAddress(recipient));
         yourInbox.clear();
 
-        // ensure the user is existing
+        // ensure the users are existing
         User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
+        User assignedBy = User.get(assignedById, true, Collections.emptyMap());
+        assignedBy.setFullName("AssignedBy User");
 
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
@@ -297,7 +329,7 @@ public class ClaimEmailerTest {
         List<CaseResult> tests = new ArrayList<>();
         tests.add(caseResult1);
         tests.add(caseResult2);
-        ClaimEmailer.sendRepeatedTestClaimEmailIfConfigured(assigneeId, "Test Build",
+        ClaimEmailer.sendRepeatedTestClaimEmailIfConfigured(assignee, "Test Build",
             "jobs/TestBuild/testReport/TestTest", tests);
 
         assertEquals(1, yourInbox.size());
@@ -327,6 +359,7 @@ public class ClaimEmailerTest {
 
         FreeStyleProject job = createFailingJobWithName("test-" + System.currentTimeMillis());
         final String assigneeId = "assignee";
+        final String assignedById = "assignedByMe";
 
         JenkinsLocationConfiguration.get().setAdminAddress("test <test@test.com>");
         JenkinsLocationConfiguration.get().setUrl("localhost:8080/jenkins/");
@@ -339,12 +372,16 @@ public class ClaimEmailerTest {
         Mailbox recipientInbox = Mailbox.get(new InternetAddress(recipient));
         recipientInbox.clear();
 
-        // ensure the user is existing
+        // ensure the users are existing
         User assignee = User.get(assigneeId, true, Collections.emptyMap());
+        assignee.setFullName("Assignee User");
+        User assignedBy = User.get(assignedById, true, Collections.emptyMap());
+        assignedBy.setFullName("AssignedBy User");
+
         assignee.addProperty(new Mailer.UserProperty("assignee@test.com"));
 
         ClaimBuildAction claimAction = job.getLastBuild().getAction(ClaimBuildAction.class);
-        claimAction.claim(assignee.getId(), "some reason", "assignedByUser", new Date(),
+        claimAction.claim(assignee, "some reason", assignedBy, new Date(),
             true, true, false);
 
         job.scheduleBuild2(0).get();

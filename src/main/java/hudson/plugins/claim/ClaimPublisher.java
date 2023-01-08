@@ -6,6 +6,7 @@ import hudson.Extension;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.model.User;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
@@ -73,14 +74,16 @@ public final class ClaimPublisher extends Notifier implements SimpleBuildStep {
         if (previousBuild != null) {
             ClaimBuildAction c = previousBuild.getAction(ClaimBuildAction.class);
             if (c != null && c.isClaimed() && c.isSticky()) {
-                c.copyTo(action);
-                sendEmailsForStickyFailure(build, c.getClaimedBy());
+                if (c.copyTo(action)) {
+                    sendEmailsForStickyFailure(build, c.getUserFromId(c.getClaimedBy()));
+                }
             }
         }
     }
 
-    private static void sendEmailsForStickyFailure(Run<?, ?> build, String claimedByUser) {
+    private static void sendEmailsForStickyFailure(Run<?, ?> build, User claimedByUser) {
         try {
+
             ClaimEmailer.sendRepeatedBuildClaimEmailIfConfigured(claimedByUser, build.toString(), build.getUrl());
         } catch (MessagingException | IOException e) {
             LOGGER.log(Level.WARNING, "Exception when sending build failure reminder email. Ignoring.", e);

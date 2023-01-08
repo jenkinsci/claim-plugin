@@ -55,21 +55,21 @@ public class UserClaimsReportTest {
 
         // job1 claimed by A
         ClaimBuildAction claimAction1 = job1.getLastBuild().getAction(ClaimBuildAction.class);
-        claimAction1.applyClaim(userA.getId(), "test reason", userB.getId(), new Date(), true, true);
+        claimAction1.applyClaim(userA, "test reason", userB, new Date(), true, true);
         verifyUserClaims(userA, 1, 0);
         verifyUserClaims(userB, 0, 0);
         verifyUserClaims(userC, 0, 0);
 
         // job2 claimed by C
         ClaimBuildAction claimAction2 = job2.getLastBuild().getAction(ClaimBuildAction.class);
-        claimAction2.applyClaim(userC.getId(), "test reason", userB.getId(), new Date(), true, true);
+        claimAction2.applyClaim(userC, "test reason", userB, new Date(), true, true);
         verifyUserClaims(userA, 1, 0);
         verifyUserClaims(userB, 0, 0);
         verifyUserClaims(userC, 1, 0);
 
         // job3 claimed by C
         ClaimBuildAction claimAction3 = job3.getLastBuild().getAction(ClaimBuildAction.class);
-        claimAction3.applyClaim(userC.getId(), "test reason", userA.getId(), new Date(), true, true);
+        claimAction3.applyClaim(userC, "test reason", userA, new Date(), true, true);
         verifyUserClaims(userA, 1, 0);
         verifyUserClaims(userB, 0, 0);
         verifyUserClaims(userC, 2, 0);
@@ -83,13 +83,14 @@ public class UserClaimsReportTest {
 
         User userA = User.get("userA-" + timestamp, true, Collections.emptyMap());
         assertNotEquals(userA.getId(), userA.getId().toLowerCase(), "Fix the test setup to ensure this condition");
+        User userALowerCasedId = User.get(userA.getId().toLowerCase(), true, Collections.emptyMap());
 
         // none claimed
         verifyUserClaims(userA, 0, 0);
 
         // job1 claimed by A
         ClaimBuildAction claimAction1 = job1.getLastBuild().getAction(ClaimBuildAction.class);
-        claimAction1.applyClaim(userA.getId().toLowerCase(), "test reason", userA.getId(), new Date(), true, true);
+        claimAction1.applyClaim(userALowerCasedId, "test reason", userA, new Date(), true, true);
 
         verifyUserClaims(userA, 1, 0);
     }

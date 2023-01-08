@@ -27,6 +27,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 import hudson.model.Build;
 import hudson.model.Project;
 import hudson.model.Result;
+import hudson.model.User;
 import hudson.plugins.claim.utils.TestBuilder;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import org.junit.Before;
@@ -153,6 +154,45 @@ public class ClaimTest {
     }
 
     @Test
+    public void stickyClaimDoesPropagatesToNextBuildWithUnknownAssignedByWhenAssignedByUserHasBeenDeleted() throws Exception {
+        final int waitTime = 2_000;
+        // Given:
+        givenBuildClaimedByOtherUser(firstBuild);
+        User user = User.getById("user1", false);
+        user.delete();
+
+        // When:
+        Thread.sleep(waitTime);
+        Build<?, ?> nextBuild = project.scheduleBuild2(0).get();
+        // Then:
+        ClaimBuildAction action = firstBuild.getAction(ClaimBuildAction.class);
+        ClaimBuildAction action2 = nextBuild.getAction(ClaimBuildAction.class);
+        assertThat(action2.isClaimed(), is(true));
+        assertThat(action2.getClaimedBy(), is("user2"));
+        assertThat(action2.getReason(), is("reason"));
+        assertThat(action2.isSticky(), is(true));
+        assertThat(action2.getAssignedBy(), is(User.getUnknown().getId()));
+        assertThat(action2.getClaimDate(), is(action.getClaimDate()));
+    }
+
+    @Test
+    public void stickyClaimDoesNotPropagatesToNextBuildWhenClaimedByUserHasBeenDeleted() throws Exception {
+        final int waitTime = 2_000;
+        // Given:
+        givenBuildClaimedByCurrentUser(firstBuild);
+        User user = User.getById("user1", false);
+        user.delete();
+
+        // When:
+        Thread.sleep(waitTime);
+        Build<?, ?> nextBuild = project.scheduleBuild2(0).get();
+        // Then:
+        ClaimBuildAction action = firstBuild.getAction(ClaimBuildAction.class);
+        ClaimBuildAction action2 = nextBuild.getAction(ClaimBuildAction.class);
+        assertThat(action2.isClaimed(), is(false));
+    }
+
+    @Test
     public void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuilds()  throws Exception {
         // Given:
         Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
@@ -258,14 +298,17 @@ public class ClaimTest {
 
     private ClaimBuildAction givenBuildClaimedByOtherUser(Build<?, ?> build) {
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        action.claim("user2", "reason", "user1", new Date(), true,
+        User user1 = User.getById("user1", true);
+        User user2 = User.getById("user2", true);
+        action.claim(user2, "reason", user1, new Date(), true,
                 false, false);
         return action;
     }
 
     private ClaimBuildAction givenBuildClaimedByCurrentUser(Build<?, ?> build) {
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-        action.claim("user1", "reason", "user1", new Date(), true,
+        User user1 = User.getById("user1", true);
+        action.claim(user1, "reason", user1, new Date(), true,
                 false, false);
         return action;
     }

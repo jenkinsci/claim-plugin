@@ -75,7 +75,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         User currentUser = getCurrentUser();
         User claimedUser = currentUser; // Default to self-assignment
         String assignee = req.getSubmittedForm().getString("assignee");
-        if (!StringUtils.isEmpty(assignee) && !claimedUser.equals(assignee)) {
+
+        if (!StringUtils.isEmpty(assignee)  && !claimedUser.getId().equals(assignee)) {
             // Validate the specified assignee.
             User resolvedAssignee = getUserFromId(assignee, false);
             if (resolvedAssignee == null) {

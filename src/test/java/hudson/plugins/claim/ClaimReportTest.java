@@ -45,7 +45,7 @@ public class ClaimReportTest {
         
         User user1 = User.get("test-user1", true, Collections.emptyMap());
         User user2 = User.get("test-user2", true, Collections.emptyMap());
-        claimAction.applyClaim(user1.getId(), "test reason", user2.getId(), new Date(), true, true);
+        claimAction.applyClaim(user1, "test reason", user2, new Date(), true, true);
 
         try(JenkinsRule.WebClient client = j.createWebClient()) {
             HtmlPage page = client.goTo("claims/");

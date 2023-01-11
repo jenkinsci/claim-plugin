@@ -1,6 +1,7 @@
 package hudson.plugins.claim;
 
 import hudson.model.Run;
+import hudson.model.User;
 import jenkins.model.RunAction2;
 
 import jakarta.mail.MessagingException;
@@ -53,7 +54,7 @@ public final class ClaimBuildAction extends AbstractClaimBuildAction<Run> implem
     }
 
     @Override
-    protected void sendInitialClaimEmail(String claimedByUser, String providedReason, String assignedByUser)
+    protected void sendInitialClaimEmail(User claimedByUser, String providedReason, User assignedByUser)
         throws MessagingException, IOException {
         ClaimEmailer.sendInitialBuildClaimEmailIfConfigured(
             claimedByUser,

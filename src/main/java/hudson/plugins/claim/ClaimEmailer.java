@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import hudson.model.User;
 import hudson.plugins.claim.messages.InitialBuildClaimMessage;
 import hudson.plugins.claim.messages.InitialTestClaimMessage;
 import hudson.plugins.claim.messages.RepeatedBuildClaimMessage;
@@ -8,6 +9,8 @@ import hudson.tasks.Mailer;
 import hudson.tasks.junit.CaseResult;
 
 import jakarta.mail.MessagingException;
+
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,22 +43,22 @@ public final class ClaimEmailer {
 
     /**
      * Sends an email to the assignee indicating that the given build has been assigned.
-     * @param claimedByUser name of the claiming user
-     * @param assignedByUser name of the assigner user
+     * @param claimedByUser the claiming user
+     * @param assignedByUser the assigner user
      * @param action the build/action which has been assigned
      * @param reason the reason given for the assignment
      * @param url the URL the user can view for the assigned build
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      */
-    public static void sendInitialBuildClaimEmailIfConfigured(String claimedByUser, String assignedByUser,
+    public static void sendInitialBuildClaimEmailIfConfigured(@Nonnull User claimedByUser, @Nonnull User assignedByUser,
                                                               String action, String reason, String url)
             throws MessagingException, IOException {
 
         ClaimConfig config = ClaimConfig.get();
         if (config.getSendEmails() && MAILER_LOADED) {
             InitialBuildClaimMessage message = new InitialBuildClaimMessage(
-                    action, url, reason, claimedByUser, assignedByUser
+                    action, url, reason, claimedByUser.getDisplayName(), assignedByUser.getDisplayName()
                 );
             message.send();
         }
@@ -63,22 +66,22 @@ public final class ClaimEmailer {
 
     /**
      * Sends an email to the assignee indicating that the given test has been assigned.
-     * @param claimedByUser name of the claiming user
-     * @param assignedByUser name of the assigner user
+     * @param claimedByUser the claiming user
+     * @param assignedByUser the assigner user
      * @param action the build/action which has been assigned
      * @param reason the reason given for the assignment
      * @param url the URL the user can view for the assigned build
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      */
-    public static void sendInitialTestClaimEmailIfConfigured(String claimedByUser, String assignedByUser,
+    public static void sendInitialTestClaimEmailIfConfigured(@Nonnull User claimedByUser, @Nonnull User assignedByUser,
                                                              String action, String reason, String url)
         throws MessagingException, IOException {
 
         ClaimConfig config = ClaimConfig.get();
         if (config.getSendEmails() && MAILER_LOADED) {
             InitialTestClaimMessage message = new InitialTestClaimMessage(
-                    action, url, reason, claimedByUser, assignedByUser
+                    action, url, reason, claimedByUser.getDisplayName(), assignedByUser.getDisplayName()
                 );
             message.send();
         }
@@ -86,18 +89,18 @@ public final class ClaimEmailer {
 
     /**
      * Sends an email to the assignee indicating that the given build is still failing.
-     * @param claimedByUser name of the claiming user
+     * @param claimedByUser the claiming user
      * @param action the build/action which has been assigned
      * @param url the URL the user can view for the assigned build
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      */
-    public static void sendRepeatedBuildClaimEmailIfConfigured(String claimedByUser, String action, String url)
+    public static void sendRepeatedBuildClaimEmailIfConfigured(@Nonnull User claimedByUser, String action, String url)
         throws MessagingException, IOException {
 
         ClaimConfig config = ClaimConfig.get();
         if (config.getSendEmailsForStickyFailures() && MAILER_LOADED) {
-            RepeatedBuildClaimMessage message = new RepeatedBuildClaimMessage(action, url, claimedByUser);
+            RepeatedBuildClaimMessage message = new RepeatedBuildClaimMessage(action, url, claimedByUser.getDisplayName());
             message.send();
         }
     }
@@ -111,13 +114,13 @@ public final class ClaimEmailer {
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      */
-    public static void sendRepeatedTestClaimEmailIfConfigured(String claimedByUser, String action, String url,
+    public static void sendRepeatedTestClaimEmailIfConfigured(@Nonnull User claimedByUser, String action, String url,
                                                               List<CaseResult> failedTests)
         throws MessagingException, IOException {
 
         ClaimConfig config = ClaimConfig.get();
         if (config.getSendEmailsForStickyFailures() && MAILER_LOADED) {
-            RepeatedTestClaimMessage message = new RepeatedTestClaimMessage(action, url, claimedByUser, failedTests);
+            RepeatedTestClaimMessage message = new RepeatedTestClaimMessage(action, url, claimedByUser.getDisplayName(), failedTests);
             message.send();
         }
     }

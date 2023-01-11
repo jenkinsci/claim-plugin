@@ -5,10 +5,7 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Functions;
 import hudson.Launcher;
-import hudson.model.Descriptor;
-import hudson.model.Run;
-import hudson.model.Saveable;
-import hudson.model.TaskListener;
+import hudson.model.*;
 import hudson.tasks.junit.*;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -34,16 +31,18 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
             throws IOException, InterruptedException {
         Data data = new Data(run);
 
-        Map<String, List<CaseResult>> claimedFailuresByUser = new HashMap<>();
+        Map<User, List<CaseResult>> claimedFailuresByUser = new HashMap<>();
         for (CaseResult result: testResult.getFailedTests()) {
             CaseResult previous = result.getPreviousResult();
             if (previous != null) {
                 ClaimTestAction previousAction = previous.getTestAction(ClaimTestAction.class);
                 if (previousAction != null && previousAction.isClaimed() && previousAction.isSticky()) {
                     ClaimTestAction action = new ClaimTestAction(data, result.getId());
-                    previousAction.copyTo(action);
-                    data.addClaim(result.getId(), action);
-                    putAsListElement(claimedFailuresByUser, action.getClaimedBy(), result);
+                    if (previousAction.copyTo(action)) {
+                        data.addClaim(result.getId(), action);
+                        User user = action.getUserFromId(action.getClaimedBy());
+                        putAsListElement(claimedFailuresByUser, user, result);
+                    }
                 }
             }
         }
@@ -63,9 +62,9 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
     }
 
     private void sendEmailsForStickyFailuresIfPresent(Run run, TestResult testResult,
-                                                      Map<String, List<CaseResult>> claimedFailuresByUser) {
+                                                      Map<User, List<CaseResult>> claimedFailuresByUser) {
         try {
-            for (Entry<String, List<CaseResult>> entry : claimedFailuresByUser.entrySet()) {
+            for (Entry<User, List<CaseResult>> entry : claimedFailuresByUser.entrySet()) {
                 String url = Functions.joinPath(run.getUrl(), testResult.getParentAction().getUrlName());
                 ClaimEmailer.sendRepeatedTestClaimEmailIfConfigured(
                     entry.getKey(), run.toString(), url, entry.getValue()

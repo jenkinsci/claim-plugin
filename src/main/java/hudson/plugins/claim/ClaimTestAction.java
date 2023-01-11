@@ -1,6 +1,7 @@
 package hudson.plugins.claim;
 
 import hudson.model.Run;
+import hudson.model.User;
 import hudson.plugins.claim.ClaimTestDataPublisher.Data;
 import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.TestResult;
@@ -25,7 +26,7 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
     }
 
     @Override
-    protected void applyClaim(String claimedByUser, String providedReason, String assignedByUser, Date date,
+    protected void applyClaim(User claimedByUser, String providedReason, User assignedByUser, Date date,
                               boolean isSticky, boolean isPropagated) {
         data.addClaim(testObjectId, this);
         super.applyClaim(claimedByUser, providedReason, assignedByUser, date, isSticky, isPropagated);
@@ -63,7 +64,7 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
     }
 
     @Override
-    protected void sendInitialClaimEmail(String claimedByUser, String providedReason, String assignedByUser)
+    protected void sendInitialClaimEmail(User claimedByUser, String providedReason, User assignedByUser)
         throws MessagingException, IOException {
     ClaimEmailer.sendInitialTestClaimEmailIfConfigured(
         claimedByUser,

@@ -51,6 +51,11 @@ public final class ClaimConfig extends GlobalConfiguration {
     private boolean sortUsersByFullName;
 
     /**
+     * Display email adress and full name on asignee choice.
+     */
+    private boolean displayEmailAndFullName;
+
+    /**
      * Groovy script to be run when a claim is changed.
      */
     @Deprecated
@@ -77,6 +82,7 @@ public final class ClaimConfig extends GlobalConfiguration {
         stickyByDefault = formData.getBoolean("stickyByDefault");
         propagateToFollowingBuildsByDefault = formData.getBoolean("propagateToFollowingBuildsByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
+        displayEmailAndFullName = formData.getBoolean("displayEmailAndFullName");
         setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
         save();
         return super.configure(req, formData);
@@ -169,6 +175,26 @@ public final class ClaimConfig extends GlobalConfiguration {
      */
     public void setSortUsersByFullName(boolean sortUsersByFullName) {
         this.sortUsersByFullName = sortUsersByFullName;
+    }
+
+    /**
+     * Returns true if the users should be displayed with email adress and full 
+     * name instead of only the full namm.
+     *
+     * @return true to display email address, else false.
+     */
+    public boolean isDisplayEmailAndFullName() {
+        return displayEmailAndFullName;
+    }
+
+    /**
+     * Sets the display variant.
+     * 
+     * @param displayEmailAndFullName 
+     *  true to display email address, else false.
+     */
+    public void setDisplayEmailAndFullName(boolean displayEmailAndFullName) {
+        this.displayEmailAndFullName = displayEmailAndFullName;
     }
 
     @NonNull

@@ -21,5 +21,10 @@
              help="/plugin/claim/help-sortUsersByFullName.html">
         <f:checkbox/>
     </f:entry>
+
+    <f:entry title="${%DisplayEmailAndFullName}" field="displayEmailAndFullName"
+             help="/plugin/claim/help-sortDisplayEmailAndFullName.html">
+        <f:checkbox/>
+    </f:entry>
     <f:property field="groovyTrigger"/>
 </j:jelly>

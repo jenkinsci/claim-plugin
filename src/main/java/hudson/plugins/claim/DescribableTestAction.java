@@ -58,14 +58,14 @@ public abstract class DescribableTestAction extends TestAction implements Descri
         }
 
         private static String getUserDisplayName(User user) {
-            if(ClaimConfig.get().isDisplayEmailAndFullName()){
+            StringBuilder sb = new StringBuilder(user.getDisplayName());
+            if(ClaimConfig.get().isEmailDisplayedForAssigneesList()) {
                 Mailer.UserProperty mailProperty = user.getProperty(Mailer.UserProperty.class);
                 if (mailProperty != null && mailProperty.getEmailAddress() != null) {
-                    return String.format("%s (%s)", user.getDisplayName(), mailProperty.getEmailAddress());
+                    sb.append(String.format(" (%s)", mailProperty.getEmailAddress()));
                 }
-                return user.getDisplayName();
-            }else
-                return user.getDisplayName();
+            }
+            return sb.toString();
         }
 
         public ListBoxModel doFillErrorsItems(@AncestorInPath Run run) throws Exception {

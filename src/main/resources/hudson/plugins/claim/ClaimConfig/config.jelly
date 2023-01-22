@@ -22,8 +22,8 @@
         <f:checkbox/>
     </f:entry>
 
-    <f:entry title="${%DisplayEmailAndFullName}" field="displayEmailAndFullName"
-             help="/plugin/claim/help-sortDisplayEmailAndFullName.html">
+    <f:entry title="${%DisplayEmailForAssigneesList}" field="emailDisplayedForAssigneesList"
+             help="/plugin/claim/help-emailDisplayedForAssigneesList.html">
         <f:checkbox/>
     </f:entry>
     <f:property field="groovyTrigger"/>

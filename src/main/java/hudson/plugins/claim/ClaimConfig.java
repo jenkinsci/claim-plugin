@@ -51,9 +51,9 @@ public final class ClaimConfig extends GlobalConfiguration {
     private boolean sortUsersByFullName;
 
     /**
-     * Display email adress and full name on asignee choice.
+     * Display email address for assignees when claiming.
      */
-    private boolean displayEmailAndFullName;
+    private boolean emailDisplayedForAssigneesList;
 
     /**
      * Groovy script to be run when a claim is changed.
@@ -82,7 +82,7 @@ public final class ClaimConfig extends GlobalConfiguration {
         stickyByDefault = formData.getBoolean("stickyByDefault");
         propagateToFollowingBuildsByDefault = formData.getBoolean("propagateToFollowingBuildsByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
-        displayEmailAndFullName = formData.getBoolean("displayEmailAndFullName");
+        emailDisplayedForAssigneesList = formData.getBoolean("emailDisplayedForAssigneesList");
         setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
         save();
         return super.configure(req, formData);
@@ -178,23 +178,21 @@ public final class ClaimConfig extends GlobalConfiguration {
     }
 
     /**
-     * Returns true if the users should be displayed with email adress and full 
-     * name instead of only the full namm.
+     * Returns true if the email should be displayed in the assignee list when claiming.
      *
      * @return true to display email address, else false.
      */
-    public boolean isDisplayEmailAndFullName() {
-        return displayEmailAndFullName;
+    public boolean isEmailDisplayedForAssigneesList() {
+        return emailDisplayedForAssigneesList;
     }
 
     /**
-     * Sets the display variant.
+     * Sets the email display option for assignees list when claiming.
      * 
-     * @param displayEmailAndFullName 
-     *  true to display email address, else false.
+     * @param emailDisplayedForAssigneesList true to display email address, else false.
      */
-    public void setDisplayEmailAndFullName(boolean displayEmailAndFullName) {
-        this.displayEmailAndFullName = displayEmailAndFullName;
+    public void setEmailDisplayedForAssigneesList(boolean emailDisplayedForAssigneesList) {
+        this.emailDisplayedForAssigneesList = emailDisplayedForAssigneesList;
     }
 
     @NonNull

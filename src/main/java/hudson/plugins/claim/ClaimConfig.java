@@ -51,6 +51,11 @@ public final class ClaimConfig extends GlobalConfiguration {
     private boolean sortUsersByFullName;
 
     /**
+     * Display email address for assignees when claiming.
+     */
+    private boolean emailDisplayedForAssigneesList;
+
+    /**
      * Groovy script to be run when a claim is changed.
      */
     @Deprecated
@@ -77,6 +82,7 @@ public final class ClaimConfig extends GlobalConfiguration {
         stickyByDefault = formData.getBoolean("stickyByDefault");
         propagateToFollowingBuildsByDefault = formData.getBoolean("propagateToFollowingBuildsByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
+        emailDisplayedForAssigneesList = formData.getBoolean("emailDisplayedForAssigneesList");
         setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
         save();
         return super.configure(req, formData);
@@ -169,6 +175,24 @@ public final class ClaimConfig extends GlobalConfiguration {
      */
     public void setSortUsersByFullName(boolean sortUsersByFullName) {
         this.sortUsersByFullName = sortUsersByFullName;
+    }
+
+    /**
+     * Returns true if the email should be displayed in the assignee list when claiming.
+     *
+     * @return true to display email address, else false.
+     */
+    public boolean isEmailDisplayedForAssigneesList() {
+        return emailDisplayedForAssigneesList;
+    }
+
+    /**
+     * Sets the email display option for assignees list when claiming.
+     * 
+     * @param emailDisplayedForAssigneesList true to display email address, else false.
+     */
+    public void setEmailDisplayedForAssigneesList(boolean emailDisplayedForAssigneesList) {
+        this.emailDisplayedForAssigneesList = emailDisplayedForAssigneesList;
     }
 
     @NonNull

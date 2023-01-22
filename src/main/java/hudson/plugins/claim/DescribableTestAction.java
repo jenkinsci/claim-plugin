@@ -2,6 +2,7 @@ package hudson.plugins.claim;
 
 import hudson.Extension;
 import hudson.model.*;
+import hudson.tasks.Mailer;
 import hudson.tasks.junit.TestAction;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
@@ -40,7 +41,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
                 currentUser = User.get(currentUserId, false, Collections.emptyMap());
             }
             if (currentUser != null) {
-                items.add(currentUser.getDisplayName(), currentUser.getId());
+                items.add(getUserDisplayName(currentUser), currentUser.getId());
             }
             Collection<User> c = User.getAll();
             if (currentUser != null) {
@@ -50,10 +51,21 @@ public abstract class DescribableTestAction extends TestAction implements Descri
             List<User> l = new ArrayList<>(c);
             l.sort(getComparator());
             for (User u : l) {
-                items.add(u.getDisplayName(), u.getId());
+                items.add(getUserDisplayName(u), u.getId());
             }
 
             return items;
+        }
+
+        private static String getUserDisplayName(User user) {
+            StringBuilder sb = new StringBuilder(user.getDisplayName());
+            if(ClaimConfig.get().isEmailDisplayedForAssigneesList()) {
+                Mailer.UserProperty mailProperty = user.getProperty(Mailer.UserProperty.class);
+                if (mailProperty != null && mailProperty.getEmailAddress() != null) {
+                    sb.append(String.format(" (%s)", mailProperty.getEmailAddress()));
+                }
+            }
+            return sb.toString();
         }
 
         public ListBoxModel doFillErrorsItems(@AncestorInPath Run run) throws Exception {

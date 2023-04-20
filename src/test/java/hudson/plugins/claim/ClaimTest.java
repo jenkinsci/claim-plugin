@@ -115,7 +115,7 @@ public class ClaimTest {
         // Given:
         givenBuildClaimedByCurrentUser(firstBuild);
         // When:
-        whenNavigatingToClaimPageAndClicking(firstBuild, "dropClaim");
+        whenNavigatingToClaimPageAndClicking(firstBuild, "claim/unclaim");
         // Then:
         ClaimBuildAction action = firstBuild.getAction(ClaimBuildAction.class);
         assertThat(action.isClaimed(), is(false));
@@ -352,12 +352,16 @@ public class ClaimTest {
         return build.getAction(ClaimBuildAction.class);
     }
 
-    private HtmlPage whenNavigatingToClaimPageAndClicking(Build<?, ?> build, String claimElement) throws Exception {
+    private HtmlPage whenNavigatingToClaimPageAndClicking(Build<?, ?> build, String idOrHref) throws Exception {
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
             wc.login("user1", "user1");
             HtmlPage page = wc.goTo("job/x/" + build.getNumber());
             // expand claim HTML box
-            page.getElementById(claimElement).click();
+            var element = page.getElementById(idOrHref);
+            if (element == null) {
+                element = page.getAnchorByHref(idOrHref);
+            }
+            element.click();
             return page;
         }
     }

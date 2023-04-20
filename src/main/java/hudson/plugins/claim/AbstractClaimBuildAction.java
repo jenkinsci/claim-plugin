@@ -196,6 +196,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     protected abstract Optional<AbstractClaimBuildAction> getNextAction();
 
     // jelly
+    @POST
     public final void doUnclaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
         Jenkins.get().checkPermission(Jenkins.READ);

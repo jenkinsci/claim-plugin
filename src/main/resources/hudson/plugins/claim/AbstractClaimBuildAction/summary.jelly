@@ -36,7 +36,7 @@
             </j:if>
             <j:if test="${it.canRelease()}">
                 <j:if test="${linkWritten}"><st:nbsp/></j:if>
-                <a id="dropClaim" href="claim/unclaim">${%Action.Release}</a>
+                <f:link href="claim/unclaim" post="true">${%Action.Release}</f:link>
                 <j:set var="linkWritten" value="true"/>
             </j:if>
             <j:if test="${it.canReassign()}">

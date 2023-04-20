@@ -72,6 +72,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     @POST
     public final void doClaim(StaplerRequest req, StaplerResponse resp)
             throws Exception {
+        Jenkins.get().checkPermission(Jenkins.READ);
+
         User currentUser = getCurrentUser();
         User claimedUser = currentUser; // Default to self-assignment
         String assignee = req.getSubmittedForm().getString("assignee");
@@ -196,6 +198,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     // jelly
     public final void doUnclaim(StaplerRequest req, StaplerResponse resp)
             throws ServletException, IOException {
+        Jenkins.get().checkPermission(Jenkins.READ);
+
         unclaim(false);
 
         if (ClaimBuildFailureAnalyzer.isBFAEnabled() && bfaClaimer != null) {

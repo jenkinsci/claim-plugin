@@ -31,6 +31,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
         }
 
         public ListBoxModel doFillAssigneeItems() {
+            Jenkins.get().checkPermission(Jenkins.READ);
             ListBoxModel items = new ListBoxModel();
 
             // sort in case the users are not already in sort order
@@ -69,6 +70,7 @@ public abstract class DescribableTestAction extends TestAction implements Descri
         }
 
         public ListBoxModel doFillErrorsItems(@AncestorInPath Run run) throws Exception {
+            Jenkins.get().checkPermission(Jenkins.READ);
 
             ListBoxModel items = new ListBoxModel();
             if (ClaimBuildFailureAnalyzer.isBFAEnabled()) {

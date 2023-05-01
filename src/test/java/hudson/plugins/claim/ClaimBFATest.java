@@ -103,7 +103,7 @@ public class ClaimBFATest {
                     CAUSE_DESCRIPTION_2);
 
             HtmlPage page = whenNavigatingtoClaimPage(webClient);
-            page.getElementById("dropClaim").click();
+            page.getAnchorByHref("claim/unclaim").click();
             page = whenNavigatingtoClaimPage(webClient);
             assertThat(action.isClaimed(), is(false));
             assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));

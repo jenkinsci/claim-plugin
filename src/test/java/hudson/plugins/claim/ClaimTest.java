@@ -24,10 +24,12 @@
 package hudson.plugins.claim;
 
 import com.gargoylesoftware.htmlunit.html.*;
+import static org.junit.Assert.assertEquals;
 import hudson.model.Build;
+import hudson.model.User;
 import hudson.model.Project;
 import hudson.model.Result;
-import hudson.model.User;
+import hudson.model.Action;
 import hudson.plugins.claim.utils.TestBuilder;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import org.junit.Before;
@@ -265,6 +267,14 @@ public class ClaimTest {
         assertThat(action3.getReason(), is(claimText));
         assertThat(action3.isSticky(), is(true));
         assertThat(action3.getAssignedBy(), is("user1"));
+    }
+    @Test
+    public void claimTestShouldGiveProperURL() {
+        ClaimTestDataPublisher.Data data = new ClaimTestDataPublisher.Data(firstBuild);
+        //testObjectId now contains junit/ since hudson 1.347
+        ClaimTestAction acti = new ClaimTestAction(data, "junit/assembly/classTest/unitTest");
+        assertEquals("wrong url who would not link to test",
+                "job/x/1/testReport/junit/assembly/classTest/unitTest", acti.getUrl());
     }
     @Test
     public void claimTestShouldGiveProperURL() {

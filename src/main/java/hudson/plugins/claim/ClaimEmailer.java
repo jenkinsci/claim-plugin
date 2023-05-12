@@ -56,7 +56,7 @@ public final class ClaimEmailer {
             throws MessagingException, IOException {
 
         ClaimConfig config = ClaimConfig.get();
-        if (config.getSendEmails() && MAILER_LOADED) {
+        if (config.getSendEmails() && MAILER_LOADED && assignee.getFullName() != assignedBy) {
             InitialBuildClaimMessage message = new InitialBuildClaimMessage(
                     action, url, reason, claimedByUser.getDisplayName(), assignedByUser.getDisplayName()
                 );

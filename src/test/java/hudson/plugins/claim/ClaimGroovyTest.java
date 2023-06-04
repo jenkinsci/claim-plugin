@@ -39,7 +39,7 @@ public class ClaimGroovyTest {
 
     @Before
     public void setUp() throws Exception {
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
+        java.util.logging.Logger.getLogger("org.htmlunit").setLevel(java.util.logging.Level.SEVERE);
 
         JenkinsRule.DummySecurityRealm realm = j.createDummySecurityRealm();
         realm.loadUserByUsername(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS);

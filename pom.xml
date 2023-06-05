@@ -33,7 +33,7 @@
 
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
-    <jenkins.version>2.361.4</jenkins.version>
+    <jenkins.version>2.387.3</jenkins.version>
     <checkstyle.version>3.3.0</checkstyle.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -43,7 +43,7 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.361.x</artifactId>
+        <artifactId>bom-2.387.x</artifactId>
         <version>2102.v854b_fec19c92</version>
         <scope>import</scope>
         <type>pom</type>
@@ -118,7 +118,7 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>font-awesome-api</artifactId>
-      <version>6.2.1-1</version>
+      <version>6.4.0-1</version>
     </dependency>
     <dependency>
       <groupId>com.sonyericsson.jenkins.plugins.bfa</groupId>

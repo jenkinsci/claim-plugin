@@ -1,6 +1,6 @@
 package hudson.plugins.claim;
 
-import com.gargoylesoftware.htmlunit.html.*;
+import org.htmlunit.html.*;
 import com.sonyericsson.jenkins.plugins.bfa.PluginImpl;
 import com.sonyericsson.jenkins.plugins.bfa.model.FailureCause;
 import hudson.model.Build;
@@ -38,7 +38,7 @@ public class ClaimBFATest {
 
     @Before
     public void setUp() throws Exception {
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
+        java.util.logging.Logger.getLogger("org.htmlunit").setLevel(java.util.logging.Level.SEVERE);
 
         j.jenkins.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());

@@ -1,7 +1,7 @@
 package hudson.plugins.claim;
 
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.htmlunit.html.DomElement;
+import org.htmlunit.html.HtmlPage;
 import hudson.model.FreeStyleProject;
 import hudson.model.User;
 import org.junit.Before;
@@ -25,7 +25,7 @@ public class ClaimReportTest {
     @Before
     public void setUp() throws Exception {
 
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(java.util.logging.Level.SEVERE);
+        java.util.logging.Logger.getLogger("org.htmlunit").setLevel(java.util.logging.Level.SEVERE);
     }
 
     private FreeStyleProject createFailingJobWithName(String jobName) throws IOException,

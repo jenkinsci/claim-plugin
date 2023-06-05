@@ -127,7 +127,7 @@ public class ClaimBFATest {
             HtmlSelect select = form.getSelectByName("_.errors");
             HashSet<String> set = new HashSet<>();
             for (HtmlOption option : select.getOptions()) {
-                set.add(option.getValue());
+                set.add(option.getValueAttribute());
             }
             assertTrue(set.contains("Default"));
             assertTrue(set.contains(CAUSE_NAME_2));

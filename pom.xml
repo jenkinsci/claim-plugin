@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -12,11 +13,11 @@
   <version>${changelist}</version>
   <packaging>hpi</packaging>
   <name>Jenkins Claim Plugin</name>
-  <url>https://github.com/jenkinsci/claim-plugin</url>
+  <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
   <scm>
-    <url>https://github.com/jenkinsci/claim-plugin</url>
-    <connection>scm:git:git://github.com/jenkinsci/claim-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/claim-plugin.git</developerConnection>
+    <url>https://github.com/${gitHubRepo}</url>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
     <tag>${scmTag}</tag>
   </scm>
 
@@ -34,6 +35,7 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <jenkins.version>2.387.3</jenkins.version>
+    <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <checkstyle.version>3.3.0</checkstyle.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
@@ -47,6 +49,18 @@
         <version>2312.v91115fa_5b_2b_6</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+      <!-- TODO Remove once in BOM -->
+      <dependency>
+        <groupId>io.jenkins.plugins</groupId>
+        <artifactId>jakarta-activation-api</artifactId>
+        <version>2.1.3-1</version>
+      </dependency>
+      <!-- TODO Remove once in BOM -->
+      <dependency>
+        <groupId>io.jenkins.plugins</groupId>
+        <artifactId>jakarta-mail-api</artifactId>
+        <version>2.1.3-1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -70,6 +84,17 @@
               </goals>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <systemPropertyVariables>
+              <mail.smtp.class>org.jvnet.mock_javamail.MockTransport</mail.smtp.class>
+              <mail.pop3.class>org.jvnet.mock_javamail.MockStore</mail.pop3.class>
+              <mail.imap.class>org.jvnet.mock_javamail.MockStore</mail.imap.class>
+            </systemPropertyVariables>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -121,6 +146,10 @@
       <version>6.4.0-2</version>
     </dependency>
     <dependency>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>jakarta-mail-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.sonyericsson.jenkins.plugins.bfa</groupId>
       <artifactId>build-failure-analyzer</artifactId>
       <version>2.4.1</version>
@@ -167,22 +196,33 @@
       <optional>true</optional>
       <scope>test</scope>
     </dependency>
-    <!--
-      This must come before jakarta-mail-api in the class path in order to avoid eclipse-ee4j/mail#350.
-    -->
     <dependency>
       <groupId>org.jvnet.mock-javamail</groupId>
       <artifactId>mock-javamail</artifactId>
-      <version>2.1</version>
+      <version>2.2</version>
       <scope>test</scope>
-    </dependency>
-    <!--
-    This must come after mock-javamail in the class path in order to avoid eclipse-ee4j/mail#350.
-    -->
-    <dependency>
-      <groupId>io.jenkins.plugins</groupId>
-      <artifactId>jakarta-mail-api</artifactId>
-      <version>2.0.1-3</version>
+      <exclusions>
+        <!-- Provided by jakarta-activation-api plugin -->
+        <exclusion>
+          <groupId>jakarta.activation</groupId>
+          <artifactId>jakarta.activation-api</artifactId>
+        </exclusion>
+        <!-- Provided by jakarta-mail-api plugin -->
+        <exclusion>
+          <groupId>jakarta.mail</groupId>
+          <artifactId>jakarta.mail-api</artifactId>
+        </exclusion>
+        <!-- Provided by jakarta-activation-api plugin -->
+        <exclusion>
+          <groupId>org.eclipse.angus</groupId>
+          <artifactId>angus-activation</artifactId>
+        </exclusion>
+        <!-- Provided by jakarta-mail-api plugin -->
+        <exclusion>
+          <groupId>org.eclipse.angus</groupId>
+          <artifactId>angus-mail</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>

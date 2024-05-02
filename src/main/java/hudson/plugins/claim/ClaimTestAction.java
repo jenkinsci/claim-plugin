@@ -73,4 +73,18 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
         providedReason,
         getUrl());
     }
+
+    /**
+     * Gets the relative URL to this test action from the test report page.
+     * If the test object ID starts with a 'junit/' prefix, it strips this prefix to maintain compatibility
+     * with changes in test object ID formatting.
+     *
+     * @return the relative URL of the test object after adjusting for backward compatibility.
+     */
+    public String getRelativeUrlFromTestReportPage() {
+        if (testObjectId.startsWith("junit")){
+            return testObjectId.substring(6);
+        }
+        return testObjectId;
+    }
 }

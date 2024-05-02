@@ -1,0 +1,7 @@
+<?jelly escape-by-default='true'?>
+<!-- displays Header for additional Columns in the testresult View for all failed tests -->
+<j:jelly xmlns:j="jelly:core">
+    <j:if test="${it.isUserAnonymous() == false}">
+        <th>Claim-Action</th>
+    </j:if>
+</j:jelly>

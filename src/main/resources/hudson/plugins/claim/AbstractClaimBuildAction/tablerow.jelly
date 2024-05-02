@@ -1,0 +1,74 @@
+<?jelly escape-by-default='true'?>
+<td>
+    <?jelly escape-by-default='true'?>
+    <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+             xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+        <script type="text/javascript">
+            function ShowPopup(hoveritem) {
+            var hp = document.getElementById("claimHoverPopup");
+            hp.style.display = "block";
+            }
+
+            function HidePopup() {
+            var hp = document.getElementById("claimHoverPopup");
+            hp.style.display = "none";
+            var action = <st:bind value="${it}" />;
+            }
+
+            function Display(error) {
+            var reasonText = document.getElementById("errordesc");
+            var action = <st:bind value="${it}" />;
+            action.getReason(error, function(content) {
+            reasonText.textContent = content.responseObject();
+            });
+            }
+        </script>
+
+            <j:if test="${it.canClaim()}">
+                <a id="claim" href="#" onClick="ShowPopup(this); return false;">${%Action.Claim}</a>
+                <j:set var="linkWritten" value="true"/>
+            </j:if>
+            <j:if test="${it.canRelease()}">
+                <f:link href="${it.getRelativeUrlFromTestReportPage()}/claim/unclaim" post="true">${%Action.Release}</f:link>
+                <j:set var="linkWritten" value="true"/>
+                <br/>
+            </j:if>
+            <j:if test="${it.canReassign()}">
+                <a id="reassign" href="#" onClick="ShowPopup(this); return false;">${%Action.Reassign}</a>
+                <j:set var="linkWritten" value="true"/>
+            </j:if>
+
+        <div id="claimHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb;">
+            <j:set var="descriptor" value="${it.descriptor}"/>
+            <f:form method="post" action="${it.getRelativeUrlFromTestReportPage()}/claim/claim" name="claim">
+                <f:entry title="${%Assignee}" field="assignee" help="/plugin/claim/help-assignee.html">
+                    <f:select />
+                </f:entry>
+                <j:if test="${it.isBFAEnabled()}">
+                    <f:entry title="${%Error}" field="errors" help="/plugin/claim/help-errors.html">
+                        <f:select onChange="Display(this.value);"/>
+                    </f:entry>
+                    <f:entry title="${%Description}" help="/plugin/claim/help-description.html">
+                        <f:textarea name="errordesc" id="errordesc" value="${it.getReason(it.error)}" readonly="true"/>
+                    </f:entry>
+                </j:if>
+                <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
+                    <f:textarea name="reason" id="reason" value="${it.reason}"/>
+                </f:entry>
+                <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html">
+                    <f:checkbox name="sticky" checked="${it.sticky}"/>
+                </f:entry>
+                <f:entry title="${%PropagateToFollowingBuilds}" help="/plugin/claim/help-propagateToFollowingBuilds.html">
+                    <f:checkbox name="propagateToFollowingBuilds" checked="${it.propagateToFollowingBuildsByDefault}"/>
+                </f:entry>
+                <f:block>
+                    <div align="right">
+                        <f:submit value="${%Claim}"/>
+                        <input type="button" onClick="HidePopup();" value="${%Cancel}" class="submit-button"/>
+                    </div>
+                </f:block>
+            </f:form>
+        </div>
+    </j:jelly>
+</td>

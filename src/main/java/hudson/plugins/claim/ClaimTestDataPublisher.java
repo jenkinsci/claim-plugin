@@ -116,6 +116,9 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
                     return Collections.singletonList(new ClaimTestAction(this, id));
                 }
             }
+            if (testObject instanceof TestResult){
+                return Collections.singletonList(new LabelTestAction((TestResult) testObject));
+            }
 
             return Collections.emptyList();
         }

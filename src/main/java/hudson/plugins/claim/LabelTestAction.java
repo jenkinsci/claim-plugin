@@ -2,7 +2,7 @@ package hudson.plugins.claim;
 
 import hudson.security.ACL;
 import hudson.tasks.junit.TestAction;
-import hudson.tasks.junit.TestResult;
+import hudson.tasks.junit.TestObject;
 import jenkins.model.Jenkins;
 
 /**
@@ -19,10 +19,10 @@ import jenkins.model.Jenkins;
  */
 public class LabelTestAction extends TestAction {
 
-    private final TestResult testResult;
+    private final TestObject testObject;
 
-    public LabelTestAction(TestResult testResult){
-        this.testResult = testResult;
+    public LabelTestAction(TestObject testObject){
+        this.testObject = testObject;
     }
 
     @Override
@@ -40,8 +40,8 @@ public class LabelTestAction extends TestAction {
         return null;
     }
 
-    public TestResult getTestResult(){
-        return testResult;
+    public TestObject getTestObject(){
+        return testObject;
     }
 
     /**

@@ -7,6 +7,7 @@ import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.TestResult;
 
 import jakarta.mail.MessagingException;
+import jenkins.model.Jenkins;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
@@ -53,6 +54,11 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
         return Messages.ClaimTestAction_Noun();
     }
 
+    /**
+     * Constructs the URL of the test result relative to the Jenkins instance.
+     *
+     * @return the relative URL of the test result.
+     */
     @Override
     String getUrl() {
         return data.getUrl() + "testReport/" + this.testObjectId;
@@ -75,16 +81,27 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
     }
 
     /**
-     * Gets the relative URL to this test action from the test report page.
-     * If the test object ID starts with a 'junit/' prefix, it strips this prefix to maintain compatibility
-     * with changes in test object ID formatting.
+     * Gets the Jenkins base URL.
      *
-     * @return the relative URL of the test object after adjusting for backward compatibility.
+     * @return the base URL of the Jenkins instance.
      */
-    public String getRelativeUrlFromTestReportPage() {
-        if (testObjectId.startsWith("junit")){
-            return testObjectId.substring(6);
+    private String getJenkinsBaseUrl() {
+        Jenkins instance = Jenkins.getInstance();
+        if (instance != null) {
+            return instance.getRootUrl();
         }
-        return testObjectId;
+        return "";
+    }
+
+    /**
+     * Constructs the absolute URL of the test result.
+     *
+     * @return the absolute URL of the test result.
+     */
+    @SuppressWarnings("unused")
+    public String getAbsoluteUrl() {
+        String baseUrl = getJenkinsBaseUrl();
+        String jobUrl = data.getUrl() + "testReport/" + (this.testObjectId.startsWith("junit/") ? this.testObjectId.substring(6) : this.testObjectId);
+        return baseUrl+jobUrl;
     }
 }

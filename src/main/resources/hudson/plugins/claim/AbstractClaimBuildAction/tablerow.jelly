@@ -30,7 +30,7 @@
                 <j:set var="linkWritten" value="true"/>
             </j:if>
             <j:if test="${it.canRelease()}">
-                <f:link href="${it.getRelativeUrlFromTestReportPage()}/claim/unclaim" post="true">${%Action.Release}</f:link>
+                <f:link href="${it.getAbsoluteUrl()}/claim/unclaim" post="true">${%Action.Release}</f:link>
                 <j:set var="linkWritten" value="true"/>
                 <br/>
             </j:if>
@@ -41,7 +41,7 @@
 
         <div id="claimHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb;">
             <j:set var="descriptor" value="${it.descriptor}"/>
-            <f:form method="post" action="${it.getRelativeUrlFromTestReportPage()}/claim/claim" name="claim">
+            <f:form method="post" action="${it.getAbsoluteUrl()}/claim/claim" name="claim">
                 <f:entry title="${%Assignee}" field="assignee" help="/plugin/claim/help-assignee.html">
                     <f:select />
                 </f:entry>

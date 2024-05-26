@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Run;
 import hudson.model.User;
 import jenkins.model.RunAction2;
@@ -12,6 +13,9 @@ public final class ClaimBuildAction extends AbstractClaimBuildAction<Run> implem
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressFBWarnings(
+            value = {"UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"},
+            justification = "owner is set by onAttached or onLoad methods, called by Jenkins")
     private transient Run owner;
 
     public String getDisplayName() {

@@ -287,7 +287,7 @@ public class ClaimTest {
     }
     @Test
     public void claimTestShouldGiveProperURL() {
-        ClaimTestDataPublisher.Data data = new ClaimTestDataPublisher.Data(firstBuild);
+        ClaimTestDataPublisher.Data data = new ClaimTestDataPublisher.Data(firstBuild, true);
         //testObjectId now contains junit/ since hudson 1.347
         ClaimTestAction acti = new ClaimTestAction(data, "junit/assembly/classTest/unitTest");
         assertEquals("wrong url who would not link to test",

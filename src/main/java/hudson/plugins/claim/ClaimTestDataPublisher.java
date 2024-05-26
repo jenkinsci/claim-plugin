@@ -1,15 +1,20 @@
 package hudson.plugins.claim;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Functions;
 import hudson.Launcher;
 import hudson.model.*;
 import hudson.tasks.junit.*;
+import hudson.tasks.test.TabulatedResult;
+import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import jakarta.mail.MessagingException;
+import org.kohsuke.stapler.StaplerRequest;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
@@ -19,17 +24,27 @@ import java.util.logging.Logger;
 public class ClaimTestDataPublisher extends TestDataPublisher {
 
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
+    private boolean displayClaimActionsInTestResultsTable;
 
     @DataBoundConstructor
-    public ClaimTestDataPublisher() {
+    public ClaimTestDataPublisher(boolean displayClaimActionsInTestResultsTable) {
         // nothing to do
+        this.displayClaimActionsInTestResultsTable = displayClaimActionsInTestResultsTable;
+    }
+
+    public boolean isDisplayClaimActionsInTestResultsTable() {
+        return displayClaimActionsInTestResultsTable;
+    }
+
+    public void setDisplayClaimActionsInTestResultsTable(boolean displayClaimActionsInTestResultsTable) {
+        this.displayClaimActionsInTestResultsTable = displayClaimActionsInTestResultsTable;
     }
 
     @Override
     public Data contributeTestData(Run<?, ?> run, @NonNull FilePath workspace, Launcher launcher,
                                    TaskListener listener, TestResult testResult)
             throws IOException, InterruptedException {
-        Data data = new Data(run);
+        Data data = new Data(run, displayClaimActionsInTestResultsTable);
 
         Map<User, List<CaseResult>> claimedFailuresByUser = new HashMap<>();
         for (CaseResult result: testResult.getFailedTests()) {
@@ -80,9 +95,15 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
         private Map<String, ClaimTestAction> claims = new HashMap<>();
 
         private final Run<?, ?> build;
+        private final boolean displayClaimActionsInTestResultsTable;
 
-        public Data(Run<?, ?> build) {
+        public Data(Run<?, ?> build, boolean displayClaimActionsInTestResultsTable) {
             this.build = build;
+            this.displayClaimActionsInTestResultsTable = displayClaimActionsInTestResultsTable;
+        }
+
+        public boolean isDisplayClaimActionsInTestResultsTable() {
+            return displayClaimActionsInTestResultsTable;
         }
 
         public String getUrl() {
@@ -114,10 +135,12 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
                 CaseResult cr = (CaseResult) testObject;
                 if (!cr.isPassed() && !cr.isSkipped()) {
                     return Collections.singletonList(new ClaimTestAction(this, id));
+                } else {
+                    return Collections.singletonList(new LabelTestAction(this));
                 }
             }
             if (testObject instanceof TestResult || testObject instanceof ClassResult || testObject instanceof PackageResult){
-                return Collections.singletonList(new LabelTestAction(testObject));
+                return Collections.singletonList(new LabelTestAction(this));
             }
 
             return Collections.emptyList();
@@ -127,8 +150,7 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
             build.save();
         }
 
-        public void addClaim(String testObjectId,
-                ClaimTestAction claim) {
+        public void addClaim(String testObjectId, ClaimTestAction claim) {
             claims.put(testObjectId, claim);
         }
 
@@ -144,6 +166,4 @@ public class ClaimTestDataPublisher extends TestDataPublisher {
             return Messages.ClaimTestDataPublisher_DisplayName();
         }
     }
-
-
 }

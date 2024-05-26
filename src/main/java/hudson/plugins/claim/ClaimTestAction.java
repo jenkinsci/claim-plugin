@@ -26,6 +26,11 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
         return Messages.ClaimTestAction_DisplayName();
     }
 
+    // jelly
+    public boolean isColumnDisplayed() {
+        return !this.isUserAnonymous() && this.data.isDisplayClaimActionsInTestResultsTable();
+    }
+
     @Override
     protected void applyClaim(User claimedByUser, String providedReason, User assignedByUser, Date date,
                               boolean isSticky, boolean isPropagated) {

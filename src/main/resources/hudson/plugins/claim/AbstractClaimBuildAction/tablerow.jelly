@@ -1,8 +1,7 @@
 <?jelly escape-by-default='true'?>
 <td>
     <?jelly escape-by-default='true'?>
-    <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
-             xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+    <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
 
         <script type="text/javascript">
             function ShowPopup(hoveritem) {
@@ -25,19 +24,28 @@
             }
         </script>
 
-            <j:if test="${it.canClaim()}">
-                <a id="claim" href="#" onClick="ShowPopup(this); return false;">${%Action.Claim}</a>
-                <j:set var="linkWritten" value="true"/>
-            </j:if>
-            <j:if test="${it.canRelease()}">
-                <f:link href="${it.getAbsoluteUrl()}/claim/unclaim" post="true">${%Action.Release}</f:link>
-                <j:set var="linkWritten" value="true"/>
-                <br/>
-            </j:if>
-            <j:if test="${it.canReassign()}">
-                <a id="reassign" href="#" onClick="ShowPopup(this); return false;">${%Action.Reassign}</a>
-                <j:set var="linkWritten" value="true"/>
-            </j:if>
+        <j:set var="linkWritten" value="false"/>
+        <j:if test="${it.canClaim()}">
+            <j:if test="${linkWritten}"><st:nbsp/></j:if>
+            <a id="claim" href="#" onClick="ShowPopup(this); return false;">
+                <j:out value="${it.messageProvider.getClaimActionText()}"/>
+            </a>
+            <j:set var="linkWritten" value="true"/>
+        </j:if>
+        <j:if test="${it.canRelease()}">
+            <j:if test="${linkWritten}"><st:nbsp/></j:if>
+            <f:link href="claim/unclaim" post="true">
+                <j:out value="${it.messageProvider.getUnclaimActionText()}"/>
+            </f:link>
+            <j:set var="linkWritten" value="true"/>
+        </j:if>
+        <j:if test="${it.canReassign()}">
+            <j:if test="${linkWritten}"><st:nbsp/></j:if>
+            <a id="reassign" href="#" onClick="ShowPopup(this); return false;">
+                <j:out value="${it.messageProvider.getReassignActionText()}"/>
+            </a>
+            <j:set var="linkWritten" value="true"/>
+        </j:if>
 
         <div id="claimHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb;">
             <j:set var="descriptor" value="${it.descriptor}"/>
@@ -59,7 +67,7 @@
                 <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html">
                     <f:checkbox name="sticky" checked="${it.sticky}"/>
                 </f:entry>
-                <f:entry title="${%PropagateToFollowingBuilds}" help="/plugin/claim/help-propagateToFollowingBuilds.html">
+                <f:entry title="${it.messageProvider.getPropagateToFollowingBuildsText()}" help="/plugin/claim/help-propagateToFollowingBuilds.html">
                     <f:checkbox name="propagateToFollowingBuilds" checked="${it.propagateToFollowingBuildsByDefault}"/>
                 </f:entry>
                 <f:block>

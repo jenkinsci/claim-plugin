@@ -129,6 +129,22 @@ public final class CommonMessagesProvider {
         return Messages.CommonMessages_Reason();
     }
 
+    public String getClaimActionText(){
+        return Messages.Action_Claim();
+    }
+
+    public String getUnclaimActionText(){
+        return Messages.Action_Release();
+    }
+
+    public String getReassignActionText(){
+        return Messages.Action_Reassign();
+    }
+
+    public String getPropagateToFollowingBuildsText(){
+        return Messages.Action_PropagateToFollowingBuilds();
+    }
+
     private static String formatClaimDescription(Formatter formatter, String objectName, String assignedBy,
                                                  String claimedBy, int hasDate, Date date, boolean enhanceUserLinks) {
         return formatter.format(

@@ -78,79 +78,92 @@ public class ClaimTest {
     @Test
     public void failedBuildCanBeClaimedByYou() throws Exception {
         // When:
-        ClaimBuildAction action = whenClaimingBuild(firstBuild);
-        // Then:
-        assertThat(action.getClaimedBy(), is("user1"));
-        assertThat(action.getReason(), is(claimText));
-        assertThat(action.isClaimed(), is(true));
-        assertThat(action.getAssignedBy(), is("user1"));
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            ClaimBuildAction action = whenClaimingBuild(wc, firstBuild);
+            // Then:
+            assertThat(action.getClaimedBy(), is("user1"));
+            assertThat(action.getReason(), is(claimText));
+            assertThat(action.isClaimed(), is(true));
+            assertThat(action.getAssignedBy(), is("user1"));
+        }
     }
 
     @Test
     public void failedBuildCanBeAssigned() throws Exception {
         // When:
-        ClaimBuildAction action = whenAssigningBuildByClicking(firstBuild, "claim");
-        // Then:
-        assertThat(action.getClaimedBy(), is("user2"));
-        assertThat(action.getReason(), is(claimText));
-        assertThat(action.isClaimed(), is(true));
-        assertThat(action.getAssignedBy(), is("user1"));
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            ClaimBuildAction action = whenAssigningBuildByClicking(wc, firstBuild, "claim");
+            // Then:
+            assertThat(action.getClaimedBy(), is("user2"));
+            assertThat(action.getReason(), is(claimText));
+            assertThat(action.isClaimed(), is(true));
+            assertThat(action.getAssignedBy(), is("user1"));
+        }
     }
 
     @Test
     public void claimedBuildCanBeReclaimedByYou() throws Exception {
         // Given:
-        givenBuildClaimedByOtherUser(firstBuild);
-        // When:
-        ClaimBuildAction action = whenClaimingBuildByClicking(firstBuild, "reassign");
-        // Then:
-        assertThat(action.getClaimedBy(), is("user1"));
-        assertThat(action.getReason(), is(claimText));
-        assertThat(action.isClaimed(), is(true));
-        assertThat(action.getAssignedBy(), is("user1"));
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            givenBuildClaimedByOtherUser(firstBuild);
+            // When:
+            ClaimBuildAction action = whenClaimingBuildByClicking(wc, firstBuild, "reassign");
+            // Then:
+            assertThat(action.getClaimedBy(), is("user1"));
+            assertThat(action.getReason(), is(claimText));
+            assertThat(action.isClaimed(), is(true));
+            assertThat(action.getAssignedBy(), is("user1"));
+        }
     }
 
     @Test
     public void claimCanBeDropped() throws Exception {
         // Given:
-        givenBuildClaimedByCurrentUser(firstBuild);
-        // When:
-        whenNavigatingToClaimPageAndClicking(firstBuild, "claim/unclaim");
-        // Then:
-        ClaimBuildAction action = firstBuild.getAction(ClaimBuildAction.class);
-        assertThat(action.isClaimed(), is(false));
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            givenBuildClaimedByCurrentUser(firstBuild);
+            // When:
+            whenNavigatingToClaimPageAndClicking(wc, firstBuild, "claim/unclaim");
+            // Then:
+            ClaimBuildAction action = firstBuild.getAction(ClaimBuildAction.class);
+            assertThat(action.isClaimed(), is(false));
+        }
     }
 
     @Test
     public void claimCanBeReassigned() throws Exception {
         // Given:
-        givenBuildClaimedByCurrentUser(firstBuild);
-        // When:
-        ClaimBuildAction action = whenAssigningBuildByClicking(firstBuild, "reassign");
-        // Then:
-        assertThat(action.getClaimedBy(), is("user2"));
-        assertThat(action.getReason(), is(claimText));
-        assertThat(action.isClaimed(), is(true));
-        assertThat(action.getAssignedBy(), is("user1"));
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            givenBuildClaimedByCurrentUser(firstBuild);
+            // When:
+            ClaimBuildAction action = whenAssigningBuildByClicking(wc, firstBuild, "reassign");
+            // Then:
+            assertThat(action.getClaimedBy(), is("user2"));
+            assertThat(action.getReason(), is(claimText));
+            assertThat(action.isClaimed(), is(true));
+            assertThat(action.getAssignedBy(), is("user1"));
+        }
     }
 
     @Test
     public void stickyClaimPropagatesToNextBuild() throws Exception {
         final int waitTime = 2_000;
-        // Given:
-        givenBuildClaimedByCurrentUser(firstBuild);
-        // When:
-        Thread.sleep(waitTime);
-        Build<?, ?> nextBuild = project.scheduleBuild2(0).get();
-        // Then:
-        ClaimBuildAction action = firstBuild.getAction(ClaimBuildAction.class);
-        ClaimBuildAction action2 = nextBuild.getAction(ClaimBuildAction.class);
-        assertThat(action2.isClaimed(), is(true));
-        assertThat(action2.getClaimedBy(), is("user1"));
-        assertThat(action2.getReason(), is("reason"));
-        assertThat(action2.isSticky(), is(true));
-        assertThat(action2.getAssignedBy(), is("user1"));
-        assertThat(action2.getClaimDate(), is(action.getClaimDate()));
+
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            // Given:
+            givenBuildClaimedByCurrentUser(firstBuild);
+            // When:
+            Thread.sleep(waitTime);
+            Build<?, ?> nextBuild = project.scheduleBuild2(0).get();
+            // Then:
+            ClaimBuildAction action = firstBuild.getAction(ClaimBuildAction.class);
+            ClaimBuildAction action2 = nextBuild.getAction(ClaimBuildAction.class);
+            assertThat(action2.isClaimed(), is(true));
+            assertThat(action2.getClaimedBy(), is("user1"));
+            assertThat(action2.getReason(), is("reason"));
+            assertThat(action2.isSticky(), is(true));
+            assertThat(action2.getAssignedBy(), is("user1"));
+            assertThat(action2.getClaimDate(), is(action.getClaimDate()));
+        }
     }
 
     @Test
@@ -195,76 +208,82 @@ public class ClaimTest {
     @Test
     public void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuilds()  throws Exception {
         // Given:
-        Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
-        Build<?, ?> thirdBuild = project.scheduleBuild2(0).get();
-        Build<?, ?> fourthBuild = project.scheduleBuild2(0).get();
-        // When:
-        ClaimBuildAction firstAction = whenAssigningBuildByClicking(firstBuild, "claim", true);
-        // Then:
-        ClaimBuildAction[] actions = new ClaimBuildAction[] {
-                secondBuild.getAction(ClaimBuildAction.class),
-                thirdBuild.getAction(ClaimBuildAction.class),
-                fourthBuild.getAction(ClaimBuildAction.class),
-        };
-        for (ClaimBuildAction action : actions) {
-            assertThat(action.isClaimed(), is(true));
-            assertThat(action.getClaimedBy(), is("user2"));
-            assertThat(action.getReason(), is(claimText));
-            assertThat(action.isSticky(), is(true));
-            assertThat(action.getAssignedBy(), is("user1"));
-            assertThat(action.getClaimDate(), is(firstAction.getClaimDate()));
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
+            Build<?, ?> thirdBuild = project.scheduleBuild2(0).get();
+            Build<?, ?> fourthBuild = project.scheduleBuild2(0).get();
+            // When:
+            ClaimBuildAction firstAction = whenAssigningBuildByClicking(wc, firstBuild, "claim", true);
+            // Then:
+            ClaimBuildAction[] actions = new ClaimBuildAction[]{
+                    secondBuild.getAction(ClaimBuildAction.class),
+                    thirdBuild.getAction(ClaimBuildAction.class),
+                    fourthBuild.getAction(ClaimBuildAction.class),
+            };
+            for (ClaimBuildAction action : actions) {
+                assertThat(action.isClaimed(), is(true));
+                assertThat(action.getClaimedBy(), is("user2"));
+                assertThat(action.getReason(), is(claimText));
+                assertThat(action.isSticky(), is(true));
+                assertThat(action.getAssignedBy(), is("user1"));
+                assertThat(action.getClaimDate(), is(firstAction.getClaimDate()));
+            }
         }
     }
 
     @Test
     public void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuildsUntilBuildIsPassing()  throws Exception {
         // Given:
-        Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
-        givenProjectIsSucceeding();
-        Build<?, ?> thirdBuild = project.scheduleBuild2(0).get();
-        givenProjectIsFailing();
-        Build<?, ?> fourthBuild = project.scheduleBuild2(0).get();
-        // When:
-        ClaimBuildAction action1 = whenAssigningBuildByClicking(firstBuild, "claim", true);
-        // Then:
-        ClaimBuildAction action2 = secondBuild.getAction(ClaimBuildAction.class);
-        ClaimBuildAction action3 = thirdBuild.getAction(ClaimBuildAction.class);
-        ClaimBuildAction action4 = fourthBuild.getAction(ClaimBuildAction.class);
-        assertThat(action2.isClaimed(), is(true));
-        assertThat(action2.getClaimedBy(), is("user2"));
-        assertThat(action2.getReason(), is(claimText));
-        assertThat(action2.isSticky(), is(true));
-        assertThat(action2.getAssignedBy(), is("user1"));
-        assertThat(action2.getClaimDate(), is(action1.getClaimDate()));
-        assertThat(action3, nullValue());
-        assertThat(action4.isClaimed(), is(false));
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
+            givenProjectIsSucceeding();
+            Build<?, ?> thirdBuild = project.scheduleBuild2(0).get();
+            givenProjectIsFailing();
+            Build<?, ?> fourthBuild = project.scheduleBuild2(0).get();
+            // When:
+            ClaimBuildAction action1 = whenAssigningBuildByClicking(wc, firstBuild, "claim", true);
+            // Then:
+            ClaimBuildAction action2 = secondBuild.getAction(ClaimBuildAction.class);
+            ClaimBuildAction action3 = thirdBuild.getAction(ClaimBuildAction.class);
+            ClaimBuildAction action4 = fourthBuild.getAction(ClaimBuildAction.class);
+            assertThat(action2.isClaimed(), is(true));
+            assertThat(action2.getClaimedBy(), is("user2"));
+            assertThat(action2.getReason(), is(claimText));
+            assertThat(action2.isSticky(), is(true));
+            assertThat(action2.getAssignedBy(), is("user1"));
+            assertThat(action2.getClaimDate(), is(action1.getClaimDate()));
+            assertThat(action3, nullValue());
+            assertThat(action4.isClaimed(), is(false));
+        }
     }
 
     @Test
     public void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuildsUntilBuildIsClaimed()  throws Exception {
         final int waitTime = 2_000;
         // Given:
-        Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
-        Build<?, ?> thirdBuild = project.scheduleBuild2(0).get();
-        Thread.sleep(waitTime);
-        whenClaimingBuildByClicking(thirdBuild, "claim");
-        // When:
-        Thread.sleep(waitTime);
-        ClaimBuildAction action1 = whenAssigningBuildByClicking(firstBuild, "claim", true);
-        // Then:
-        ClaimBuildAction action2 = secondBuild.getAction(ClaimBuildAction.class);
-        ClaimBuildAction action3 = thirdBuild.getAction(ClaimBuildAction.class);
-        assertThat(action2.isClaimed(), is(true));
-        assertThat(action2.getClaimedBy(), is("user2"));
-        assertThat(action2.getReason(), is(claimText));
-        assertThat(action2.isSticky(), is(true));
-        assertThat(action2.getAssignedBy(), is("user1"));
-        assertThat(action2.getClaimDate(), is(action1.getClaimDate()));
-        assertThat(action3.isClaimed(), is(true));
-        assertThat(action3.getClaimedBy(), is("user1"));
-        assertThat(action3.getReason(), is(claimText));
-        assertThat(action3.isSticky(), is(true));
-        assertThat(action3.getAssignedBy(), is("user1"));
+        try(JenkinsRule.WebClient wc = j.createWebClient()) {
+            Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
+            Build<?, ?> thirdBuild = project.scheduleBuild2(0).get();
+            Thread.sleep(waitTime);
+            whenClaimingBuildByClicking(wc, thirdBuild, "claim");
+            // When:
+            Thread.sleep(waitTime);
+            ClaimBuildAction action1 = whenAssigningBuildByClicking(wc, firstBuild, "claim", true);
+            // Then:
+            ClaimBuildAction action2 = secondBuild.getAction(ClaimBuildAction.class);
+            ClaimBuildAction action3 = thirdBuild.getAction(ClaimBuildAction.class);
+            assertThat(action2.isClaimed(), is(true));
+            assertThat(action2.getClaimedBy(), is("user2"));
+            assertThat(action2.getReason(), is(claimText));
+            assertThat(action2.isSticky(), is(true));
+            assertThat(action2.getAssignedBy(), is("user1"));
+            assertThat(action2.getClaimDate(), is(action1.getClaimDate()));
+            assertThat(action3.isClaimed(), is(true));
+            assertThat(action3.getClaimedBy(), is("user1"));
+            assertThat(action3.getReason(), is(claimText));
+            assertThat(action3.isSticky(), is(true));
+            assertThat(action3.getAssignedBy(), is("user1"));
+        }
     }
     @Test
     public void claimTestShouldGiveProperURL() {
@@ -313,28 +332,28 @@ public class ClaimTest {
         return action;
     }
 
-    private ClaimBuildAction whenClaimingBuild(Build<?, ?> build) throws Exception {
-        return applyClaim(build, "claim", null, claimText, false);
+    private ClaimBuildAction whenClaimingBuild(JenkinsRule.WebClient webClient, Build<?, ?> build) throws Exception {
+        return applyClaim(webClient, build, "claim", null, claimText, false);
     }
 
-    private ClaimBuildAction whenClaimingBuildByClicking(Build<?, ?> build, String claimElement) throws Exception {
-        return applyClaim(build, claimElement, "user1", claimText, false);
+    private ClaimBuildAction whenClaimingBuildByClicking(JenkinsRule.WebClient webClient, Build<?, ?> build, String claimElement) throws Exception {
+        return applyClaim(webClient, build, claimElement, "user1", claimText, false);
     }
 
-    private ClaimBuildAction whenAssigningBuildByClicking(Build<?, ?> build, String claimElement)
+    private ClaimBuildAction whenAssigningBuildByClicking(JenkinsRule.WebClient webClient, Build<?, ?> build, String claimElement)
             throws Exception {
-        return whenAssigningBuildByClicking(build, claimElement, false);
+        return whenAssigningBuildByClicking(webClient, build, claimElement, false);
     }
 
-    private ClaimBuildAction whenAssigningBuildByClicking(Build<?, ?> build, String claimElement, boolean propagate)
+    private ClaimBuildAction whenAssigningBuildByClicking(JenkinsRule.WebClient webClient, Build<?, ?> build, String claimElement, boolean propagate)
             throws Exception {
-        return applyClaim(build, claimElement, "user2", claimText, propagate);
+        return applyClaim(webClient, build, claimElement, "user2", claimText, propagate);
     }
 
-    private ClaimBuildAction applyClaim(Build<?, ?> build, String claimElement, String assignee, String reason,
+    private ClaimBuildAction applyClaim(JenkinsRule.WebClient webClient, Build<?, ?> build, String claimElement, String assignee, String reason,
                                         boolean propagate)
             throws Exception {
-        HtmlPage page = whenNavigatingToClaimPageAndClicking(build, claimElement);
+        HtmlPage page = whenNavigatingToClaimPageAndClicking(webClient, build, claimElement);
         HtmlForm form = page.getFormByName("claim");
 
         form.getTextAreaByName("reason").setText(reason);
@@ -352,17 +371,15 @@ public class ClaimTest {
         return build.getAction(ClaimBuildAction.class);
     }
 
-    private HtmlPage whenNavigatingToClaimPageAndClicking(Build<?, ?> build, String idOrHref) throws Exception {
-        try(JenkinsRule.WebClient wc = j.createWebClient()) {
-            wc.login("user1", "user1");
-            HtmlPage page = wc.goTo("job/x/" + build.getNumber());
-            // expand claim HTML box
-            var element = page.getElementById(idOrHref);
-            if (element == null) {
-                element = page.getAnchorByHref(idOrHref);
-            }
-            element.click();
-            return page;
+    private HtmlPage whenNavigatingToClaimPageAndClicking(JenkinsRule.WebClient webClient, Build<?, ?> build, String idOrHref) throws Exception {
+        webClient.login("user1", "user1");
+        HtmlPage page = webClient.goTo("job/x/" + build.getNumber());
+        // expand claim HTML box
+        var element = page.getElementById(idOrHref);
+        if (element == null) {
+            element = page.getAnchorByHref(idOrHref);
         }
+        element.click();
+        return page;
     }
 }

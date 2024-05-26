@@ -2,7 +2,7 @@ package hudson.plugins.claim;
 
 import hudson.security.ACL;
 import hudson.tasks.junit.TestAction;
-import hudson.tasks.junit.TestObject;
+import hudson.plugins.claim.ClaimTestDataPublisher.Data;
 import jenkins.model.Jenkins;
 
 /**
@@ -17,12 +17,12 @@ import jenkins.model.Jenkins;
  * <li>tablerow.jelly: allows additional table cells to be shown in tables that list test methods, classes and packages</li>
  * </ul>
  */
-public class LabelTestAction extends TestAction {
+public final class LabelTestAction extends TestAction {
 
-    private final TestObject testObject;
+    private Data data;
 
-    public LabelTestAction(TestObject testObject){
-        this.testObject = testObject;
+    public LabelTestAction(Data data) {
+        this.data = data;
     }
 
     @Override
@@ -40,8 +40,9 @@ public class LabelTestAction extends TestAction {
         return null;
     }
 
-    public TestObject getTestObject(){
-        return testObject;
+    // jelly
+    public boolean isColumnDisplayed() {
+        return !this.isUserAnonymous() && this.data.isDisplayClaimActionsInTestResultsTable();
     }
 
     /**
@@ -49,8 +50,7 @@ public class LabelTestAction extends TestAction {
      *
      * @return true if the current user is anonymous, false otherwise.
      */
-    public final boolean isUserAnonymous() {
+    private final boolean isUserAnonymous() {
         return ACL.isAnonymous2(Jenkins.getAuthentication2());
     }
-
 }

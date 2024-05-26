@@ -320,7 +320,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
         return !isUserAnonymous() && isClaimedByMe();
     }
 
-    public final boolean isUserAnonymous() {
+    protected final boolean isUserAnonymous() {
         return ACL.isAnonymous2(Jenkins.getAuthentication2());
     }
 

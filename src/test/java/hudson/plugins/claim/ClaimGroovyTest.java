@@ -8,6 +8,7 @@ import hudson.security.ACLContext;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
+import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,14 +19,13 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -83,19 +83,26 @@ public class ClaimGroovyTest {
     @Issue("JENKINS-43811")
     @Test
     public void userWithNoRunScriptsRightTest() throws Exception {
-        doConfigureScriptWithUser(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS);
+        doConfigureScriptWithUser(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS, false);
         assertNull(j.jenkins.getSystemMessage());
     }
 
     @Issue("JENKINS-43811")
     @Test
     public void userWithRunScriptsRightTest() throws Exception {
-        doConfigureScriptWithUser(ADMIN_WITH_ALL_RIGHTS);
+        doConfigureScriptWithUser(ADMIN_WITH_ALL_RIGHTS, false);
+        assertNull(j.jenkins.getSystemMessage());
+    }
+
+    @Issue("SECURITY-3103")
+    @Test
+    public void userWithRunScriptsRightApprovedTest() throws Exception, IOException {
+        doConfigureScriptWithUser(ADMIN_WITH_ALL_RIGHTS, true);
         assertEquals("pwned", j.jenkins.getSystemMessage());
     }
 
-    private void doConfigureScriptWithUser(String userName)
-            throws InterruptedException, java.util.concurrent.ExecutionException {
+    private void doConfigureScriptWithUser(String userName, boolean approve)
+            throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
         try (ACLContext ctx = ACL.as(User.getOrCreateByIdOrFullName(userName))) {
             try {
                 ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
@@ -104,6 +111,18 @@ public class ClaimGroovyTest {
             } catch (Exception e) {
                 fail(e.getMessage());
             }
+        }
+
+        if (approve) {
+            var scriptApproval = ScriptApproval.get();
+            var pendingScripts = scriptApproval.getPendingScripts();
+            assertEquals(1, pendingScripts.size());
+
+            for (ScriptApproval.PendingScript it : pendingScripts) {
+                scriptApproval.approveScript(it.getHash());
+            }
+            pendingScripts = scriptApproval.getPendingScripts();
+            assertEquals(0, pendingScripts.size());
         }
 
         String configXml = "<project>  <builders>\n"

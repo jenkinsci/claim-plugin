@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.71</version>
+    <version>4.82</version>
     <relativePath />
   </parent>
 
@@ -34,9 +34,9 @@
 
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
-    <jenkins.version>2.387.3</jenkins.version>
+    <jenkins.version>2.452.1</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
-    <checkstyle.version>3.3.0</checkstyle.version>
+    <checkstyle.version>3.3.1</checkstyle.version>
     <spotbugs.effort>Max</spotbugs.effort>
     <spotbugs.threshold>Low</spotbugs.threshold>
   </properties>
@@ -45,8 +45,8 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.387.x</artifactId>
-        <version>2312.v91115fa_5b_2b_6</version>
+        <artifactId>bom-2.452.x</artifactId>
+        <version>3080.vfa_b_e4a_a_39b_44</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -143,7 +143,6 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>font-awesome-api</artifactId>
-      <version>6.4.0-2</version>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
@@ -152,7 +151,7 @@
     <dependency>
       <groupId>com.sonyericsson.jenkins.plugins.bfa</groupId>
       <artifactId>build-failure-analyzer</artifactId>
-      <version>2.4.1</version>
+      <version>2.4.2</version>
       <optional>true</optional>
     </dependency>
     <dependency>

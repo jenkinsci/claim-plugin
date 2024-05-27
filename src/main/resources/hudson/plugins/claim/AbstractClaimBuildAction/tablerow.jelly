@@ -33,7 +33,7 @@
             </j:if>
             <j:if test="${it.canRelease()}">
                 <j:if test="${linkWritten}"><st:nbsp/></j:if>
-                <f:link href="claim/unclaim" post="true">
+                <f:link href="${it.getAbsoluteUrl()}/claim/unclaim" post="true">
                     <j:out value="${it.messageProvider.getUnclaimActionText()}"/>
                 </f:link>
                 <j:set var="linkWritten" value="true"/>

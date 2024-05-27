@@ -57,37 +57,41 @@
                 <j:out value="${h.escape(it.reason)}"/>
             </p>
         </j:if>
-        <div id="claimHoverPopup" style="display:none; width:500px; z-index:1000; border:1px solid #bbb;">
-            <j:set var="descriptor" value="${it.descriptor}"/>
-            ${messageProvider.shortClaimDescription}
-            <f:form method="post" action="claim/claim" name="claim">
-                <f:entry title="${%Assignee}" field="assignee" help="/plugin/claim/help-assignee.html">
-                    <f:select />        
-                </f:entry>
-                <j:if test="${it.isBFAEnabled()}">
-                    <f:entry title="${%Error}" field="errors" help="/plugin/claim/help-errors.html">
-                        <f:select onChange="Display(this.value);"/>
+        <div id="claimHoverPopup" style="display:none; z-index:1000; min-width: 500px;">
+            <f:block>
+                <j:set var="descriptor" value="${it.descriptor}"/>
+                ${messageProvider.shortClaimDescription}
+                <f:form method="post" action="claim/claim" name="claim">
+                    <f:entry title="${%Assignee}" field="assignee" help="/plugin/claim/help-assignee.html">
+                        <f:select />
                     </f:entry>
-                    <f:entry title="${%Description}" help="/plugin/claim/help-description.html">
-                      <f:textarea name="errordesc" id="errordesc" value="${it.getReason(it.error)}" readonly="true"/>
-                  </f:entry>
-                </j:if>
-                <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
-                    <f:textarea name="reason" id="reason" value="${it.reason}"/>
-                </f:entry>
-                <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html"> 
-                    <f:checkbox name="sticky" checked="${it.sticky}"/>
-                </f:entry>
-                <f:entry title="${it.messageProvider.getPropagateToFollowingBuildsText()}" help="/plugin/claim/help-propagateToFollowingBuilds.html">
-                    <f:checkbox name="propagateToFollowingBuilds" checked="${it.propagateToFollowingBuildsByDefault}"/>
-                </f:entry>
-                <f:block>
-                    <div align="right">
-                        <f:submit value="${%Claim}"/>
-                        <input type="button" onClick="HidePopup();" value="${%Cancel}" class="submit-button"/>
-                    </div>
-                </f:block>
-            </f:form>
+                    <j:if test="${it.isBFAEnabled()}">
+                        <f:entry title="${%Error}" field="errors" help="/plugin/claim/help-errors.html">
+                            <f:select onChange="Display(this.value);"/>
+                        </f:entry>
+                        <f:entry title="${%Description}" help="/plugin/claim/help-description.html">
+                          <f:textarea name="errordesc" id="errordesc" value="${it.getReason(it.error)}" readonly="true"/>
+                      </f:entry>
+                    </j:if>
+                    <f:entry title="${%Reason}" help="/plugin/claim/help-reason.html">
+                        <f:textarea name="reason" id="reason" value="${it.reason}"/>
+                    </f:entry>
+                    <f:entry title="${%Sticky}" help="/plugin/claim/help-sticky.html">
+                        <f:checkbox name="sticky" checked="${it.sticky}"/>
+                    </f:entry>
+                    <f:entry title="${it.messageProvider.getPropagateToFollowingBuildsText()}" help="/plugin/claim/help-propagateToFollowingBuilds.html">
+                        <f:checkbox name="propagateToFollowingBuilds" checked="${it.propagateToFollowingBuildsByDefault}"/>
+                    </f:entry>
+                    <f:block>
+                        <div class="jenkins-buttons-row jenkins-buttons-row--equal-width" style="justify-content: right;">
+                            <f:submit value="${%Claim}"/>
+                            <button type="button" name="Cancel" formNoValidate="formNoValidate" class="jenkins-button jenkins-submit-button}" onClick="HidePopup();">
+                                ${%Cancel}
+                            </button>
+                        </div>
+                    </f:block>
+                </f:form>
+            </f:block>
         </div>
     </t:summary>
 </j:jelly>

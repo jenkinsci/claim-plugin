@@ -32,7 +32,7 @@ THE SOFTWARE.
                    value="&#10;&#10;${action.claim.messageProvider.reasonTitle}&#10;${action.claim.reason}"/>
         </j:if>
         <l:icon class="symbol-solid/user-doctor plugin-font-awesome-api ${subIconSizeClass}"
-                title="${action.claim.messageProvider.shortClaimDescription}${reasonPart}"/>
+                tooltip="${action.claim.messageProvider.shortClaimDescription}${reasonPart}"/>
     </j:forEach>  
   </td>
 </j:jelly>

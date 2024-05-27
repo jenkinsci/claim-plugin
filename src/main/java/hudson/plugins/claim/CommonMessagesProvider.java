@@ -14,8 +14,8 @@ import java.util.function.Supplier;
 
 public final class CommonMessagesProvider {
 
-    private static final int DATA_PRESENT = 1;
-    private static final int DATA_ABSENT = 0;
+    private static final int DATE_PRESENT = 1;
+    private static final int DATE_ABSENT = 0;
     private static final String NO_DATA = "";
     private static final String TERMINATOR = NO_DATA;
 
@@ -90,7 +90,7 @@ public final class CommonMessagesProvider {
                 objectName,
                 assignedBy,
                 claimedBy,
-                isDataPresent(date),
+                isDatePresent(date),
                 date,
                 true);
     }
@@ -100,7 +100,7 @@ public final class CommonMessagesProvider {
                 NO_DATA,
                 assignedBy,
                 claimedBy,
-                isDataPresent(date),
+                isDatePresent(date),
                 date,
                 true);
     }
@@ -110,7 +110,7 @@ public final class CommonMessagesProvider {
                 objectName,
                 assignedBy,
                 claimedBy,
-                DATA_ABSENT,
+                DATE_ABSENT,
                 date,
                 false);
     }
@@ -120,7 +120,7 @@ public final class CommonMessagesProvider {
                 NO_DATA,
                 assignedBy,
                 claimedBy,
-                DATA_ABSENT,
+                DATE_ABSENT,
                 date,
                 false);
     }
@@ -157,11 +157,11 @@ public final class CommonMessagesProvider {
         return displayName;
     }
 
-    private static int isDataPresent(Date data) {
+    private static int isDatePresent(Date data) {
         if (data == null) {
-            return DATA_ABSENT;
+            return DATE_ABSENT;
         }
-        return DATA_PRESENT;
+        return DATE_PRESENT;
     }
 
     @FunctionalInterface

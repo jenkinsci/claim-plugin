@@ -1,7 +1,12 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
-    <j:if test="${it.claimed}"> 
-            <l:icon class="symbol-solid/user-doctor plugin-font-awesome-api icon-sm jenkins-!-margin-left-2" alt="${it.messageProvider.shortClaimDescription}" tooltip="${it.messageProvider.shortClaimDescription}"/>
+    <j:if test="${it.claimed}">
+        <j:set var="reasonPart" value=""/>
+        <j:if test="${it.reason != ''}">
+            <j:set var="reasonPart" encode="true"
+                   value="&#10;&#10;${it.messageProvider.reasonTitle}&#10;${it.reason}"/>
+        </j:if>
+        <l:icon class="symbol-solid/user-doctor plugin-font-awesome-api icon-sm jenkins-!-margin-left-2" alt="${it.messageProvider.shortClaimDescription}" tooltip="${it.messageProvider.shortClaimDescription}${reasonPart}"/>
     </j:if>
 </j:jelly>
 

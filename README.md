@@ -43,7 +43,7 @@ The claim information will also be displayed on the **Build History** widget, wi
 
 ### Allow claiming of failed tests
 
-To allow claiming of failed tests, add a **Allow claiming of failed test** additional test report features to your test results report post-build action.
+To allow claiming of failed tests, add a **Allow claiming of failed test** additional test report features to your test results report post-build action. Optional, check **Display claim actions in test results table** to allow direct claiming from the test results pages. 
 
 ![The Claim test test result report feature](./docs/images/test-config-claim.png)
 
@@ -55,6 +55,7 @@ Failed tests will then display a **Claim it** option. | ![The "Claim it" action 
 Upon clicking the **Claim it** link, a logged-in user can then claim the test. | ![The claim details for a test](./docs/images/test-claim-details.png)
 The test will then display the claim information, along with options to **Drop the claim** or **Reassign it**. | ![The claim info for a test](./docs/images/test-claim-info.png)
 The claim information will also be displayed on the **Test Result** page, with a tooltipinformation about the claim. | ![The claim history for a test](./docs/images/test-claim-summary.png)
+With checked **Display claim actions in test results table** setting, logged in users will see claim actions as new column on the **Test Result** page | ![The claim actions on the test result page](./docs/images/claim-actions-on-test-results.png)
 
 ### Integration with Build Failure Analyzer
 This feature is supported from v2.8 forward.
@@ -95,6 +96,14 @@ Example:
 
 ```
 junit testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '**/target/*-reports/TEST*.xml'
+```
+
+To show claim actions directly on the test results page, the **displayClaimActionsInTestResultsTable** option can be added.
+
+Example:
+
+```
+junit testDataPublishers: [[$class: 'ClaimTestDataPublisher', displayClaimActionsInTestResultsTable: true]], testResults: '**/target/*-reports/TEST*.xml'
 ```
 
 ### Limitations

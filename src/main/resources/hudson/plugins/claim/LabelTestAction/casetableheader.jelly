@@ -1,0 +1,7 @@
+<?jelly escape-by-default='true'?>
+<!-- displays Header for additional Columns in the testresult View for all failed tests -->
+<j:jelly xmlns:j="jelly:core">
+    <j:if test="${it.isColumnDisplayed()}">
+        <th class="pane-header" style="width:15em">${%Header}</th>
+    </j:if>
+</j:jelly>

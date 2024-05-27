@@ -107,6 +107,6 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
     public String getAbsoluteUrl() {
         String baseUrl = getJenkinsBaseUrl();
         String jobUrl = data.getUrl() + "testReport/" + (this.testObjectId.startsWith("junit/") ? this.testObjectId.substring(6) : this.testObjectId);
-        return baseUrl+jobUrl;
+        return baseUrl + jobUrl + '/';
     }
 }

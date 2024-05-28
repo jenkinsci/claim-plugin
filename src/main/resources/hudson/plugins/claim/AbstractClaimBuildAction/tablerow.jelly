@@ -4,18 +4,29 @@
         <td class="pane">
             <script type="text/javascript">
                 function ShowPopup(hoveritem) {
-                var hp = document.getElementById("claimHoverPopup");
-                hp.style.display = "block";
+                var row = hoveritem.closest('tr');
+                var hp = row.querySelector(".claimHoverPopup");
+                if (hp) {
+                    hp.style.display = "block";
+                } else {
+                    console.error("Claim popup not found in the same row.");
+                }
                 }
 
-                function HidePopup() {
-                var hp = document.getElementById("claimHoverPopup");
+                function HidePopup(hoveritem) {
+                var row = hoveritem.closest('tr');
+                var hp = row.querySelector(".claimHoverPopup");
+                if (hp) {
                 hp.style.display = "none";
+                } else {
+                console.error("Claim popup not found in the same row.");
+                }
                 var action = <st:bind value="${it}" />;
                 }
 
-                function Display(error) {
-                var reasonText = document.getElementById("errordesc");
+                function Display(hoveritem, error) {
+                var row = hoveritem.closest('tr');
+                var reasonText = row.querySelector('#errordesc');
                 var action = <st:bind value="${it}" />;
                 action.getReason(error, function(content) {
                 reasonText.textContent = content.responseObject();
@@ -45,7 +56,7 @@
                 </a>
                 <j:set var="linkWritten" value="true"/>
             </j:if>
-            <div id="claimHoverPopup" style="display:none; z-index:1000; min-width: 500px;">
+            <div class="claimHoverPopup" style="display:none; z-index:1000; min-width: 500px;">
                 <f:block>
                     <j:set var="descriptor" value="${it.descriptor}"/>
                     <f:form method="post" action="${it.getAbsoluteUrl()}/claim/claim" name="claim">
@@ -54,7 +65,7 @@
                         </f:entry>
                         <j:if test="${it.isBFAEnabled()}">
                             <f:entry title="${%Error}" field="errors" help="/plugin/claim/help-errors.html">
-                                <f:select onChange="Display(this.value);"/>
+                                <f:select onChange="Display(this, this.value);"/>
                             </f:entry>
                             <f:entry title="${%Description}" help="/plugin/claim/help-description.html">
                                 <f:textarea name="errordesc" id="errordesc" value="${it.getReason(it.error)}" readonly="true"/>
@@ -72,7 +83,7 @@
                         <f:block>
                             <div class="jenkins-buttons-row jenkins-buttons-row--equal-width" style="justify-content: right;">
                                 <f:submit value="${%Claim}"/>
-                                <button type="button"  name="Cancel" formNoValidate="formNoValidate" class="jenkins-button jenkins-submit-button}" onClick="HidePopup();">
+                                <button type="button"  name="Cancel" formNoValidate="formNoValidate" class="jenkins-button jenkins-submit-button}" onClick="HidePopup(this);">
                                     ${%Cancel}
                                 </button>
                             </div>

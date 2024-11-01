@@ -3,6 +3,7 @@ package hudson.plugins.claim;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
+import hudson.model.Descriptor;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +22,12 @@ public final class ClaimConfig extends GlobalConfiguration {
     public ClaimConfig() {
         load();
         if (groovyTrigger == null) {
-            setGroovyTrigger(new SecureGroovyScript("", true, null), false);
+            try {
+                setGroovyTrigger(new SecureGroovyScript("", true, null), false);
+            } catch (Descriptor.FormException e) {
+                throw new IllegalStateException(
+                        "This should never occur as sandbox is set to true, and the exception is thrown only if it is false.");
+            }
         }
     }
 
@@ -157,7 +163,6 @@ public final class ClaimConfig extends GlobalConfiguration {
         this.propagateToFollowingBuildsByDefault = propagateToFollowingBuildsByDefault;
     }
 
-
     /**
      * Returns true if the users should be sorted by full name instead of ids.
      *
@@ -188,7 +193,7 @@ public final class ClaimConfig extends GlobalConfiguration {
 
     /**
      * Sets the email display option for assignees list when claiming.
-     * 
+     *
      * @param emailDisplayedForAssigneesList true to display email address, else false.
      */
     public void setEmailDisplayedForAssigneesList(boolean emailDisplayedForAssigneesList) {
@@ -237,7 +242,12 @@ public final class ClaimConfig extends GlobalConfiguration {
             } else {
                 script = "";
             }
-            setGroovyTrigger(new SecureGroovyScript(script, true, null), false);
+            try {
+                setGroovyTrigger(new SecureGroovyScript(script, true, null), false);
+            } catch (Descriptor.FormException e) {
+                throw new IllegalStateException(
+                        "This should never occur as sandbox is set to true, and the exception is thrown only if it is false.");
+            }
         }
         return this;
     }

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.88</version>
+    <version>5.2</version>
     <relativePath />
   </parent>
 
@@ -34,7 +34,7 @@
 
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
-    <jenkins.version>2.452.1</jenkins.version>
+    <jenkins.version>2.479.1</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <checkstyle.version>3.6.0</checkstyle.version>
     <spotbugs.effort>Max</spotbugs.effort>
@@ -45,8 +45,8 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.452.x</artifactId>
-        <version>3482.vc10d4f6da_28a_</version>
+        <artifactId>bom-2.479.x</artifactId>
+        <version>3613.v584fca_12cf5c</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -61,6 +61,12 @@
         <groupId>io.jenkins.plugins</groupId>
         <artifactId>jakarta-mail-api</artifactId>
         <version>2.1.3-1</version>
+      </dependency>
+      <!-- TODO JENKINS-73339 until in parent POM, work around https://github.com/jenkinsci/plugin-pom/issues/936 -->
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>5.0.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

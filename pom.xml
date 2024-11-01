@@ -34,7 +34,7 @@
 
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
-    <jenkins.version>2.452.1</jenkins.version>
+    <jenkins.version>2.479.1</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <checkstyle.version>3.6.0</checkstyle.version>
     <spotbugs.effort>Max</spotbugs.effort>

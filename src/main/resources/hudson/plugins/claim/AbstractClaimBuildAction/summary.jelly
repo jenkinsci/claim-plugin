@@ -1,26 +1,8 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-    <script type="text/javascript">
-        function ShowPopup(hoveritem) {
-            var hp = document.getElementById("claimHoverPopup");
-            hp.style.display = "block";
-        }
-
-        function HidePopup() {
-            var hp = document.getElementById("claimHoverPopup");
-            hp.style.display = "none";
-            var action = <st:bind value="${it}" />;
-        }
-
-        function Display(error) {
-            var reasonText = document.getElementById("errordesc");
-            var action = <st:bind value="${it}" />;
-            action.getReason(error, function(content) {
-                reasonText.textContent = content.responseObject();
-            });
-        }
-   </script>
+    <st:bind var="claimBuildAction" value="${it}"/>
+    <st:adjunct includes="hudson.plugins.claim.AbstractClaimBuildAction.resource"/>
 
     <t:summary icon="symbol-solid/user-doctor plugin-font-awesome-api">
         <p>
@@ -30,7 +12,7 @@
             <j:set var="linkWritten" value="false"/>
             <j:if test="${it.canClaim()}">
                 <j:if test="${linkWritten}"><st:nbsp/></j:if>
-                <a id="claim" href="#" onClick="ShowPopup(this); return false;">
+                <a id="claim" href="#">
                     <j:out value="${it.messageProvider.getClaimActionText()}"/>
                 </a>
                 <j:set var="linkWritten" value="true"/>
@@ -44,7 +26,7 @@
             </j:if>
             <j:if test="${it.canReassign()}">
                 <j:if test="${linkWritten}"><st:nbsp/></j:if>
-                <a id="reassign" href="#" onClick="ShowPopup(this); return false;">
+                <a id="reassign" href="#">
                     <j:out value="${it.messageProvider.getReassignActionText()}"/>
                 </a>
                 <j:set var="linkWritten" value="true"/>
@@ -67,7 +49,7 @@
                     </f:entry>
                     <j:if test="${it.isBFAEnabled()}">
                         <f:entry title="${%Error}" field="errors" help="/plugin/claim/help-errors.html">
-                            <f:select onChange="Display(this.value);"/>
+                            <f:select clazz="claim-bfa-display-error"/>
                         </f:entry>
                         <f:entry title="${%Description}" help="/plugin/claim/help-description.html">
                           <f:textarea name="errordesc" id="errordesc" value="${it.getReason(it.error)}" readonly="true"/>
@@ -85,7 +67,8 @@
                     <f:block>
                         <div class="jenkins-buttons-row jenkins-buttons-row--equal-width" style="justify-content: right;">
                             <f:submit value="${%Claim}"/>
-                            <button type="button" name="Cancel" formNoValidate="formNoValidate" class="jenkins-button jenkins-submit-button}" onClick="HidePopup();">
+                            <button type="button" name="Cancel" formNoValidate="formNoValidate" 
+                                    class="jenkins-button jenkins-submit-button claim-hide-popup">
                                 ${%Cancel}
                             </button>
                         </div>

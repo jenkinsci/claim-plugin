@@ -1,5 +1,6 @@
 package hudson.plugins.claim;
 
+import hudson.Util;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.plugins.claim.ClaimTestDataPublisher.Data;
@@ -107,6 +108,6 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
     public String getAbsoluteUrl() {
         String baseUrl = getJenkinsBaseUrl();
         String jobUrl = data.getUrl() + "testReport/" + (this.testObjectId.startsWith("junit/") ? this.testObjectId.substring(6) : this.testObjectId);
-        return baseUrl + jobUrl + '/';
+        return Util.rawEncode(baseUrl + jobUrl + '/');
     }
 }

@@ -1,16 +1,25 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <j:set var="userEmailPreferencesEnabled" value="${descriptor.allowUsersToConfigureEmailPreferences}" />
     <f:description>If global email notification is enabled you can modify your notification preferences</f:description>
-    <f:entry title="Receive initial Build Claim Emails?" field="receiveInitialBuildClaimEmail">
-        <f:checkbox />
-    </f:entry>
-    <f:entry title="Receive initial Test Claim Emails?" field="receiveInitialTestClaimEmail">
-        <f:checkbox />
-    </f:entry>
-    <f:entry title="Receive repeated Build Claim Emails?" field="receiveRepeatedBuildClaimEmail">
-        <f:checkbox />
-    </f:entry>
-    <f:entry title="Receive repeated Test Claim Emails?" field="receiveRepeatedTestClaimEmail">
-        <f:checkbox />
-    </f:entry>
+    <j:if test="${userEmailPreferencesEnabled == true}">
+        <f:entry title="Receive initial Build Claim Emails?" field="receiveInitialBuildClaimEmail">
+            <f:checkbox />
+        </f:entry>
+        <f:entry title="Receive initial Test Claim Emails?" field="receiveInitialTestClaimEmail">
+            <f:checkbox />
+        </f:entry>
+        <f:entry title="Receive repeated Build Claim Emails?" field="receiveRepeatedBuildClaimEmail">
+            <f:checkbox />
+        </f:entry>
+        <f:entry title="Receive repeated Test Claim Emails?" field="receiveRepeatedTestClaimEmail">
+            <f:checkbox />
+        </f:entry>
+    </j:if>
+    <j:if test="${userEmailPreferencesEnabled == false}">
+        <f:entry title="Email notifications are managed globally and cannot be configured.">
+            Your administrator has disabled user-specific email preferences.
+        </f:entry>
+    </j:if>
+
 </j:jelly>

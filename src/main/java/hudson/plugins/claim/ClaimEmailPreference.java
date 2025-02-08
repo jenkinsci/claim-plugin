@@ -35,6 +35,8 @@ public class ClaimEmailPreference extends UserProperty {
         return receiveRepeatedTestClaimEmail;
     }
 
+
+
     @Extension
     public static class DescriptorImpl extends hudson.model.UserPropertyDescriptor {
         @Override
@@ -46,5 +48,14 @@ public class ClaimEmailPreference extends UserProperty {
         public String getDisplayName() {
             return "Claim E-Mail Preferences";
         }
+
+        public boolean isAllowUsersToConfigureEmailPreferences() {
+            var config = ClaimConfig.get();
+            if (config == null) {
+                return false;
+            }
+            return config.isAllowUsersToConfigureEmailPreferences();
+        }
+
     }
 }

@@ -55,7 +55,7 @@ public final class ClaimEmailer {
                                                               String action, String reason, String url)
             throws MessagingException, IOException {
 
-        if (!isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveInitialBuildClaimEmail)) {
+        if (isAllowUsersToConfigureEmailPreferences() && !isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveInitialBuildClaimEmail)) {
             LOGGER.log(java.util.logging.Level.FINE, "Initial build claim emails not configured for user {0}", claimedByUser.getDisplayName());
             return;
         }
@@ -83,7 +83,7 @@ public final class ClaimEmailer {
                                                              String action, String reason, String url)
         throws MessagingException, IOException {
 
-        if (!isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveInitialTestClaimEmail)) {
+        if (isAllowUsersToConfigureEmailPreferences() && !isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveInitialTestClaimEmail)) {
             LOGGER.log(java.util.logging.Level.FINE, "Initial test claim emails not configured for user {0}", claimedByUser.getDisplayName());
             return;
         }
@@ -108,7 +108,7 @@ public final class ClaimEmailer {
     public static void sendRepeatedBuildClaimEmailIfConfigured(@Nonnull User claimedByUser, String action, String url)
         throws MessagingException, IOException {
 
-        if (!isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveRepeatedBuildClaimEmail)) {
+        if (isAllowUsersToConfigureEmailPreferences() && !isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveRepeatedBuildClaimEmail)) {
             LOGGER.log(java.util.logging.Level.FINE, "Repeated Build claim emails not configured for user {0}", claimedByUser.getDisplayName());
             return;
         }
@@ -133,7 +133,7 @@ public final class ClaimEmailer {
                                                               List<CaseResult> failedTests)
         throws MessagingException, IOException {
 
-        if (!isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveRepeatedTestClaimEmail)) {
+        if (isAllowUsersToConfigureEmailPreferences() && !isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveRepeatedTestClaimEmail)) {
             LOGGER.log(java.util.logging.Level.FINE, "Repeated test claim emails not configured for user {0}", claimedByUser.getDisplayName());
             return;
         }
@@ -148,6 +148,14 @@ public final class ClaimEmailer {
     @FunctionalInterface
     private interface EmailPreferenceChecker {
         boolean shouldSend(ClaimEmailPreference preference);
+    }
+
+    private static boolean isAllowUsersToConfigureEmailPreferences() {
+        var config = ClaimConfig.get();
+        if (config == null) {
+            return false;
+        }
+        return config.isAllowUsersToConfigureEmailPreferences();
     }
 
     private static boolean isMailEnabledByUserPreference(@Nonnull User user, EmailPreferenceChecker preferenceChecker) {

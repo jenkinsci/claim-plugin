@@ -72,4 +72,17 @@ public class ClaimEmailPreferenceTest {
         assertTrue("Default repeated build claim email should be true", preference.isReceiveRepeatedBuildClaimEmail());
         assertTrue("Default repeated test claim email should be true", preference.isReceiveRepeatedTestClaimEmail());
     }
+
+    @Test
+    public void testNullUserPreferences() {
+        User user = User.getOrCreateByIdOrFullName("noPreferencesUser");
+
+        ClaimEmailPreference preference = user.getProperty(ClaimEmailPreference.class);
+
+        assertNotNull("Preference should not be null", preference);
+        assertTrue("Default initial build claim email should be true", preference.isReceiveInitialBuildClaimEmail());
+        assertTrue("Default initial test claim email should be true", preference.isReceiveInitialTestClaimEmail());
+        assertTrue("Default repeated build claim email should be true", preference.isReceiveRepeatedBuildClaimEmail());
+        assertTrue("Default repeated test claim email should be true", preference.isReceiveRepeatedTestClaimEmail());
+    }
 }

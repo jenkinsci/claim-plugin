@@ -15,8 +15,8 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -146,7 +146,7 @@ public class ClaimGroovyTest {
 
         try (ACLContext ctx = ACL.as(User.getOrCreateByIdOrFullName(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
             try {
-                StaplerRequest req = mock(StaplerRequest.class);
+                StaplerRequest2 req = mock(StaplerRequest2.class);
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.accumulate("assignee", ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS);
                 jsonObject.accumulate("reason", "none");
@@ -155,7 +155,7 @@ public class ClaimGroovyTest {
                 jsonObject.accumulate("propagateToFollowingBuilds", false);
                 when(req.getSubmittedForm()).thenReturn(jsonObject);
 
-                StaplerResponse res = mock(StaplerResponse.class);
+                StaplerResponse2 res = mock(StaplerResponse2.class);
                 ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
                 action.doClaim(req, res);
             } catch (Exception e) {

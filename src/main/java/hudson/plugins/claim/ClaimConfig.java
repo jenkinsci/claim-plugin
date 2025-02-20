@@ -62,6 +62,11 @@ public final class ClaimConfig extends GlobalConfiguration {
     private boolean emailDisplayedForAssigneesList;
 
     /**
+     * When enabled users can configure their email notification preferences
+     */
+    private boolean allowUsersToConfigureEmailPreferences;
+
+    /**
      * Groovy script to be run when a claim is changed.
      */
     @Deprecated
@@ -89,6 +94,7 @@ public final class ClaimConfig extends GlobalConfiguration {
         propagateToFollowingBuildsByDefault = formData.getBoolean("propagateToFollowingBuildsByDefault");
         sortUsersByFullName = formData.getBoolean("sortUsersByFullName");
         emailDisplayedForAssigneesList = formData.getBoolean("emailDisplayedForAssigneesList");
+        allowUsersToConfigureEmailPreferences = formData.getBoolean("allowUsersToConfigureEmailPreferences");
         setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
         save();
         return super.configure(req, formData);
@@ -198,6 +204,14 @@ public final class ClaimConfig extends GlobalConfiguration {
      */
     public void setEmailDisplayedForAssigneesList(boolean emailDisplayedForAssigneesList) {
         this.emailDisplayedForAssigneesList = emailDisplayedForAssigneesList;
+    }
+
+    public boolean isAllowUsersToConfigureEmailPreferences() {
+        return allowUsersToConfigureEmailPreferences;
+    }
+
+    public void setAllowUsersToConfigureEmailPreferences(boolean allowUsersToConfigureEmailPreferences) {
+        this.allowUsersToConfigureEmailPreferences = allowUsersToConfigureEmailPreferences;
     }
 
     @NonNull

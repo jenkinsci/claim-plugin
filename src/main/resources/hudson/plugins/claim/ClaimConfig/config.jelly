@@ -9,6 +9,10 @@
              help="/plugin/claim/help-sendEmailsForStickyFailures.html">
         <f:checkbox/>
     </f:entry>
+    <f:entry title="${%AllowUsersToConfigureEmailPreferences}" field="allowUsersToConfigureEmailPreferences"
+             help="/plugin/claim/help-allowUsersToConfigureEmailPreferences.html">
+        <f:checkbox/>
+    </f:entry>
     <f:entry title="${%StickyByDefault}" field="stickyByDefault" help="/plugin/claim/help-stickyByDefault.html">
         <f:checkbox/>
     </f:entry>

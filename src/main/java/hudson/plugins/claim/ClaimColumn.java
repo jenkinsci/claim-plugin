@@ -12,7 +12,7 @@ import hudson.views.ListViewColumnDescriptor;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +67,7 @@ public final class ClaimColumn extends ListViewColumn {
     @Extension
     public static class DescriptorImpl extends ListViewColumnDescriptor {
         @Override
-        public ListViewColumn newInstance(StaplerRequest req,
+        public ListViewColumn newInstance(StaplerRequest2 req,
                                           @NonNull JSONObject formData) throws FormException {
             return new ClaimColumn();
         }

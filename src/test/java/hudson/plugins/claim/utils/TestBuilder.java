@@ -8,7 +8,7 @@ import hudson.model.Descriptor;
 import hudson.model.Result;
 import hudson.tasks.Builder;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.IOException;
 
@@ -39,7 +39,7 @@ public class TestBuilder extends Builder {
 
     @Extension
     public static final class DescriptorImpl extends Descriptor<Builder> {
-        public Builder newInstance(StaplerRequest req, JSONObject data) {
+        public Builder newInstance(StaplerRequest2 req, JSONObject data) {
             throw new UnsupportedOperationException();
         }
     }

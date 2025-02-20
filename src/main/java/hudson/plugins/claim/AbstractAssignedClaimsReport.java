@@ -27,7 +27,7 @@ public class AbstractAssignedClaimsReport implements Action, IconSpec {
         Icon icon = IconSet.icons.getIconByClassSpec(iconClassName + " icon-md");
         if (icon != null) {
             JellyContext ctx = new JellyContext();
-            ctx.setVariable("resURL", Stapler.getCurrentRequest().getContextPath() + Jenkins.RESOURCE_PATH);
+            ctx.setVariable("resURL", Stapler.getCurrentRequest2().getContextPath() + Jenkins.RESOURCE_PATH);
             return icon.getQualifiedUrl(ctx);
         }
         return null;
@@ -60,7 +60,7 @@ public class AbstractAssignedClaimsReport implements Action, IconSpec {
     }
 
     public ModelObject getOwner() {
-        View view = Stapler.getCurrentRequest().findAncestorObject(View.class);
+        View view = Stapler.getCurrentRequest2().findAncestorObject(View.class);
         if (view != null) {
             return view;
         } else {

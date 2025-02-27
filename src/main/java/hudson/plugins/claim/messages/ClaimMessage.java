@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //TODO configurable formatting, through email-ext plugin
-abstract class ClaimMessage {
+public abstract class ClaimMessage {
 
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
     protected static final String LINE_SEPARATOR =  System.getProperty("line.separator");

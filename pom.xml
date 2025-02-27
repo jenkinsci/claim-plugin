@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>5.4</version>
+    <version>5.7</version>
     <relativePath />
   </parent>
 
@@ -34,7 +34,8 @@
 
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
-    <jenkins.version>2.479.1</jenkins.version>
+    <jenkins.baseline>2.479</jenkins.baseline>
+    <jenkins.version>${jenkins.baseline}.1</jenkins.version>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     <checkstyle.version>3.6.0</checkstyle.version>
     <spotbugs.effort>Max</spotbugs.effort>
@@ -45,8 +46,8 @@
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.479.x</artifactId>
-        <version>3850.vb_c5319efa_e29</version>
+        <artifactId>bom-${jenkins.baseline}.x</artifactId>
+        <version>4023.va_eeb_b_4e45f07</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -160,9 +161,8 @@
       <artifactId>checks-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.17.0</version>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>commons-lang3-api</artifactId>
     </dependency>
 
     <dependency>

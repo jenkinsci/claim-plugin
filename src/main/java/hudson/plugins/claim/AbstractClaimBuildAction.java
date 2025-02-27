@@ -8,8 +8,8 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.DoNotUse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -20,7 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
@@ -70,7 +70,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     // jelly
     @POST
-    public final void doClaim(StaplerRequest req, StaplerResponse resp)
+    public final void doClaim(StaplerRequest2 req, StaplerResponse2 resp)
             throws Exception {
         Jenkins.get().checkPermission(Jenkins.READ);
 
@@ -197,7 +197,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
 
     // jelly
     @POST
-    public final void doUnclaim(StaplerRequest req, StaplerResponse resp)
+    public final void doUnclaim(StaplerRequest2 req, StaplerResponse2 resp)
             throws ServletException, IOException {
         Jenkins.get().checkPermission(Jenkins.READ);
 

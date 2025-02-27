@@ -107,7 +107,7 @@ junit testDataPublishers: [[$class: 'ClaimTestDataPublisher', displayClaimAction
 ```
 
 ### Limitations
-As the plugin uses a post build action to allow claiming, build or tests marked as failed priori to enabling the plugin will not have any claim action proposed.
+As the plugin uses a post build action to allow claiming, build or tests marked as failed prior to enabling the plugin will not have any claim action proposed.
 
 ## License
 

@@ -1,32 +1,30 @@
 package hudson.plugins.claim;
 
 import hudson.model.User;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ClaimEmailPreferenceTest {
-
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
+@WithJenkins
+class ClaimEmailPreferenceTest {
 
     @Test
-    public void testDefaultEmailPreferences() {
+    void testDefaultEmailPreferences(JenkinsRule jenkins) {
         User user = User.getOrCreateByIdOrFullName("testuser");
 
         ClaimEmailPreference preference = user.getProperty(ClaimEmailPreference.class);
 
-        assertNotNull("User property should not be null", preference);
-        assertTrue("Default initial build claim email should be true", preference.isReceiveInitialBuildClaimEmail());
-        assertTrue("Default initial test claim email should be true", preference.isReceiveInitialTestClaimEmail());
-        assertTrue("Default repeated build claim email should be true", preference.isReceiveRepeatedBuildClaimEmail());
-        assertTrue("Default repeated test claim email should be true", preference.isReceiveRepeatedTestClaimEmail());
+        assertNotNull(preference, "User property should not be null");
+        assertTrue(preference.isReceiveInitialBuildClaimEmail(), "Default initial build claim email should be true");
+        assertTrue(preference.isReceiveInitialTestClaimEmail(), "Default initial test claim email should be true");
+        assertTrue(preference.isReceiveRepeatedBuildClaimEmail(), "Default repeated build claim email should be true");
+        assertTrue(preference.isReceiveRepeatedTestClaimEmail(), "Default repeated test claim email should be true");
     }
 
     @Test
-    public void testCustomEmailPreferences() throws Exception {
+    void testCustomEmailPreferences(JenkinsRule jenkins) throws Exception {
         User user = User.getOrCreateByIdOrFullName("testuser");
 
         ClaimEmailPreference customPreference = new ClaimEmailPreference(true, false, true, false);
@@ -34,15 +32,15 @@ public class ClaimEmailPreferenceTest {
 
         ClaimEmailPreference preference = user.getProperty(ClaimEmailPreference.class);
 
-        assertNotNull("ClaimEmailPreference should be set", preference);
-        assertTrue("User should receive initial build claim emails", preference.isReceiveInitialBuildClaimEmail());
-        assertFalse("User should NOT receive initial test claim emails", preference.isReceiveInitialTestClaimEmail());
-        assertTrue("User should receive repeated build claim emails", preference.isReceiveRepeatedBuildClaimEmail());
-        assertFalse("User should NOT receive repeated test claim emails", preference.isReceiveRepeatedTestClaimEmail());
+        assertNotNull(preference, "ClaimEmailPreference should be set");
+        assertTrue(preference.isReceiveInitialBuildClaimEmail(), "User should receive initial build claim emails");
+        assertFalse(preference.isReceiveInitialTestClaimEmail(), "User should NOT receive initial test claim emails");
+        assertTrue(preference.isReceiveRepeatedBuildClaimEmail(), "User should receive repeated build claim emails");
+        assertFalse(preference.isReceiveRepeatedTestClaimEmail(), "User should NOT receive repeated test claim emails");
     }
 
     @Test
-    public void testUpdateEmailPreferences() throws Exception {
+    void testUpdateEmailPreferences(JenkinsRule jenkins) throws Exception {
         User user = User.getOrCreateByIdOrFullName("testuser");
 
         user.addProperty(new ClaimEmailPreference(false, false, false, false));
@@ -61,28 +59,28 @@ public class ClaimEmailPreferenceTest {
     }
 
     @Test
-    public void testUserWithoutPreferences() {
+    void testUserWithoutPreferences(JenkinsRule jenkins) {
         User user = User.getOrCreateByIdOrFullName("newuser");
 
         ClaimEmailPreference preference = user.getProperty(ClaimEmailPreference.class);
 
-        assertNotNull("Preference should not be null", preference);
-        assertTrue("Default initial build claim email should be true", preference.isReceiveInitialBuildClaimEmail());
-        assertTrue("Default initial test claim email should be true", preference.isReceiveInitialTestClaimEmail());
-        assertTrue("Default repeated build claim email should be true", preference.isReceiveRepeatedBuildClaimEmail());
-        assertTrue("Default repeated test claim email should be true", preference.isReceiveRepeatedTestClaimEmail());
+        assertNotNull(preference, "Preference should not be null");
+        assertTrue(preference.isReceiveInitialBuildClaimEmail(), "Default initial build claim email should be true");
+        assertTrue(preference.isReceiveInitialTestClaimEmail(), "Default initial test claim email should be true");
+        assertTrue(preference.isReceiveRepeatedBuildClaimEmail(), "Default repeated build claim email should be true");
+        assertTrue(preference.isReceiveRepeatedTestClaimEmail(), "Default repeated test claim email should be true");
     }
 
     @Test
-    public void testNullUserPreferences() {
+    void testNullUserPreferences(JenkinsRule jenkins) {
         User user = User.getOrCreateByIdOrFullName("noPreferencesUser");
 
         ClaimEmailPreference preference = user.getProperty(ClaimEmailPreference.class);
 
-        assertNotNull("Preference should not be null", preference);
-        assertTrue("Default initial build claim email should be true", preference.isReceiveInitialBuildClaimEmail());
-        assertTrue("Default initial test claim email should be true", preference.isReceiveInitialTestClaimEmail());
-        assertTrue("Default repeated build claim email should be true", preference.isReceiveRepeatedBuildClaimEmail());
-        assertTrue("Default repeated test claim email should be true", preference.isReceiveRepeatedTestClaimEmail());
+        assertNotNull(preference, "Preference should not be null");
+        assertTrue(preference.isReceiveInitialBuildClaimEmail(), "Default initial build claim email should be true");
+        assertTrue(preference.isReceiveInitialTestClaimEmail(), "Default initial test claim email should be true");
+        assertTrue(preference.isReceiveRepeatedBuildClaimEmail(), "Default repeated build claim email should be true");
+        assertTrue(preference.isReceiveRepeatedTestClaimEmail(), "Default repeated test claim email should be true");
     }
 }

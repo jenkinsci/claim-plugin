@@ -30,29 +30,30 @@ import hudson.model.Result;
 import hudson.model.User;
 import hudson.plugins.claim.utils.TestBuilder;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 
-public class ClaimTest {
+@WithJenkins
+class ClaimTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
 
     private Build<?, ?> firstBuild;
     private Project<?, ?> project;
     private TestBuilder builder;
-    private String claimText = "claimReason";
+    private final String claimText = "claimReason";
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp(JenkinsRule j) throws Exception {
+        this.j = j;
         java.util.logging.Logger.getLogger("org.htmlunit").setLevel(java.util.logging.Level.SEVERE);
 
         j.jenkins.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
@@ -71,12 +72,12 @@ public class ClaimTest {
     }
 
     @Test
-    public void failedBuildWithClaimPublisherHasClaimAction() {
+    void failedBuildWithClaimPublisherHasClaimAction() {
         assertThat(firstBuild.getAction(ClaimBuildAction.class), is(notNullValue()));
     }
 
     @Test
-    public void failedBuildCanBeClaimedByYou() throws Exception {
+    void failedBuildCanBeClaimedByYou() throws Exception {
         // When:
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
             ClaimBuildAction action = whenClaimingBuild(wc, firstBuild);
@@ -89,7 +90,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void failedBuildCanBeAssigned() throws Exception {
+    void failedBuildCanBeAssigned() throws Exception {
         // When:
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
             ClaimBuildAction action = whenAssigningBuildByClicking(wc, firstBuild, "claim");
@@ -102,7 +103,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void claimedBuildCanBeReclaimedByYou() throws Exception {
+    void claimedBuildCanBeReclaimedByYou() throws Exception {
         // Given:
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
             givenBuildClaimedByOtherUser(firstBuild);
@@ -117,7 +118,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void claimCanBeDropped() throws Exception {
+    void claimCanBeDropped() throws Exception {
         // Given:
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
             givenBuildClaimedByCurrentUser(firstBuild);
@@ -130,7 +131,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void claimCanBeReassigned() throws Exception {
+    void claimCanBeReassigned() throws Exception {
         // Given:
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
             givenBuildClaimedByCurrentUser(firstBuild);
@@ -145,7 +146,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void stickyClaimPropagatesToNextBuild() throws Exception {
+    void stickyClaimPropagatesToNextBuild() throws Exception {
         final int waitTime = 2_000;
 
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
@@ -167,7 +168,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void stickyClaimDoesPropagatesToNextBuildWithUnknownAssignedByWhenAssignedByUserHasBeenDeleted() throws Exception {
+    void stickyClaimDoesPropagatesToNextBuildWithUnknownAssignedByWhenAssignedByUserHasBeenDeleted() throws Exception {
         final int waitTime = 2_000;
         // Given:
         givenBuildClaimedByOtherUser(firstBuild);
@@ -189,7 +190,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void stickyClaimDoesNotPropagatesToNextBuildWhenClaimedByUserHasBeenDeleted() throws Exception {
+    void stickyClaimDoesNotPropagatesToNextBuildWhenClaimedByUserHasBeenDeleted() throws Exception {
         final int waitTime = 2_000;
         // Given:
         givenBuildClaimedByCurrentUser(firstBuild);
@@ -206,7 +207,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuilds()  throws Exception {
+    void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuilds()  throws Exception {
         // Given:
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
             Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
@@ -232,7 +233,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuildsUntilBuildIsPassing()  throws Exception {
+    void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuildsUntilBuildIsPassing()  throws Exception {
         // Given:
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
             Build<?, ?> secondBuild = project.scheduleBuild2(0).get();
@@ -258,7 +259,7 @@ public class ClaimTest {
     }
 
     @Test
-    public void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuildsUntilBuildIsClaimed()  throws Exception {
+    void stickyClaimOnPreviousBuildPropagatesToFollowingFailedBuildsUntilBuildIsClaimed()  throws Exception {
         final int waitTime = 2_000;
         // Given:
         try(JenkinsRule.WebClient wc = j.createWebClient()) {
@@ -285,13 +286,13 @@ public class ClaimTest {
             assertThat(action3.getAssignedBy(), is("user1"));
         }
     }
+
     @Test
-    public void claimTestShouldGiveProperURL() {
+    void claimTestShouldGiveProperURL() {
         ClaimTestDataPublisher.Data data = new ClaimTestDataPublisher.Data(firstBuild, true);
         //testObjectId now contains junit/ since hudson 1.347
         ClaimTestAction acti = new ClaimTestAction(data, "junit/assembly/classTest/unitTest");
-        assertEquals("wrong url who would not link to test",
-                "job/x/1/testReport/junit/assembly/classTest/unitTest", acti.getUrl());
+        assertEquals("job/x/1/testReport/junit/assembly/classTest/unitTest", acti.getUrl(), "wrong url who would not link to test");
     }
 
     private void givenProjectIsSucceeding() {
@@ -304,7 +305,7 @@ public class ClaimTest {
 
 
     @Test
-    public void nonStickyClaimDoesNotPropagateToNextBuild() throws Exception {
+    void nonStickyClaimDoesNotPropagateToNextBuild() throws Exception {
         // Given:
         ClaimBuildAction action1 = givenBuildClaimedByCurrentUser(firstBuild);
         action1.setSticky(false);
@@ -315,7 +316,7 @@ public class ClaimTest {
         assertThat(action2.isClaimed(), is(false));
     }
 
-    private ClaimBuildAction givenBuildClaimedByOtherUser(Build<?, ?> build) {
+    private static ClaimBuildAction givenBuildClaimedByOtherUser(Build<?, ?> build) {
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
         User user1 = User.getById("user1", true);
         User user2 = User.getById("user2", true);
@@ -324,7 +325,7 @@ public class ClaimTest {
         return action;
     }
 
-    private ClaimBuildAction givenBuildClaimedByCurrentUser(Build<?, ?> build) {
+    private static ClaimBuildAction givenBuildClaimedByCurrentUser(Build<?, ?> build) {
         ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
         User user1 = User.getById("user1", true);
         action.claim(user1, "reason", user1, new Date(), true,
@@ -371,7 +372,7 @@ public class ClaimTest {
         return build.getAction(ClaimBuildAction.class);
     }
 
-    private HtmlPage whenNavigatingToClaimPageAndClicking(JenkinsRule.WebClient webClient, Build<?, ?> build, String idOrHref) throws Exception {
+    private static HtmlPage whenNavigatingToClaimPageAndClicking(JenkinsRule.WebClient webClient, Build<?, ?> build, String idOrHref) throws Exception {
         webClient.login("user1", "user1");
         HtmlPage page = webClient.goTo("job/x/" + build.getNumber());
         // expand claim HTML box

@@ -6,10 +6,10 @@ import hudson.model.UserProperty;
 import hudson.tasks.Mailer;
 import hudson.tasks.junit.CaseResult;
 import jenkins.model.JenkinsLocationConfiguration;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.mock_javamail.Mailbox;
 
 import jakarta.mail.Address;
@@ -20,22 +20,19 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("StringOperationCanBeSimplified")
-public class ClaimEmailerTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class ClaimEmailerTest {
 
     /*
      * Test that no mail is sent if mail sending is not configured
      */
     @Test
-    public void testSendEmailNotConfigured() throws Exception {
+    void testSendEmailNotConfigured(JenkinsRule j) throws Exception {
 
         final String assigneeId = "assignee";
         final String assignedById = "assignedByMe";
@@ -64,7 +61,7 @@ public class ClaimEmailerTest {
     }
 
     @Test
-    public void testSendEmailOnInitialBuildFailureConfigured() throws Exception {
+    void testSendEmailOnInitialBuildFailureConfigured(JenkinsRule j) throws Exception {
 
         final String assigneeId = "assignee";
         final String assignedById = "assignedByMe";
@@ -98,20 +95,20 @@ public class ClaimEmailerTest {
         assertEquals("test <test@test.com>", senders[0].toString());
 
         String subject = mailMessage.getSubject();
-        assertTrue("Mail subject must contain the build name", subject.contains(Messages
-            .ClaimEmailer_Build_Initial_Subject("Test build")));
+        assertTrue(subject.contains(Messages
+            .ClaimEmailer_Build_Initial_Subject("Test build")), "Mail subject must contain the build name");
 
         String content = mailMessage.getContent().toString();
-        assertTrue("Mail content should contain the reason", content.contains(Messages
-                .ClaimEmailer_Reason("test reason")));
-        assertTrue("Mail content should contain the details", content.contains(Messages
-                .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/")));
-        assertTrue("Mail content should assignment text", content.contains(Messages
-            .ClaimEmailer_Build_Initial_Text("Test build", "AssignedBy User")));
+        assertTrue(content.contains(Messages
+                .ClaimEmailer_Reason("test reason")), "Mail content should contain the reason");
+        assertTrue(content.contains(Messages
+                .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/")), "Mail content should contain the details");
+        assertTrue(content.contains(Messages
+            .ClaimEmailer_Build_Initial_Text("Test build", "AssignedBy User")), "Mail content should assignment text");
     }
 
     @Test
-    public void testSendEmailOnInitialTestFailureConfigured() throws Exception {
+    void testSendEmailOnInitialTestFailureConfigured(JenkinsRule j) throws Exception {
 
         final String assigneeId = "assignee";
         final String assignedById = "assignedByMe";
@@ -144,23 +141,23 @@ public class ClaimEmailerTest {
         assertEquals("test <test@test.com>", senders[0].toString());
 
         String subject = mailMessage.getSubject();
-        assertTrue("Mail subject must contain the build name", subject.contains(Messages
-            .ClaimEmailer_Test_Initial_Subject("Test Test")));
+        assertTrue(subject.contains(Messages
+            .ClaimEmailer_Test_Initial_Subject("Test Test")), "Mail subject must contain the build name");
 
         String content = mailMessage.getContent().toString();
-        assertTrue("Mail content should contain the reason", content.contains(Messages
-            .ClaimEmailer_Reason("test reason")));
-        assertTrue("Mail content should contain the details", content.contains(Messages
-            .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/testReport/TestTest")));
-        assertTrue("Mail content should assignment text",
-            content.contains(Messages.ClaimEmailer_Test_Initial_Text("Test Test", "AssignedBy User")));
+        assertTrue(content.contains(Messages
+            .ClaimEmailer_Reason("test reason")), "Mail content should contain the reason");
+        assertTrue(content.contains(Messages
+            .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/testReport/TestTest")), "Mail content should contain the details");
+        assertTrue(content.contains(Messages.ClaimEmailer_Test_Initial_Text("Test Test", "AssignedBy User")),
+            "Mail content should assignment text");
     }
 
     /*
      * Test that mail is not sent when self claiming
      */
     @Test
-    public void shouldNotSendEmailWhenSelfClaiming() throws Exception {
+    void shouldNotSendEmailWhenSelfClaiming(JenkinsRule j) throws Exception {
 
         final String assigneeId = "assignee";
 
@@ -190,7 +187,7 @@ public class ClaimEmailerTest {
      * Test that method does not throw runtime exception if mail is null (can happen when user id contains spaces)
      */
     @Test
-    public void shouldNotFailWhenRecipientEmailAddressIsNull() throws Exception {
+    void shouldNotFailWhenRecipientEmailAddressIsNull(JenkinsRule j) throws Exception {
 
         final String assigneeId = "sarah connor";
         final String assignedById = "assignedByMe";
@@ -218,7 +215,7 @@ public class ClaimEmailerTest {
     }
 
     @Test
-    public void testSendEmailOnRepeatedBuildFailureConfigured() throws Exception {
+    void testSendEmailOnRepeatedBuildFailureConfigured(JenkinsRule j) throws Exception {
 
         final String assigneeId = "assignee";
         final String assignedById = "assignedByMe";
@@ -252,19 +249,19 @@ public class ClaimEmailerTest {
         assertEquals("test <test@test.com>", senders[0].toString());
 
         String subject = mailMessage.getSubject();
-        assertTrue("Mail subject must contain the build name", subject.contains(Messages
-            .ClaimEmailer_Build_Repeated_Subject("Test build")));
+        assertTrue(subject.contains(Messages
+            .ClaimEmailer_Build_Repeated_Subject("Test build")), "Mail subject must contain the build name");
 
         String content = mailMessage.getContent().toString();
-        assertTrue("Mail content should contain the details", content.contains(Messages
-            .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/")));
+        assertTrue(content.contains(Messages
+            .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/")), "Mail content should contain the details");
     }
 
     /*
      * Test that method does not throw runtime exception if mail is null (can happen when user id contains spaces)
      */
     @Test
-    public void shouldNotFailOnRepeatedTestFailureWhenNoTestsAreFailing() throws Exception {
+    void shouldNotFailOnRepeatedTestFailureWhenNoTestsAreFailing(JenkinsRule j) throws Exception {
 
         final String assigneeId = "assignee";
         final String assignedById = "assignedByMe";
@@ -289,7 +286,7 @@ public class ClaimEmailerTest {
         UserProperty p = new Mailer.UserProperty("assignee@test.com");
         assignee.addProperty(p);
 
-        List<CaseResult> tests = new ArrayList<CaseResult>();
+        List<CaseResult> tests = new ArrayList<>();
         ClaimEmailer.sendRepeatedTestClaimEmailIfConfigured(assignee, "Test Test",
             "jobs/TestBuild/testReport/TestTest", tests);
 
@@ -297,7 +294,7 @@ public class ClaimEmailerTest {
     }
 
     @Test
-    public void testSendEmailOnRepeatedTestFailureConfigured() throws Exception {
+    void testSendEmailOnRepeatedTestFailureConfigured(JenkinsRule j) throws Exception {
 
         final String assigneeId = "assignee";
         final String assignedById = "assignedByMe";
@@ -340,24 +337,24 @@ public class ClaimEmailerTest {
         assertEquals("test <test@test.com>", senders[0].toString());
 
         String subject = mailMessage.getSubject();
-        assertTrue("Mail subject must contain the build name and number of failing tests", subject.contains(
-            Messages.ClaimEmailer_Test_Repeated_Subject(2, "Test Build")));
+        assertTrue(subject.contains(
+            Messages.ClaimEmailer_Test_Repeated_Subject(2, "Test Build")), "Mail subject must contain the build name and number of failing tests");
 
         String content = mailMessage.getContent().toString();
-        assertTrue("Mail content should contain the test details for test 1", content.contains(Messages
-            .ClaimEmailer_Test_Repeated_Details("Test 1")));
-        assertTrue("Mail content should contain the test details for test 2", content.contains(Messages
-            .ClaimEmailer_Test_Repeated_Details("Test 2")));
-        assertTrue("Mail content should contain the details", content.contains(Messages
-            .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/testReport/TestTest")));
-        assertTrue("Mail content should contain the details", content.contains(Messages
-            .ClaimEmailer_Test_Repeated_Text(2, "Test Build")));
+        assertTrue(content.contains(Messages
+            .ClaimEmailer_Test_Repeated_Details("Test 1")), "Mail content should contain the test details for test 1");
+        assertTrue(content.contains(Messages
+            .ClaimEmailer_Test_Repeated_Details("Test 2")), "Mail content should contain the test details for test 2");
+        assertTrue(content.contains(Messages
+            .ClaimEmailer_Details("http://localhost:8080/jenkins/jobs/TestBuild/testReport/TestTest")), "Mail content should contain the details");
+        assertTrue(content.contains(Messages
+            .ClaimEmailer_Test_Repeated_Text(2, "Test Build")), "Mail content should contain the details");
     }
 
     @Test
-    public void emailShouldBeSentForStickyBuildClaimWhenReminderConfigured() throws Exception {
+    void emailShouldBeSentForStickyBuildClaimWhenReminderConfigured(JenkinsRule j) throws Exception {
 
-        FreeStyleProject job = createFailingJobWithName("test-" + System.currentTimeMillis());
+        FreeStyleProject job = createFailingJobWithName(j, "test-" + System.currentTimeMillis());
         final String assigneeId = "assignee";
         final String assignedById = "assignedByMe";
 
@@ -390,7 +387,7 @@ public class ClaimEmailerTest {
             recipientInbox.get(0).getSubject());
     }
 
-    private FreeStyleProject createFailingJobWithName(String jobName) throws Exception {
+    private static FreeStyleProject createFailingJobWithName(JenkinsRule j, String jobName) throws Exception {
         FreeStyleProject project = j.createFreeStyleProject(jobName);
         project.getBuildersList().add(new FailureBuilder());
         project.getPublishersList().add(new ClaimPublisher());

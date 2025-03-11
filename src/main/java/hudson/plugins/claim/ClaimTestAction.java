@@ -92,7 +92,7 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
      * @return the base URL of the Jenkins instance.
      */
     private String getJenkinsBaseUrl() {
-        Jenkins instance = Jenkins.getInstance();
+        Jenkins instance = Jenkins.getInstanceOrNull();
         if (instance != null) {
             return instance.getRootUrl();
         }

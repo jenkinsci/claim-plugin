@@ -1,5 +1,6 @@
 package hudson.plugins.claim.utils;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -9,8 +10,6 @@ import hudson.model.Result;
 import hudson.tasks.Builder;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest2;
-
-import java.io.IOException;
 
 public class TestBuilder extends Builder {
 
@@ -25,8 +24,7 @@ public class TestBuilder extends Builder {
     }
 
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
-            throws InterruptedException, IOException {
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
         listener.getLogger().println("Simulating a specific result code " + result);
         build.setResult(result);
         return true;
@@ -39,7 +37,8 @@ public class TestBuilder extends Builder {
 
     @Extension
     public static final class DescriptorImpl extends Descriptor<Builder> {
-        public Builder newInstance(StaplerRequest2 req, JSONObject data) {
+        @Override
+        public Builder newInstance(StaplerRequest2 req, @NonNull JSONObject data) {
             throw new UnsupportedOperationException();
         }
     }

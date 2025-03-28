@@ -3,27 +3,27 @@ package hudson.plugins.claim;
 import org.htmlunit.html.HtmlPage;
 import hudson.model.FreeStyleProject;
 import hudson.model.User;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class UserClaimsReportTest {
+@WithJenkins
+class UserClaimsReportTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
 
-    @Before
-    public void setUp() throws Exception {
-
+    @BeforeEach
+    void setUp(JenkinsRule j) {
+        this.j = j;
         java.util.logging.Logger.getLogger("org.htmlunit").setLevel(java.util.logging.Level.SEVERE);
     }
 
@@ -37,13 +37,13 @@ public class UserClaimsReportTest {
     }
 
     @Test
-    public void userAssignedFailedJobsShouldBeVisibleInUserClaimReport() throws Exception {
+    void userAssignedFailedJobsShouldBeVisibleInUserClaimReport() throws Exception {
         long timestamp = System.currentTimeMillis();
 
         FreeStyleProject job1 = createFailingJobWithName("job1-" + timestamp);
         FreeStyleProject job2 = createFailingJobWithName("job2-" + timestamp);
         FreeStyleProject job3 = createFailingJobWithName("job3-" + timestamp);
-        
+
         User userA = User.get("userA-" + timestamp, true, Collections.emptyMap());
         User userB = User.get("userB-" + timestamp, true, Collections.emptyMap());
         User userC = User.get("userC-" + timestamp, true, Collections.emptyMap());
@@ -76,13 +76,13 @@ public class UserClaimsReportTest {
     }
 
     @Test
-    public void userAssignedFailedJobsUnderADifferentIdForSameUserShouldBeVisibleInUserClaimReport() throws Exception {
+    void userAssignedFailedJobsUnderADifferentIdForSameUserShouldBeVisibleInUserClaimReport() throws Exception {
         long timestamp = System.currentTimeMillis();
 
         FreeStyleProject job1 = createFailingJobWithName("job1-" + timestamp);
 
         User userA = User.get("userA-" + timestamp, true, Collections.emptyMap());
-        assertNotEquals(userA.getId(), userA.getId().toLowerCase(), "Fix the test setup to ensure this condition");
+        assertNotEquals("Fix the test setup to ensure this condition", userA.getId().toLowerCase(), userA.getId());
         User userALowerCasedId = User.get(userA.getId().toLowerCase(), true, Collections.emptyMap());
 
         // none claimed

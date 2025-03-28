@@ -1,13 +1,13 @@
 package hudson.plugins.claim;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MessagesTest {
+class MessagesTest {
 
     @Test
-    public void msgTestsRepeatedSubject() {
+    void msgTestsRepeatedSubject() {
         assertEquals("1 assigned test still failing for foo",
             Messages.ClaimEmailer_Test_Repeated_Subject(1, "foo"));
         assertEquals("2 assigned tests still failing for foo",
@@ -17,7 +17,7 @@ public class MessagesTest {
     }
 
     @Test
-    public void msgTestsRepeatedText() {
+    void msgTestsRepeatedText() {
         assertEquals("A test assigned to you is still failing in foo:",
             Messages.ClaimEmailer_Test_Repeated_Text(1, "foo"));
         assertEquals("2 tests assigned to you are still failing in foo:",

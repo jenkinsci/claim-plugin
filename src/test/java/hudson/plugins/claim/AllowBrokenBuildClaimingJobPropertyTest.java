@@ -2,58 +2,56 @@ package hudson.plugins.claim;
 
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class AllowBrokenBuildClaimingJobPropertyTest {
-
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class AllowBrokenBuildClaimingJobPropertyTest {
 
     @Test
-    public void failedJobWithPropertyShouldHaveClaimBuildAction() throws Exception {
+    void failedJobWithPropertyShouldHaveClaimBuildAction(JenkinsRule j) throws Exception {
         WorkflowJob workflowJob = j.jenkins.createProject(WorkflowJob.class, "test-" + System.currentTimeMillis());
-        workflowJob.setDefinition(new CpsFlowDefinition(""
-                + "node {\n"
-                + "  properties([allowBrokenBuildClaiming()])\n"
-                + "  error('Error')\n"
-                + "}", true));
+        workflowJob.setDefinition(new CpsFlowDefinition("""
+                node {
+                  properties([allowBrokenBuildClaiming()])
+                  error('Error')
+                }""", true));
         workflowJob.scheduleBuild2(0).get();
-        
+
         ClaimBuildAction claimAction = workflowJob.getLastBuild().getAction(ClaimBuildAction.class);
         assertNotNull(claimAction);
     }
 
 
     @Test
-    public void failedJobWithoutPropertyShouldNotHaveClaimBuildAction() throws Exception {
+    void failedJobWithoutPropertyShouldNotHaveClaimBuildAction(JenkinsRule j) throws Exception {
         WorkflowJob workflowJob = j.jenkins.createProject(WorkflowJob.class, "test-" + System.currentTimeMillis());
-        workflowJob.setDefinition(new CpsFlowDefinition(""
-                + "node {\n"
-                + "  error('Error')\n"
-                + "}", true));
+        workflowJob.setDefinition(new CpsFlowDefinition("""
+                node {
+                  error('Error')
+                }""", true));
         workflowJob.scheduleBuild2(0).get();
-        
+
         ClaimBuildAction claimAction = workflowJob.getLastBuild().getAction(ClaimBuildAction.class);
         assertNull(claimAction);
     }
 
     @Test
-    public void failedJobWithPropertyAndStepShouldHaveClaimBuildAction() throws Exception {
+    void failedJobWithPropertyAndStepShouldHaveClaimBuildAction(JenkinsRule j) throws Exception {
         WorkflowJob workflowJob = j.jenkins.createProject(WorkflowJob.class, "test-" + System.currentTimeMillis());
-        workflowJob.setDefinition(new CpsFlowDefinition(""
-                + "node {\n"
-                + "  properties([allowBrokenBuildClaiming()])\n"
-                + "  currentBuild.result = 'ERROR'\n"
-                + "  step([$class: 'ClaimPublisher'])\n"
-                + "  error('Error')\n"
-                + "}", true));
+        workflowJob.setDefinition(new CpsFlowDefinition("""
+                node {
+                  properties([allowBrokenBuildClaiming()])
+                  currentBuild.result = 'ERROR'
+                  step([$class: 'ClaimPublisher'])
+                  error('Error')
+                }""", true));
         workflowJob.scheduleBuild2(0).get();
-        
+
         ClaimBuildAction claimAction = workflowJob.getLastBuild().getAction(ClaimBuildAction.class);
         assertNotNull(claimAction);
     }

@@ -5,16 +5,18 @@ import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.util.ListBoxModel;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class DescribableTestActionTest {
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+@WithJenkins
+class DescribableTestActionTest {
+
+    private JenkinsRule j;
 
     private User user0;
     private User user1;
@@ -22,8 +24,9 @@ public class DescribableTestActionTest {
     private User user3;
     private User user4;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp(JenkinsRule j) throws Exception {
+        this.j = j;
         j.jenkins.setAuthorizationStrategy(new FullControlOnceLoggedInAuthorizationStrategy());
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         JenkinsRule.WebClient wc = j.createWebClient();
@@ -66,7 +69,7 @@ public class DescribableTestActionTest {
     }
 
     @Test
-    public void assigneeListIsSortedByIdByDefault() {
+    void assigneeListIsSortedByIdByDefault() {
         try (ACLContext ignored = ACL.as2(user1.impersonate2())) {
             DescribableTestActionImpl.DescriptorImpl descriptor = new DescribableTestActionImpl.DescriptorImpl();
             ListBoxModel items = descriptor.doFillAssigneeItems();
@@ -78,7 +81,7 @@ public class DescribableTestActionTest {
     }
 
     @Test
-    public void assigneeListFullNameSortsByFullNameThenId() {
+    void assigneeListFullNameSortsByFullNameThenId() {
         try (ACLContext ignored = ACL.as2(user1.impersonate2())) {
             DescribableTestActionImpl.DescriptorImpl descriptor = new DescribableTestActionImpl.DescriptorImpl();
             ((ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class)).setSortUsersByFullName(true);

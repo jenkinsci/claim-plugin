@@ -19,7 +19,6 @@ import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -100,16 +99,11 @@ class ClaimGroovyTest {
         assertEquals("pwned", j.jenkins.getSystemMessage());
     }
 
-    private void doConfigureScriptWithUser(String userName, boolean approve)
-            throws IOException, InterruptedException, java.util.concurrent.ExecutionException {
+    private void doConfigureScriptWithUser(String userName, boolean approve) throws Exception {
         try (ACLContext ctx = ACL.as(User.getOrCreateByIdOrFullName(userName))) {
-            try {
-                ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
-                config.setGroovyTrigger(new SecureGroovyScript(
-                        "jenkins.model.Jenkins.instance.systemMessage = 'pwned'", false, null));
-            } catch (Exception e) {
-                fail(e.getMessage());
-            }
+            ClaimConfig config = (ClaimConfig) j.jenkins.getDescriptor(ClaimConfig.class);
+            config.setGroovyTrigger(new SecureGroovyScript(
+                    "jenkins.model.Jenkins.instance.systemMessage = 'pwned'", false, null));
         }
 
         if (approve) {
@@ -144,22 +138,18 @@ class ClaimGroovyTest {
         assertEquals(Result.FAILURE, build.getResult());
 
         try (ACLContext ctx = ACL.as(User.getOrCreateByIdOrFullName(ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS))) {
-            try {
-                StaplerRequest2 req = mock(StaplerRequest2.class);
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.accumulate("assignee", ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS);
-                jsonObject.accumulate("reason", "none");
-                jsonObject.accumulate("errors", "");
-                jsonObject.accumulate("sticky", true);
-                jsonObject.accumulate("propagateToFollowingBuilds", false);
-                when(req.getSubmittedForm()).thenReturn(jsonObject);
+            StaplerRequest2 req = mock(StaplerRequest2.class);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("assignee", ADMIN_WITH_NO_RUN_SCRIPT_RIGHTS);
+            jsonObject.accumulate("reason", "none");
+            jsonObject.accumulate("errors", "");
+            jsonObject.accumulate("sticky", true);
+            jsonObject.accumulate("propagateToFollowingBuilds", false);
+            when(req.getSubmittedForm()).thenReturn(jsonObject);
 
-                StaplerResponse2 res = mock(StaplerResponse2.class);
-                ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
-                action.doClaim(req, res);
-            } catch (Exception e) {
-                fail(e.getMessage());
-            }
+            StaplerResponse2 res = mock(StaplerResponse2.class);
+            ClaimBuildAction action = build.getAction(ClaimBuildAction.class);
+            action.doClaim(req, res);
         }
     }
 }

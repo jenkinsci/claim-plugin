@@ -5,7 +5,6 @@ import hudson.security.ACL;
 import hudson.security.ACLContext;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.util.ListBoxModel;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;

@@ -1,7 +1,7 @@
 package hudson.plugins.claim.messages;
 
 import hudson.plugins.claim.Messages;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 

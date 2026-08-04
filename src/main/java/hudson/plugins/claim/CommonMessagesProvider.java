@@ -5,7 +5,7 @@ import hudson.Util;
 import hudson.model.User;
 import hudson.security.ACL;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 
 import java.util.Collections;

@@ -9,7 +9,12 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ApprovalContext;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest2;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Extension
 public final class ClaimConfig extends GlobalConfiguration {
@@ -76,6 +81,11 @@ public final class ClaimConfig extends GlobalConfiguration {
     private SecureGroovyScript groovyTrigger;
 
     /**
+     * Webhooks notified when a test or build is claimed or unclaimed.
+     */
+    private List<ClaimWebhook> webhooks = new ArrayList<>();
+
+    /**
      * This human readable name is used in the configuration screen.
      */
     @NonNull
@@ -96,6 +106,11 @@ public final class ClaimConfig extends GlobalConfiguration {
         emailDisplayedForAssigneesList = formData.getBoolean("emailDisplayedForAssigneesList");
         allowUsersToConfigureEmailPreferences = formData.getBoolean("allowUsersToConfigureEmailPreferences");
         setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
+        if (formData.has("webhooks")) {
+            setWebhooks(req.bindJSONToList(ClaimWebhook.class, formData.get("webhooks")));
+        } else {
+            setWebhooks(Collections.emptyList());
+        }
         save();
         return super.configure(req, formData);
     }
@@ -212,6 +227,16 @@ public final class ClaimConfig extends GlobalConfiguration {
 
     public void setAllowUsersToConfigureEmailPreferences(boolean allowUsersToConfigureEmailPreferences) {
         this.allowUsersToConfigureEmailPreferences = allowUsersToConfigureEmailPreferences;
+    }
+
+    @NonNull
+    public List<ClaimWebhook> getWebhooks() {
+        return webhooks == null ? Collections.emptyList() : Collections.unmodifiableList(webhooks);
+    }
+
+    @DataBoundSetter
+    public void setWebhooks(List<ClaimWebhook> webhooks) {
+        this.webhooks = webhooks == null ? new ArrayList<>() : new ArrayList<>(webhooks);
     }
 
     @NonNull

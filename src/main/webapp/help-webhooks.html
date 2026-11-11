@@ -1,0 +1,14 @@
+<div>
+    <p>A <em>webhook</em> is a URL of another system that Jenkins calls automatically as soon as something
+        happens, here: a failed test or build is <b>claimed</b> (someone takes responsibility) or
+        <b>unclaimed</b> (the claim is released). Jenkins sends a small JSON message via HTTP <code>POST</code>
+        to that URL, so external tools such as chat bots, ticket systems or dashboards can react immediately
+        without polling Jenkins.</p>
+    <p>You can configure several webhooks and restrict each one to claim and/or unclaim events and to tests
+        and/or builds. An optional secret lets the receiver verify that a message really comes from this
+        Jenkins.</p>
+    <p>Sending is asynchronous and best effort: if a webhook is unreachable or answers with an error, this is
+        only written to the Jenkins log. Claiming itself is never blocked or broken by a webhook.
+        If no webhook is configured, nothing is sent.</p>
+    <p>The structure of the message is described in the help of the <em>Payload format</em> entry of each webhook.</p>
+</div>

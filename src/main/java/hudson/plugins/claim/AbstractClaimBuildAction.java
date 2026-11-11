@@ -139,6 +139,8 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
     public final void claim(User claimedByUser, String providedReason, User assignedByUser, Date date,
                             boolean isSticky, boolean isPropagated, boolean notify) {
         applyClaim(claimedByUser, providedReason, assignedByUser, date, isSticky, isPropagated);
+        ClaimWebhookNotifier.notify(ClaimWebhook.ClaimEvent.CLAIMED, this, claimedByUser, assignedByUser,
+                providedReason, isSticky, isPropagated);
         if (notify) {
             try {
                 sendInitialClaimEmail(claimedByUser, providedReason, assignedByUser);
@@ -216,8 +218,13 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param notify true if notifications have to be sent
      */
     public final void unclaim(boolean notify) {
-        //TODO actually notify
+        //TODO actually notify by email; webhooks are always notified
+        User previousClaimant = claimedBy == null ? null : getUserFromId(claimedBy, false);
+        String previousReason = reason;
+        boolean wasSticky = isSticky();
         applyUnclaim();
+        ClaimWebhookNotifier.notify(ClaimWebhook.ClaimEvent.UNCLAIMED, this, previousClaimant, getCurrentUser(),
+                previousReason, wasSticky, false);
     }
 
     /**

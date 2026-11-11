@@ -106,6 +106,30 @@ Example:
 junit testDataPublishers: [[$class: 'ClaimTestDataPublisher', displayClaimActionsInTestResultsTable: true]], testResults: '**/target/*-reports/TEST*.xml'
 ```
 
+### Webhooks
+
+Under *Manage Jenkins → System → Claim* (Webhooks) you can add any number of webhooks that are notified
+when a test or build is claimed or unclaimed. Each webhook can be enabled/disabled, restricted to claim and/or
+unclaim events, restricted to tests and/or builds, given a timeout, and protected by an optional secret.
+The *Test webhook* button sends a test event.
+
+A JSON `POST` is sent per claimed/unclaimed item (claiming several tests produces one event per test):
+
+```json
+{
+  "event": "claimed", "type": "test", "job": "folder/job", "build": 42,
+  "buildUrl": "https://jenkins/job/x/42/", "test": "junit/pkg/Class/method",
+  "testUrl": "https://jenkins/job/x/42/testReport/...",
+  "claimedBy": {"id": "alice", "name": "Alice"}, "triggeredBy": {"id": "bob", "name": "Bob"},
+  "reason": "...", "sticky": true, "propagated": false, "timestamp": "2026-11-11T10:00:00Z"
+}
+```
+
+If a secret is set, the body is signed with HMAC-SHA256 and sent as `X-Claim-Signature: sha256=<hex>`.
+Delivery is asynchronous and best effort: failures (timeouts, errors, non-2xx answers) are only logged and
+never affect the claim. Claims that are propagated to following builds or carried over to new builds do not
+send additional events.
+
 ### Limitations
 As the plugin uses a post build action to allow claiming, build or tests marked as failed prior to enabling the plugin will not have any claim action proposed.
 

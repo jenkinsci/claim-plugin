@@ -164,6 +164,7 @@ public class ClaimWebhook extends AbstractDescribableImpl<ClaimWebhook> {
             return Messages.ClaimWebhook_DisplayName();
         }
 
+        @POST
         public FormValidation doCheckUrl(@QueryParameter String value) {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             if (StringUtils.isBlank(value)) {
@@ -171,19 +172,6 @@ public class ClaimWebhook extends AbstractDescribableImpl<ClaimWebhook> {
             }
             if (!isValidUrl(value)) {
                 return FormValidation.error(Messages.ClaimWebhook_UrlInvalid());
-            }
-            return FormValidation.ok();
-        }
-
-        public FormValidation doCheckTimeoutSeconds(@QueryParameter String value) {
-            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
-            try {
-                int v = Integer.parseInt(StringUtils.trimToEmpty(value));
-                if (v < 1 || v > MAX_TIMEOUT_SECONDS) {
-                    return FormValidation.error(Messages.ClaimWebhook_TimeoutRange(MAX_TIMEOUT_SECONDS));
-                }
-            } catch (NumberFormatException e) {
-                return FormValidation.error(Messages.ClaimWebhook_TimeoutRange(MAX_TIMEOUT_SECONDS));
             }
             return FormValidation.ok();
         }

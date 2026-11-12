@@ -19,7 +19,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collections;
@@ -173,7 +173,7 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      * @param isSticky true if the claim has to be kept until resolution
      * @param isPropagated true if the claim has to be propagated to following builds
      */
-    protected void applyClaim(@Nonnull User claimedByUser, String providedReason, @Nonnull User assignedByUser, Date date,
+    protected void applyClaim(@NonNull User claimedByUser, String providedReason, @NonNull User assignedByUser, Date date,
                               boolean isSticky, boolean isPropagated) {
         this.claimed = true;
         this.claimedBy = claimedByUser.getId();

@@ -142,7 +142,8 @@ public class ClaimWebhook extends AbstractDescribableImpl<ClaimWebhook> {
     /** The kind of event a webhook is notified about. */
     enum ClaimEvent {
         CLAIMED("claimed"),
-        UNCLAIMED("unclaimed");
+        UNCLAIMED("unclaimed"),
+        TEST("test");
 
         private final String id;
 
@@ -164,6 +165,9 @@ public class ClaimWebhook extends AbstractDescribableImpl<ClaimWebhook> {
             return Messages.ClaimWebhook_DisplayName();
         }
 
+        // Both methods require ADMINISTER, matching the permission of the global Claim configuration page
+        // (ClaimConfig does not override getRequiredGlobalConfigPagePermission()). Testing a webhook also makes
+        // an outbound request from the controller, which is an administrative operation.
         @POST
         public FormValidation doCheckUrl(@QueryParameter String value) {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
@@ -190,7 +194,7 @@ public class ClaimWebhook extends AbstractDescribableImpl<ClaimWebhook> {
             hook.setSecret(Secret.fromString(secret));
             hook.setTimeoutSeconds(timeoutSeconds);
             JSONObject payload = new JSONObject();
-            payload.put("event", "test");
+            payload.put("event", ClaimEvent.TEST.getId());
             payload.put("message", "Test event from the Jenkins Claim plugin");
             payload.put("jenkinsUrl", Jenkins.get().getRootUrl());
             try {

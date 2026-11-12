@@ -106,6 +106,8 @@ public final class ClaimConfig extends GlobalConfiguration {
         emailDisplayedForAssigneesList = formData.getBoolean("emailDisplayedForAssigneesList");
         allowUsersToConfigureEmailPreferences = formData.getBoolean("allowUsersToConfigureEmailPreferences");
         setGroovyTrigger(req.bindJSON(SecureGroovyScript.class, formData.getJSONObject("groovyTrigger")));
+        // Bound explicitly (not only via the @DataBoundSetter): when the last webhook is removed in the UI the
+        // "webhooks" key is absent from the submitted JSON, so the setter would not be invoked and the old list kept.
         if (formData.has("webhooks")) {
             setWebhooks(req.bindJSONToList(ClaimWebhook.class, formData.get("webhooks")));
         } else {

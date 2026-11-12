@@ -219,12 +219,15 @@ public abstract class AbstractClaimBuildAction<T extends Saveable>
      */
     public final void unclaim(boolean notify) {
         //TODO actually notify by email; webhooks are always notified
+        boolean wasClaimed = isClaimed();
         User previousClaimant = claimedBy == null ? null : getUserFromId(claimedBy, false);
         String previousReason = reason;
         boolean wasSticky = isSticky();
         applyUnclaim();
-        ClaimWebhookNotifier.notify(ClaimWebhook.ClaimEvent.UNCLAIMED, this, previousClaimant, getCurrentUser(),
-                previousReason, wasSticky, false);
+        if (wasClaimed) {
+            ClaimWebhookNotifier.notify(ClaimWebhook.ClaimEvent.UNCLAIMED, this, previousClaimant, getCurrentUser(),
+                    previousReason, wasSticky, false);
+        }
     }
 
     /**

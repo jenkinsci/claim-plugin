@@ -1,6 +1,7 @@
 package hudson.plugins.claim;
 
 import hudson.ProxyConfiguration;
+import hudson.Util;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.util.Secret;
@@ -18,7 +19,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,6 +27,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +43,7 @@ final class ClaimWebhookNotifier {
 
     private static final Logger LOGGER = Logger.getLogger("claim-plugin");
     private static final int QUEUE_CAPACITY = 100;
+    private static final int MAX_THREADS = 4;
 
     private static final ThreadPoolExecutor EXECUTOR = createExecutor();
 
@@ -54,7 +57,7 @@ final class ClaimWebhookNotifier {
             return t;
         };
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                1, 2, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<>(QUEUE_CAPACITY), factory);
+                MAX_THREADS, MAX_THREADS, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<>(QUEUE_CAPACITY), factory);
         executor.allowCoreThreadTimeOut(true);
         return executor;
     }
@@ -93,20 +96,21 @@ final class ClaimWebhookNotifier {
                     int status = deliver(hook, body, event.getId());
                     if (status < 200 || status >= 300) {
                         LOGGER.log(Level.WARNING, "Claim webhook {0} answered with HTTP {1}",
-                                new Object[] {hook.getUrl(), status});
+                                new Object[] {redact(hook.getUrl()), status});
                     }
                 } catch (Throwable t) { // NOSONAR
-                    LOGGER.log(Level.WARNING, "Claim webhook " + hook.getUrl() + " could not be notified: "
-                            + t.getMessage(), t);
+                    LOGGER.log(Level.WARNING, "Claim webhook {0} could not be notified: {1}",
+                            new Object[] {redact(hook.getUrl()), t.toString()});
+                    LOGGER.log(Level.FINE, "Claim webhook delivery failure details", t);
                 }
             });
         } catch (RejectedExecutionException e) {
-            LOGGER.log(Level.WARNING, "Claim webhook queue is full, dropping event for {0}", hook.getUrl());
+            LOGGER.log(Level.WARNING, "Claim webhook queue is full, dropping event for {0}", redact(hook.getUrl()));
         }
     }
 
     static int deliver(ClaimWebhook hook, String body) throws IOException {
-        return deliver(hook, body, "test");
+        return deliver(hook, body, ClaimEvent.TEST.getId());
     }
 
     static int deliver(ClaimWebhook hook, String body, String eventId) throws IOException {
@@ -114,7 +118,7 @@ final class ClaimWebhookNotifier {
         byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
         HttpURLConnection con = (HttpURLConnection) ProxyConfiguration.open(java.net.URI.create(hook.getUrl()).toURL());
         if (con == null) {
-            throw new IOException("Could not open connection to " + hook.getUrl());
+            throw new IOException("Could not open connection to " + redact(hook.getUrl()));
         }
         try {
             con.setConnectTimeout(timeoutMs);
@@ -137,6 +141,25 @@ final class ClaimWebhookNotifier {
         } finally {
             con.disconnect();
         }
+    }
+
+    /**
+     * Returns scheme://host[:port]/... of the URL. Path and query are never logged because webhook URLs
+     * (Slack, Teams, Discord, ...) often carry their credential there.
+     */
+    static String redact(String url) {
+        try {
+            java.net.URI u = java.net.URI.create(url);
+            return u.getScheme() + "://" + u.getHost() + (u.getPort() > 0 ? ":" + u.getPort() : "") + "/...";
+        } catch (IllegalArgumentException e) {
+            return "<invalid url>";
+        }
+    }
+
+    private static String encodePath(String path) {
+        return Arrays.stream(path.split("/", -1))
+                .map(Util::rawEncode)
+                .collect(Collectors.joining("/"));
     }
 
     static String sign(String secret, byte[] payload) throws IOException {
@@ -165,15 +188,18 @@ final class ClaimWebhookNotifier {
             json.put("buildUrl", rootUrl + run.getUrl());
         }
         if (action instanceof ClaimTestAction testAction) {
-            json.put("test", testAction.getTestObjectId());
-            json.put("testUrl", rootUrl + action.getUrl());
+            String testId = testAction.getTestObjectId();
+            json.put("test", testId);
+            if (owner instanceof Run<?, ?> run) {
+                json.put("testUrl", rootUrl + run.getUrl() + "testReport/" + encodePath(testId));
+            }
         }
         json.put("claimedBy", userJson(previousClaimant));
         json.put("triggeredBy", userJson(triggeredBy));
         json.put("reason", reason);
         json.put("sticky", sticky);
         json.put("propagated", propagated);
-        json.put("timestamp", Instant.ofEpochMilli(new Date().getTime()).toString());
+        json.put("timestamp", Instant.now().toString());
         return json;
     }
 

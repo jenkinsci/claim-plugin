@@ -7,6 +7,9 @@ import hudson.model.User;
 import hudson.plugins.claim.utils.TestBuilder;
 import hudson.util.Secret;
 import net.sf.json.JSONObject;
+import org.htmlunit.html.HtmlElement;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlPage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -150,5 +153,58 @@ class ClaimWebhookTest {
         assertFalse(hooks.get(0).isOnUnclaim());
         assertTrue(hooks.get(0).isOnClaim());
         assertEquals(7, hooks.get(0).getTimeoutSeconds());
+    }
+
+    @Test
+    void testClaimsSendEncodedTestUrlAndPropagatedFlag() throws Exception {
+        configure(new ClaimWebhook(url()));
+        ClaimTestDataPublisher.Data data = new ClaimTestDataPublisher.Data(build, true);
+        ClaimTestAction testAction = new ClaimTestAction(data, "junit/pkg/MyClass/test[1] with space");
+
+        testAction.claim(user, "flaky", user, new Date(), true, true, false);
+        JSONObject claimed = JSONObject.fromObject(bodies.poll(10, TimeUnit.SECONDS));
+        assertEquals("claimed", claimed.getString("event"));
+        assertEquals("test", claimed.getString("type"));
+        assertEquals("junit/pkg/MyClass/test[1] with space", claimed.getString("test"));
+        assertTrue(claimed.getString("testUrl").endsWith("job/x/1/testReport/junit/pkg/MyClass/test%5B1%5D%20with%20space"),
+                claimed.getString("testUrl"));
+        assertTrue(claimed.getBoolean("propagated"));
+        assertEquals("alice", claimed.getJSONObject("claimedBy").getString("id"));
+
+        testAction.unclaim(false);
+        JSONObject unclaimed = JSONObject.fromObject(bodies.poll(10, TimeUnit.SECONDS));
+        assertEquals("unclaimed", unclaimed.getString("event"));
+        assertEquals("test", unclaimed.getString("type"));
+        assertEquals("alice", unclaimed.getJSONObject("claimedBy").getString("id"));
+        assertFalse(unclaimed.getBoolean("propagated"));
+    }
+
+    @Test
+    void unclaimWithoutPriorClaimSendsNothing() throws Exception {
+        configure(new ClaimWebhook(url()));
+        assertFalse(action.isClaimed());
+        action.unclaim(false);
+        assertNull(bodies.poll(1, TimeUnit.SECONDS));
+    }
+
+    @Test
+    void removingTheLastWebhookIsPersisted() throws Exception {
+        configure(new ClaimWebhook("https://example.org/hook"));
+        JenkinsRule.WebClient wc = j.createWebClient();
+        HtmlPage page = wc.goTo("manage/configure");
+        HtmlForm form = page.getFormByName("config");
+        HtmlElement delete = page.querySelector(".repeatable-delete");
+        assertNotNull(delete, "delete button of the webhook not found");
+        delete.click();
+        j.submit(form);
+        assertTrue(ClaimConfig.get().getWebhooks().isEmpty());
+    }
+
+    @Test
+    void urlsAreRedactedForLogging() {
+        assertEquals("https://hooks.slack.com/...",
+                ClaimWebhookNotifier.redact("https://hooks.slack.com/services/T000/B000/SECRET?token=abc"));
+        assertEquals("http://localhost:8080/...", ClaimWebhookNotifier.redact("http://localhost:8080/hook?x=1"));
+        assertEquals("<invalid url>", ClaimWebhookNotifier.redact("not a url"));
     }
 }

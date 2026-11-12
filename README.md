@@ -130,6 +130,18 @@ Delivery is asynchronous and best effort: failures (timeouts, errors, non-2xx an
 never affect the claim. Claims that are propagated to following builds or carried over to new builds do not
 send additional events.
 
+**Delivery guarantees:** Events are queued in memory and sent best effort. There is no retry and no
+persistence, so events are lost if Jenkins restarts or shuts down, or if more than 100 events are pending.
+Do not assume at-least-once delivery.
+
+**Verifying messages:** If a secret is set, verify `X-Claim-Signature` (HMAC-SHA256 of the raw request body).
+The JSON body contains a `timestamp` that is covered by the signature, so receivers can reject messages whose
+timestamp is too old and deduplicate if needed to protect against replays.
+
+**Security note:** Webhook URLs are configured by administrators. Webhooks can reach every host the Jenkins
+controller can reach (including internal addresses), and the *Test webhook* button shows the status code or
+error. Redirects are not followed. Webhook URLs are never logged in full (only scheme, host and port).
+
 ### Limitations
 As the plugin uses a post build action to allow claiming, build or tests marked as failed prior to enabling the plugin will not have any claim action proposed.
 

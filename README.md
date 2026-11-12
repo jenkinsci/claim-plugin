@@ -106,6 +106,42 @@ Example:
 junit testDataPublishers: [[$class: 'ClaimTestDataPublisher', displayClaimActionsInTestResultsTable: true]], testResults: '**/target/*-reports/TEST*.xml'
 ```
 
+### Webhooks
+
+Under *Manage Jenkins → System → Claim* (Webhooks) you can add any number of webhooks that are notified
+when a test or build is claimed or unclaimed. Each webhook can be enabled/disabled, restricted to claim and/or
+unclaim events, restricted to tests and/or builds, given a timeout, and protected by an optional secret.
+The *Test webhook* button sends a test event.
+
+A JSON `POST` is sent per claimed/unclaimed item (claiming several tests produces one event per test):
+
+```json
+{
+  "event": "claimed", "type": "test", "job": "folder/job", "build": 42,
+  "buildUrl": "https://jenkins/job/x/42/", "test": "junit/pkg/Class/method",
+  "testUrl": "https://jenkins/job/x/42/testReport/...",
+  "claimedBy": {"id": "alice", "name": "Alice"}, "triggeredBy": {"id": "bob", "name": "Bob"},
+  "reason": "...", "sticky": true, "propagated": false, "timestamp": "2026-11-11T10:00:00Z"
+}
+```
+
+If a secret is set, the body is signed with HMAC-SHA256 and sent as `X-Claim-Signature: sha256=<hex>`.
+Delivery is asynchronous and best effort: failures (timeouts, errors, non-2xx answers) are only logged and
+never affect the claim. Claims that are propagated to following builds or carried over to new builds do not
+send additional events.
+
+**Delivery guarantees:** Events are queued in memory and sent best effort. There is no retry and no
+persistence, so events are lost if Jenkins restarts or shuts down, or if more than 100 events are pending.
+Do not assume at-least-once delivery.
+
+**Verifying messages:** If a secret is set, verify `X-Claim-Signature` (HMAC-SHA256 of the raw request body).
+The JSON body contains a `timestamp` that is covered by the signature, so receivers can reject messages whose
+timestamp is too old and deduplicate if needed to protect against replays.
+
+**Security note:** Webhook URLs are configured by administrators. Webhooks can reach every host the Jenkins
+controller can reach (including internal addresses), and the *Test webhook* button shows the status code or
+error. Redirects are not followed. Webhook URLs are never logged in full (only scheme, host and port).
+
 ### Limitations
 As the plugin uses a post build action to allow claiming, build or tests marked as failed prior to enabling the plugin will not have any claim action proposed.
 

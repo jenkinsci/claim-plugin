@@ -1,0 +1,27 @@
+<div>
+    <p>Each event is sent as an HTTP <code>POST</code> with <code>Content-Type: application/json</code> and the headers:</p>
+    <ul>
+        <li><code>X-Claim-Event</code>: <code>claimed</code>, <code>unclaimed</code> or <code>test</code></li>
+        <li><code>X-Claim-Signature: sha256=&lt;hex&gt;</code>: HMAC-SHA256 of the raw body, only if a secret is set</li>
+    </ul>
+    <p>Fields without a value (e.g. <code>reason</code>) are omitted. Any 2xx answer counts as success.
+        Claiming several tests sends one event per test.</p>
+<pre>{
+  "event": "claimed",              // "claimed" | "unclaimed"
+  "type": "test",                  // "test" | "build"
+  "jenkinsUrl": "https://jenkins.example.com/",
+  "job": "folder/my-job",
+  "build": 42,
+  "buildUrl": "https://jenkins.example.com/job/folder/job/my-job/42/",
+  "test": "junit/pkg/MyClass/myMethod",   // only for type "test"
+  "testUrl": "https://jenkins.example.com/job/folder/job/my-job/42/testReport/junit/pkg/MyClass/myMethod",
+  "claimedBy":   { "id": "alice", "name": "Alice A." },  // on "unclaimed": the previous claimant
+  "triggeredBy": { "id": "bob",   "name": "Bob B." },    // user who claimed/assigned/unclaimed
+  "reason": "Known flaky, see TICKET-123",
+  "sticky": true,
+  "propagated": false,             // true if the claim is also applied to following builds
+  "timestamp": "2026-11-11T10:00:00Z"
+}</pre>
+    <p>The <em>Test webhook</em> button sends:</p>
+<pre>{ "event": "test", "message": "Test event from the Jenkins Claim plugin", "jenkinsUrl": "https://jenkins.example.com/" }</pre>
+</div>

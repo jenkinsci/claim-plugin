@@ -22,6 +22,10 @@ public final class ClaimTestAction extends AbstractClaimBuildAction<Run> {
         this.testObjectId = testObjectId;
     }
 
+    String getTestObjectId() {
+        return testObjectId;
+    }
+
     public String getDisplayName() {
         return Messages.ClaimTestAction_DisplayName();
     }

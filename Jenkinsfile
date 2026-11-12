@@ -1,6 +1,6 @@
 buildPlugin(
   forkCount: '1C',
   useContainerAgent: true,
-  jdkVersions: [17, 21],
-  jenkinsVersions: [null, "2.479.3"]
+  jdkVersions: [21, 25],
+  jenkinsVersions: [null, "2.555.3"]
 )

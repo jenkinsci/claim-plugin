@@ -10,7 +10,7 @@ import hudson.tasks.junit.CaseResult;
 
 import jakarta.mail.MessagingException;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -51,7 +51,7 @@ public final class ClaimEmailer {
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      */
-    public static void sendInitialBuildClaimEmailIfConfigured(@Nonnull User claimedByUser, @Nonnull User assignedByUser,
+    public static void sendInitialBuildClaimEmailIfConfigured(@NonNull User claimedByUser, @NonNull User assignedByUser,
                                                               String action, String reason, String url)
             throws MessagingException, IOException {
 
@@ -79,7 +79,7 @@ public final class ClaimEmailer {
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      */
-    public static void sendInitialTestClaimEmailIfConfigured(@Nonnull User claimedByUser, @Nonnull User assignedByUser,
+    public static void sendInitialTestClaimEmailIfConfigured(@NonNull User claimedByUser, @NonNull User assignedByUser,
                                                              String action, String reason, String url)
         throws MessagingException, IOException {
 
@@ -105,7 +105,7 @@ public final class ClaimEmailer {
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      */
-    public static void sendRepeatedBuildClaimEmailIfConfigured(@Nonnull User claimedByUser, String action, String url)
+    public static void sendRepeatedBuildClaimEmailIfConfigured(@NonNull User claimedByUser, String action, String url)
         throws MessagingException, IOException {
 
         if (isAllowUsersToConfigureEmailPreferences() && !isMailEnabledByUserPreference(claimedByUser, ClaimEmailPreference::isReceiveRepeatedBuildClaimEmail)) {
@@ -129,7 +129,7 @@ public final class ClaimEmailer {
      * @throws MessagingException if there has been some problem with sending the email
      * @throws IOException if there is an IO problem when sending the mail
      */
-    public static void sendRepeatedTestClaimEmailIfConfigured(@Nonnull User claimedByUser, String action, String url,
+    public static void sendRepeatedTestClaimEmailIfConfigured(@NonNull User claimedByUser, String action, String url,
                                                               List<CaseResult> failedTests)
         throws MessagingException, IOException {
 
@@ -158,7 +158,7 @@ public final class ClaimEmailer {
         return config.isAllowUsersToConfigureEmailPreferences();
     }
 
-    private static boolean isMailEnabledByUserPreference(@Nonnull User user, EmailPreferenceChecker preferenceChecker) {
+    private static boolean isMailEnabledByUserPreference(@NonNull User user, EmailPreferenceChecker preferenceChecker) {
         ClaimEmailPreference preference = user.getProperty(ClaimEmailPreference.class);
         if (preference == null) {
             // Default: Send mails

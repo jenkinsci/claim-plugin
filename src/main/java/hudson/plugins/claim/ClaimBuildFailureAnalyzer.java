@@ -18,8 +18,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class ClaimBuildFailureAnalyzer {
+
+    private static final Logger LOGGER = Logger.getLogger(ClaimBuildFailureAnalyzer.class.getName());
 
     public static final String DEFAULT_ERROR = "Default";
     private static final String MATCHING_FILE = "Claim";
@@ -78,6 +83,10 @@ public final class ClaimBuildFailureAnalyzer {
                 break;
             }
         }
+        if (newClaimedFailureCause == null) {
+            LOGGER.log(Level.WARNING, "Unknown failure cause \"{0}\", nothing to claim", error);
+            return;
+        }
 
         getPluginImpl().save();
 
@@ -85,16 +94,17 @@ public final class ClaimBuildFailureAnalyzer {
         FoundFailureCause existingClaimedFoundFailureCause = null;
         FailureCauseBuildAction bfaAction = bfaActionList.get(0);
         List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
+        removeNullCauses(foundFailureCauses);
         boolean hasFailureCauseFromBFA = false;
         for (FoundFailureCause cause : foundFailureCauses) {
-            // check if it's an indication created by claim
-            if (cause == null || cause.getIndications().isEmpty()) {
+            if (cause.getIndications().isEmpty()) {
                 continue;
             }
             if (cause.getName().equals(newClaimedFailureCause.getName())
                     && cause.getIndications().get(0).getMatchingFile().equals("log")) {
                 hasFailureCauseFromBFA = true;
             }
+            // check if it's an indication created by claim
             if (cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
                 existingClaimedFoundFailureCause = cause;
                 break;
@@ -119,16 +129,26 @@ public final class ClaimBuildFailureAnalyzer {
         if (!bfaActionList.isEmpty()) {
             FailureCauseBuildAction bfaAction = bfaActionList.get(0);
             List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
+            removeNullCauses(foundFailureCauses);
             List<FoundFailureCause> toRemove = Lists.newArrayList();
             for (FoundFailureCause cause : foundFailureCauses) {
-                if (cause != null
-                        && cause.getIndications().size() > 0
+                if (!cause.getIndications().isEmpty()
                         && cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
                     toRemove.add(cause);
                 }
             }
             foundFailureCauses.removeAll(toRemove);
         }
+    }
+
+    /**
+     * Drops {@code null} entries from the found failure causes, which a build can end up with if its
+     * {@code build.xml} is not fully deserialized. Removing them here, rather than skipping them in each loop,
+     * also keeps them away from BFA's statistics logger, which does not tolerate them, and stops them being
+     * saved back to the build.
+     */
+    private static void removeNullCauses(List<FoundFailureCause> foundFailureCauses) {
+        foundFailureCauses.removeIf(Objects::isNull);
     }
 
 }

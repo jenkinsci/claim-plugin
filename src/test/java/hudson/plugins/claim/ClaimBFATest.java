@@ -4,6 +4,7 @@ import org.htmlunit.html.*;
 import com.sonyericsson.jenkins.plugins.bfa.PluginImpl;
 import com.sonyericsson.jenkins.plugins.bfa.model.FailureCause;
 import com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseBuildAction;
+import com.sonyericsson.jenkins.plugins.bfa.model.FoundFailureCause;
 import hudson.model.Build;
 import hudson.model.Project;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
@@ -13,7 +14,10 @@ import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -115,14 +119,59 @@ class ClaimBFATest {
     }
 
     @Test
-    void removeFailActionToleratesNullFoundFailureCause() throws Exception {
+    void removeFailActionPrunesNullsAndRemovesOnlyClaimEntries() throws Exception {
         FailureCauseBuildAction bfaAction = build.getAction(FailureCauseBuildAction.class);
         assertNotNull(bfaAction);
-        bfaAction.getFoundFailureCauses().add(null);
+        List<FoundFailureCause> causes = bfaAction.getFoundFailureCauses();
+        FailureCause knownCause = ClaimBuildFailureAnalyzer.getFailureCauses().iterator().next();
+        // an entry that is not created by claim and must survive the removal
+        FoundFailureCause notFromClaim = new FoundFailureCause(knownCause, new LinkedList<>());
+        causes.add(notFromClaim);
+        List<FoundFailureCause> original = new ArrayList<>(causes);
+        ClaimBuildFailureAnalyzer analyzer = new ClaimBuildFailureAnalyzer(CAUSE_NAME_2);
 
-        new ClaimBuildFailureAnalyzer(ClaimBuildFailureAnalyzer.DEFAULT_ERROR).removeFailAction(build);
+        analyzer.createFailAction(build);
+        assertThat(causes.size(), is(original.size() + 1));
+        causes.add(null);
 
-        assertThat(bfaAction.getFoundFailureCauses().contains(null), is(true));
+        analyzer.removeFailAction(build);
+
+        assertThat(causes.contains(null), is(false));
+        assertThat(causes.contains(notFromClaim), is(true));
+        assertThat(causes, is(original));
+    }
+
+    @Test
+    void createFailActionToleratesNullAndEmptyIndicationEntries() throws Exception {
+        FailureCauseBuildAction bfaAction = build.getAction(FailureCauseBuildAction.class);
+        assertNotNull(bfaAction);
+        List<FoundFailureCause> causes = bfaAction.getFoundFailureCauses();
+        int originalSize = causes.size();
+        FailureCause knownCause = ClaimBuildFailureAnalyzer.getFailureCauses().iterator().next();
+        FoundFailureCause withoutIndications = new FoundFailureCause(knownCause, new LinkedList<>());
+        causes.add(null);
+        causes.add(withoutIndications);
+
+        new ClaimBuildFailureAnalyzer(CAUSE_NAME_2).createFailAction(build);
+
+        assertThat(causes.contains(null), is(false));
+        assertThat(causes.contains(withoutIndications), is(true));
+        // the original entries, the one without indications and the new claim entry
+        assertThat(causes.size(), is(originalSize + 2));
+        FoundFailureCause claimEntry = causes.get(causes.size() - 1);
+        assertThat(claimEntry.getName(), is(CAUSE_NAME_2));
+        assertThat(claimEntry.getIndications().get(0).getMatchingFile(), is("Claim"));
+    }
+
+    @Test
+    void createFailActionIgnoresUnknownFailureCause() throws Exception {
+        FailureCauseBuildAction bfaAction = build.getAction(FailureCauseBuildAction.class);
+        assertNotNull(bfaAction);
+        List<FoundFailureCause> original = new ArrayList<>(bfaAction.getFoundFailureCauses());
+
+        new ClaimBuildFailureAnalyzer("NoSuchCause").createFailAction(build);
+
+        assertThat(bfaAction.getFoundFailureCauses(), is(original));
     }
 
     @Test

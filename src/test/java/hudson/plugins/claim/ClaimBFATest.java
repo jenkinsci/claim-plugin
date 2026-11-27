@@ -3,6 +3,7 @@ package hudson.plugins.claim;
 import org.htmlunit.html.*;
 import com.sonyericsson.jenkins.plugins.bfa.PluginImpl;
 import com.sonyericsson.jenkins.plugins.bfa.model.FailureCause;
+import com.sonyericsson.jenkins.plugins.bfa.model.FailureCauseBuildAction;
 import hudson.model.Build;
 import hudson.model.Project;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
@@ -111,6 +112,17 @@ class ClaimBFATest {
             assertTrue(page.asXml().contains(IDENTIFIED_PROBLEMS));
             assertTrue(page.asXml().contains("No identified problem"));
         }
+    }
+
+    @Test
+    void removeFailActionToleratesNullFoundFailureCause() throws Exception {
+        FailureCauseBuildAction bfaAction = build.getAction(FailureCauseBuildAction.class);
+        assertNotNull(bfaAction);
+        bfaAction.getFoundFailureCauses().add(null);
+
+        new ClaimBuildFailureAnalyzer(ClaimBuildFailureAnalyzer.DEFAULT_ERROR).removeFailAction(build);
+
+        assertThat(bfaAction.getFoundFailureCauses().contains(null), is(true));
     }
 
     @Test

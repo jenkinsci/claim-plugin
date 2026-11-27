@@ -88,6 +88,9 @@ public final class ClaimBuildFailureAnalyzer {
         boolean hasFailureCauseFromBFA = false;
         for (FoundFailureCause cause : foundFailureCauses) {
             // check if it's an indication created by claim
+            if (cause == null || cause.getIndications().isEmpty()) {
+                continue;
+            }
             if (cause.getName().equals(newClaimedFailureCause.getName())
                     && cause.getIndications().get(0).getMatchingFile().equals("log")) {
                 hasFailureCauseFromBFA = true;
@@ -118,7 +121,8 @@ public final class ClaimBuildFailureAnalyzer {
             List<FoundFailureCause> foundFailureCauses = bfaAction.getFoundFailureCauses();
             List<FoundFailureCause> toRemove = Lists.newArrayList();
             for (FoundFailureCause cause : foundFailureCauses) {
-                if (cause.getIndications().size() > 0
+                if (cause != null
+                        && cause.getIndications().size() > 0
                         && cause.getIndications().get(0).getMatchingFile().equals(MATCHING_FILE)) {
                     toRemove.add(cause);
                 }
